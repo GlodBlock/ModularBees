@@ -1,0 +1,8 @@
+{
+  "type": "modularbees:treater_food",
+  "boost": 1.3,
+  "food": {
+    "item": "minecraft:sugar"
+  },
+  "output": {}
+}

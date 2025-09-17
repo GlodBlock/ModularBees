@@ -1,0 +1,8 @@
+{
+  "loader": "modularbees:connect_model",
+  "border": "modularbees:block/beehive_border",
+  "top": "modularbees:block/beehive_end",
+  "down": "modularbees:block/beehive_end",
+  "sides": "modularbees:block/beehive_treater",
+  "particle": "modularbees:block/beehive_treater"
+}

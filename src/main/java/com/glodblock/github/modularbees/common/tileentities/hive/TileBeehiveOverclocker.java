@@ -1,0 +1,104 @@
+package com.glodblock.github.modularbees.common.tileentities.hive;
+
+import com.glodblock.github.glodium.util.GlodUtil;
+import com.glodblock.github.modularbees.common.MBSingletons;
+import com.glodblock.github.modularbees.common.caps.EnergyHandlerHost;
+import com.glodblock.github.modularbees.common.caps.ItemHandlerHost;
+import com.glodblock.github.modularbees.common.inventory.MBEnergyInventory;
+import com.glodblock.github.modularbees.common.inventory.MBItemInventory;
+import com.glodblock.github.modularbees.util.GameConstants;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.state.BlockState;
+import net.neoforged.neoforge.items.IItemHandler;
+import org.jetbrains.annotations.NotNull;
+
+import java.util.List;
+
+public class TileBeehiveOverclocker extends TileBeehivePart implements ItemHandlerHost, EnergyHandlerHost {
+
+    public static final int POWER_USE = 100;
+    protected final MBItemInventory electrode = new MBItemInventory(this, 1).setFilter(stack -> stack.getItem() instanceof HiveElectrode);
+    protected final MBEnergyInventory energy = new MBEnergyInventory(this, 2 * GameConstants.M).inputOnly();
+
+    public TileBeehiveOverclocker(BlockPos pos, BlockState state) {
+        super(GlodUtil.getTileType(TileBeehiveOverclocker.class, TileBeehiveOverclocker::new, MBSingletons.MODULAR_OVERCLOCKER), pos, state);
+    }
+
+    public float getBoostAndConsume(int bees) {
+        if (this.level instanceof ServerLevel server && this.isActive()) {
+            var stack = this.electrode.getStackInSlot(0);
+            if (!stack.isEmpty() && stack.getItem() instanceof HiveElectrode e) {
+                if (this.energy.getEnergyStored() >= bees * POWER_USE) {
+                    int power = this.energy.forceExtractEnergy(bees * POWER_USE, false);
+                    if (power >= bees * POWER_USE) {
+                        stack.hurtAndBreak(1, server, null, item -> this.electrode.setStackInSlot(0, ItemStack.EMPTY));
+                        return e.getPower();
+                    }
+                }
+            }
+        }
+        return 1;
+    }
+
+    @Override
+    public void saveTag(CompoundTag data, HolderLookup.@NotNull Provider provider) {
+        super.saveTag(data, provider);
+        data.put("electrode", this.electrode.serializeNBT(provider));
+        data.put("energy", this.energy.serializeNBT(provider));
+    }
+
+    @Override
+    public void loadTag(CompoundTag data, HolderLookup.@NotNull Provider provider) {
+        super.loadTag(data, provider);
+        this.electrode.deserializeNBT(provider, data.getCompound("electrode"));
+        this.energy.deserializeNBT(provider, data.getCompound("energy"));
+    }
+
+    @Override
+    public IItemHandler getItemInventory() {
+        return this.electrode;
+    }
+
+    @Override
+    public MBEnergyInventory getEnergyStorage() {
+        return this.energy;
+    }
+
+    @Override
+    public MBEnergyInventory getEnergyStorage(Direction side) {
+        if (side == null) {
+            return this.getEnergyStorage();
+        }
+        if (side == this.getFacing()) {
+            return this.energy;
+        }
+        return null;
+    }
+
+    @Override
+    public MBItemInventory getHandlerByName(String name) {
+        return this.electrode;
+    }
+
+    @Override
+    public void addInventoryDrops(Level level, @NotNull BlockPos pos, List<ItemStack> drops) {
+        drops.addAll(this.electrode.toList());
+    }
+
+    public Direction getFacing() {
+        return MBSingletons.MODULAR_OVERCLOCKER.getFacing(this.getBlockState());
+    }
+
+    public interface HiveElectrode {
+
+        float getPower();
+
+    }
+
+}

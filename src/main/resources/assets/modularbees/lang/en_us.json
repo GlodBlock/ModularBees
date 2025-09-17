@@ -1,0 +1,20 @@
+{
+  "itemGroup.mb": "Modular Bees",
+  "block.modularbees.modular_beehive_core": "Modular Beehive",
+  "block.modularbees.modular_beehive_part": "Beehive Structure Box",
+  "block.modularbees.modular_beehive_alveary": "Modular Alveary",
+  "block.modularbees.modular_beehive_feeder": "Modular Feeder",
+  "block.modularbees.modular_beehive_overclocker": "Beehive Overclocker",
+  "block.modularbees.modular_treater": "Beehive Treater",
+  "item.modularbees.electride_copper": "Copper Electride",
+  "item.modularbees.electride_iron": "Iron Electride",
+  "item.modularbees.electride_gold": "Gold Electride",
+  "item.modularbees.electride_netherite": "Netherite Electride",
+  "modularbees.tooltip.electride_power": "Gives extra %s%% speed boost",
+  "modularbees.gui.modular_beehive_overclocker.boost": "Speed Boost:",
+  "modularbees.gui.modular_beehive_overclocker.empty": "No Electrode",
+  "modularbees.gui.fluid_tank.amount": "%s/%s mB",
+  "modularbees.gui.energy_bar.amount": "FE: %s/%s",
+  "modularbees.gui.empty": "Empty",
+  "modularbees.jei.treater_boost": "Productivity +%s"
+}

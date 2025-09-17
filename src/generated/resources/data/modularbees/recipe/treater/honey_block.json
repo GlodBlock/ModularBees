@@ -1,0 +1,8 @@
+{
+  "type": "modularbees:treater_food",
+  "boost": 5.0,
+  "food": {
+    "item": "minecraft:honey_block"
+  },
+  "output": {}
+}

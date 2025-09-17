@@ -1,0 +1,34 @@
+modLoader="javafml"
+loaderVersion="${loader_version_range}"
+license="${mod_license}"
+[[mods]]
+    modId="modularbees"
+    issueTrackerURL=""
+    displayURL=""
+    version="${mod_version}"
+    displayName="${mod_name}"
+    authors="${mod_authors}"
+    logoFile="logo.png"
+    description='''${mod_description}'''
+
+[[mixins]]
+    config="mixins.modularbees.json"
+
+[[dependencies.modularbees]]
+    modId="neoforge"
+    type="REQUIRED"
+    versionRange="${neo_version_range}"
+    ordering="NONE"
+    side="BOTH"
+[[dependencies.modularbees]]
+    modId="minecraft"
+    type="REQUIRED"
+    versionRange="${minecraft_version_range}"
+    ordering="NONE"
+    side="BOTH"
+[[dependencies.modularbees]]
+    modId="glodium"
+    type="REQUIRED"
+    versionRange="[1.21-2.0-neoforge,)"
+    ordering="AFTER"
+    side="BOTH"
