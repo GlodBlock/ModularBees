@@ -119,7 +119,7 @@ public class TileModularBeehive extends TileMBModularCore implements ItemHandler
                         }
                     }
                     this.sending.addAll(outputs.getItems(this.blockMode, this.upgradeMultiplier * treaterMultiplier));
-                    var honeyAmt = world.getRandom().nextInt(this.table.getBeeCount() / 2, this.table.getBeeCount()) * 200;
+                    var honeyAmt = world.getRandom().nextInt(this.table.getBeeCount() / 2, this.table.getBeeCount()) * 300;
                     if (honeyAmt > 0) {
                         this.honey.forceFill(new FluidStack(ModFluids.HONEY.get(), honeyAmt), IFluidHandler.FluidAction.EXECUTE);
                     }

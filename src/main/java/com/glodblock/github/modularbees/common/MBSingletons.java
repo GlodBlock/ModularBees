@@ -1,6 +1,7 @@
 package com.glodblock.github.modularbees.common;
 
 import com.glodblock.github.modularbees.common.blocks.hive.BlockBeehiveAlveary;
+import com.glodblock.github.modularbees.common.blocks.hive.BlockBeehiveExport;
 import com.glodblock.github.modularbees.common.blocks.hive.BlockBeehiveFeeder;
 import com.glodblock.github.modularbees.common.blocks.hive.BlockBeehiveOverclocker;
 import com.glodblock.github.modularbees.common.blocks.hive.BlockBeehivePart;
@@ -8,6 +9,7 @@ import com.glodblock.github.modularbees.common.blocks.hive.BlockBeehiveTreater;
 import com.glodblock.github.modularbees.common.blocks.hive.BlockModularBeehive;
 import com.glodblock.github.modularbees.common.items.ItemElectrode;
 import com.glodblock.github.modularbees.common.tileentities.hive.TileBeehiveAlveary;
+import com.glodblock.github.modularbees.common.tileentities.hive.TileBeehiveExport;
 import com.glodblock.github.modularbees.common.tileentities.hive.TileBeehiveFeeder;
 import com.glodblock.github.modularbees.common.tileentities.hive.TileBeehiveOverclocker;
 import com.glodblock.github.modularbees.common.tileentities.hive.TileBeehivePart;
@@ -25,6 +27,7 @@ public class MBSingletons {
     public static BlockBeehiveFeeder MODULAR_FEEDER;
     public static BlockBeehiveOverclocker MODULAR_OVERCLOCKER;
     public static BlockBeehiveTreater MODULAR_TREATER;
+    public static BlockBeehiveExport MODULAR_EXPORT;
     public static ItemElectrode ELECTRODE_COPPER;
     public static ItemElectrode ELECTRODE_IRON;
     public static ItemElectrode ELECTRODE_GOLD;
@@ -37,6 +40,7 @@ public class MBSingletons {
         MODULAR_FEEDER = new BlockBeehiveFeeder();
         MODULAR_OVERCLOCKER = new BlockBeehiveOverclocker();
         MODULAR_TREATER = new BlockBeehiveTreater();
+        MODULAR_EXPORT = new BlockBeehiveExport();
         ELECTRODE_COPPER = new ItemElectrode(3 * GameConstants.MINUTE, 1.1f, Ingredient.of(Tags.Items.INGOTS_COPPER));
         ELECTRODE_IRON = new ItemElectrode(10 * GameConstants.MINUTE, 1.25f, Ingredient.of(Tags.Items.INGOTS_IRON));
         ELECTRODE_GOLD = new ItemElectrode(10 * GameConstants.MINUTE, 1.8f, Ingredient.of(Tags.Items.INGOTS_GOLD));
@@ -47,6 +51,7 @@ public class MBSingletons {
         regHandler.block("modular_beehive_feeder", MODULAR_FEEDER, TileBeehiveFeeder.class, TileBeehiveFeeder::new);
         regHandler.block("modular_beehive_overclocker", MODULAR_OVERCLOCKER, TileBeehiveOverclocker.class, TileBeehiveOverclocker::new);
         regHandler.block("modular_treater", MODULAR_TREATER, TileBeehiveTreater.class, TileBeehiveTreater::new);
+        regHandler.block("modular_export", MODULAR_EXPORT, TileBeehiveExport.class, TileBeehiveExport::new);
         regHandler.item("electride_copper", ELECTRODE_COPPER);
         regHandler.item("electride_iron", ELECTRODE_IRON);
         regHandler.item("electride_gold", ELECTRODE_GOLD);
