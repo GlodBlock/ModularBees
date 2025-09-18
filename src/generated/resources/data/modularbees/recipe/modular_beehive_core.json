@@ -1,0 +1,30 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "1": {
+      "item": "productivelib:upgrade_simulator"
+    },
+    "2": {
+      "item": "productivelib:upgrade_adult"
+    },
+    "B": {
+      "item": "minecraft:iron_bars"
+    },
+    "H": {
+      "tag": "productivebees:advanced_beehives"
+    },
+    "P": {
+      "item": "modularbees:scented_plank"
+    }
+  },
+  "pattern": [
+    "P1P",
+    "BHB",
+    "P2P"
+  ],
+  "result": {
+    "count": 1,
+    "id": "modularbees:modular_beehive_core"
+  }
+}

@@ -9,6 +9,7 @@ import com.glodblock.github.modularbees.dynamic.DyResourcePack;
 import com.glodblock.github.modularbees.util.ContainerResolver;
 import com.glodblock.github.modularbees.util.RotorBlocks;
 import net.minecraft.core.BlockPos;
+import net.minecraft.network.chat.Component;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.player.Player;
@@ -35,6 +36,8 @@ public class BlockModularBeehive extends BlockMBGuiBase<TileModularBeehive> impl
         tile.formStructure();
         if (tile.isFormed()) {
             MBGuiHandler.open(ContainerMBModularBeehive.TYPE.type(), p, ContainerResolver.of(tile));
+        } else {
+            p.displayClientMessage(Component.translatable("modularbees.chat.beehive_unformed"), true);
         }
     }
 

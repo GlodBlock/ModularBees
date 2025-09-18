@@ -1,0 +1,27 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "B": {
+      "item": "minecraft:iron_bars"
+    },
+    "C": {
+      "tag": "c:chests"
+    },
+    "G": {
+      "item": "minecraft:glass_bottle"
+    },
+    "P": {
+      "item": "modularbees:modular_beehive_part"
+    }
+  },
+  "pattern": [
+    "BBB",
+    "GPG",
+    "BCB"
+  ],
+  "result": {
+    "count": 1,
+    "id": "modularbees:modular_treater"
+  }
+}

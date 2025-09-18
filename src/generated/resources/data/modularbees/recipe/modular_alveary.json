@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "tag": "productivebees:expansion_boxes"
+    },
+    {
+      "item": "modularbees:modular_beehive_part"
+    }
+  ],
+  "result": {
+    "count": 1,
+    "id": "modularbees:modular_beehive_alveary"
+  }
+}

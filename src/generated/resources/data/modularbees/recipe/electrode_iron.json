@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "B": {
+      "tag": "c:dyes/black"
+    },
+    "G": {
+      "tag": "c:nuggets/gold"
+    },
+    "M": {
+      "tag": "c:ingots/iron"
+    }
+  },
+  "pattern": [
+    " BG",
+    " MB",
+    "M  "
+  ],
+  "result": {
+    "count": 1,
+    "id": "modularbees:electride_iron"
+  }
+}

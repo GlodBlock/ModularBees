@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "key": {
+    "H": {
+      "item": "minecraft:honey_block"
+    },
+    "P": {
+      "tag": "minecraft:planks"
+    },
+    "W": {
+      "item": "productivebees:wax"
+    }
+  },
+  "pattern": [
+    "WHW",
+    "PPP",
+    "WHW"
+  ],
+  "result": {
+    "count": 3,
+    "id": "modularbees:scented_plank"
+  }
+}

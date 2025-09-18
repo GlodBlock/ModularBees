@@ -47,7 +47,7 @@ import java.util.function.Consumer;
 
 public class TileModularBeehive extends TileMBModularCore implements ItemHandlerHost, FluidHandlerHost, SlotListener {
 
-    private static final int WAITING_TICKS = ProductiveBeesConfig.GENERAL.timeInHive.getAsInt() / 10;
+    private static final int WAITING_TICKS = ProductiveBeesConfig.GENERAL.timeInHive.getAsInt();
     @Nullable
     private ObjectSet<BlockPos> allPos;
     @Nullable
