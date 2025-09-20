@@ -80,6 +80,7 @@ dependencies {
     implementation "curse.maven:productivebees-377897:6698777"
     implementation files("libs/productivelib.jar")
     implementation "mezz.jei:jei-1.21.1-neoforge:19.21.0.247"
+    implementation "vazkii.patchouli:Patchouli:1.21-87-NEOFORGE"
     // runtime test
     runtimeOnly "curse.maven:jade-324717:5427817"
 }

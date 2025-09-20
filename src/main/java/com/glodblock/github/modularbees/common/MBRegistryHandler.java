@@ -107,6 +107,10 @@ public class MBRegistryHandler extends RegistryHandler {
         return Stream.concat(this.items.stream(), this.blocks.stream()).map(Pair::getRight).collect(Collectors.toList());
     }
 
+    public Collection<Block> getBlocks() {
+        return this.blocks.stream().map(Pair::getRight).collect(Collectors.toList());
+    }
+
     public void registerTab(Registry<CreativeModeTab> registry) {
         var tab = CreativeModeTab.builder()
                 .icon(() -> new ItemStack(MBSingletons.MODULAR_BEEHIVE_CORE))

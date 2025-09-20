@@ -2,12 +2,14 @@
   "required": true,
   "minVersion": "0.8",
   "package": "com.glodblock.github.modularbees.mixins",
+  "plugin": "com.glodblock.github.modularbees.mixins.MBMixinConfig",
   "compatibilityLevel": "JAVA_17",
   "mixins": [
     "BeeDataMixin"
   ],
   "client": [
-    "ModelManagerMixin"
+    "ModelManagerMixin",
+    "NeoForgeClientXplatImplMixin"
   ],
   "server": []
 }

@@ -1,0 +1,12 @@
+{
+  "values": [
+    "modularbees:modular_beehive_core",
+    "modularbees:modular_beehive_part",
+    "modularbees:modular_beehive_alveary",
+    "modularbees:modular_beehive_feeder",
+    "modularbees:modular_beehive_overclocker",
+    "modularbees:modular_treater",
+    "modularbees:modular_export",
+    "modularbees:scented_plank"
+  ]
+}

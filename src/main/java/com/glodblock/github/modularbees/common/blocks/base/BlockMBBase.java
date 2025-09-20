@@ -93,17 +93,10 @@ public class BlockMBBase extends Block implements RegisterTask, ResourceProvider
     @Override
     public void load(DyDataPack pack) {
         this.loadLootTable(pack);
-        this.loadBlockTag(pack);
     }
 
     protected void loadLootTable(DyDataPack pack) {
         pack.addBlockLootTable(this.registryName, createSingleBlockLootJson(this.registryName));
-    }
-
-    protected void loadBlockTag(DyDataPack pack) {
-        if (this.harvestTool() != null) {
-            pack.addBlockTag(this.harvestTool(), this.registryName);
-        }
     }
 
     @Override

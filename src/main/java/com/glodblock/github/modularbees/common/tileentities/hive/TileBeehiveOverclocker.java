@@ -43,7 +43,7 @@ public class TileBeehiveOverclocker extends TileBeehivePart implements ItemHandl
                 }
             }
         }
-        return 1;
+        return 0;
     }
 
     @Override

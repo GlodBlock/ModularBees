@@ -20,7 +20,6 @@ import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.Ingredient;
-import net.minecraft.world.item.crafting.SmithingRecipe;
 import net.minecraft.world.level.block.Blocks;
 import net.neoforged.neoforge.common.Tags;
 import org.jetbrains.annotations.NotNull;
@@ -44,7 +43,7 @@ public class MBRecipeProvider extends RecipeProvider {
         TreaterRecipe.builder()
                 .input(ModItems.HONEY_BUCKET.get())
                 .output(Items.BUCKET)
-                .boost(5)
+                .boost(3.5f)
                 .save(c, ModularBees.id("treater/honey_bucket"));
         TreaterRecipe.builder()
                 .input(Items.HONEY_BOTTLE)
@@ -53,7 +52,7 @@ public class MBRecipeProvider extends RecipeProvider {
                 .save(c, ModularBees.id("treater/honey_bottle"));
         TreaterRecipe.builder()
                 .input(Blocks.HONEY_BLOCK)
-                .boost(5)
+                .boost(3.5f)
                 .save(c, ModularBees.id("treater/honey_block"));
         TreaterRecipe.builder()
                 .input(Items.SUGAR)

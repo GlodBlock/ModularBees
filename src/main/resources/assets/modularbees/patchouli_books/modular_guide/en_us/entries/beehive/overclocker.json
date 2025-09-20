@@ -1,0 +1,36 @@
+{
+  "name": "Beehive Overclocker",
+  "icon": "modularbees:modular_beehive_overclocker",
+  "read_by_default": true,
+  "category": "modularbees:beehive",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "title": "Beehive Overclocker",
+      "text": "You can use Beehive Overclocker to make your bee produce even more faster. It needs energy and Electrode to work, better Electrode has higher speed boost.$(br)When you use multiple overclockers at the same time, the speed boosts are additive. That means two Netherite Electrodes(x25) can make bees work x50 faster."
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "modularbees:modular_overclocker",
+      "text": "$(o)Absolutely Safe"
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Electrode",
+      "text": "There four tiers of electrodes.$(li)Copper: x1.8$(li)Iron: x3$(li)Gold: x8$(li)Netherite: x25"
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "modularbees:electrode_copper",
+      "recipe2": "modularbees:electrode_iron"
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "modularbees:electrode_gold"
+    },
+    {
+      "type": "patchouli:smithing",
+      "recipe": "modularbees:electrode_netherite"
+    }
+  ]
+}

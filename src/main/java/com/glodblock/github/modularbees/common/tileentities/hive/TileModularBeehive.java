@@ -81,14 +81,15 @@ public class TileModularBeehive extends TileMBModularCore implements ItemHandler
             if (this.table.getBeeCount() <= 0) {
                 return;
             }
-            float overclock = 1;
+            float overclock = 0;
             if (!this.stuck) {
                 for (var component : components) {
                     if (component instanceof TileBeehiveOverclocker overclocker) {
-                        overclock *= overclocker.getBoostAndConsume(this.table.getBeeCount());
+                        overclock += overclocker.getBoostAndConsume(this.table.getBeeCount());
                     }
                 }
             }
+            overclock = Math.max(1, overclock);
             this.addTick(overclock);
             if (!this.sending.isEmpty() && !this.stuck) {
                 for (int i = 0; i < this.sending.size(); ++i) {
@@ -112,12 +113,13 @@ public class TileModularBeehive extends TileMBModularCore implements ItemHandler
                     this.process = 0;
                     var outputs = new StackCacheMap(world.getRandom());
                     this.table.collectOutput(outputs::add);
-                    float treaterMultiplier = 1;
+                    float treaterMultiplier = 0;
                     for (var component : components) {
                         if (component instanceof TileBeehiveTreater treater) {
-                            treaterMultiplier *= treater.getBoostAndConsume(this.table.getBeeCount());
+                            treaterMultiplier += treater.getBoostAndConsume(this.table.getBeeCount());
                         }
                     }
+                    treaterMultiplier = Math.max(1, treaterMultiplier);
                     this.sending.addAll(outputs.getItems(this.blockMode, this.upgradeMultiplier * treaterMultiplier));
                     var honeyAmt = world.getRandom().nextInt(this.table.getBeeCount() / 2, this.table.getBeeCount()) * 300;
                     if (honeyAmt > 0) {

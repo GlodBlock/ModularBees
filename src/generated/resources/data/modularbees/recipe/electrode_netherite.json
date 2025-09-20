@@ -4,11 +4,11 @@
     "item": "minecraft:netherite_ingot"
   },
   "base": {
-    "item": "modularbees:electride_gold"
+    "item": "modularbees:electrode_gold"
   },
   "result": {
     "count": 1,
-    "id": "modularbees:electride_netherite"
+    "id": "modularbees:electrode_netherite"
   },
   "template": {
     "item": "minecraft:netherite_upgrade_smithing_template"

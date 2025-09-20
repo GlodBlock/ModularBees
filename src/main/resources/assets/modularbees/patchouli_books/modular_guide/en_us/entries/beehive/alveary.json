@@ -1,0 +1,17 @@
+{
+  "name": "Modular Alveary",
+  "icon": "modularbees:modular_beehive_alveary",
+  "read_by_default": true,
+  "category": "modularbees:beehive",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "title": "Modular Alveary",
+      "text": "The core hive itself can't hold bees, so you need Alveary to house all your bees.$(br)Every Alveary can hold 5 bees, you need to use bee cages to put bees into the Alveary."
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "modularbees:modular_alveary"
+    }
+  ]
+}

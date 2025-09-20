@@ -52,9 +52,12 @@ public class TileBeehiveTreater extends TileBeehivePart implements ItemHandlerHo
                     }
                 }
             }
+            if (want == 0) {
+                return find.boost();
+            }
             return find.boost() * (bees - want) / bees;
         }
-        return 1;
+        return 0;
     }
 
     @Override

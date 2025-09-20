@@ -1,0 +1,45 @@
+{
+  "name": "Modular Beehive Core",
+  "icon": "modularbees:modular_beehive_core",
+  "read_by_default": true,
+  "category": "modularbees:beehive",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "title": "Modular Beehive Core",
+      "text": "The controller of the Modular Beehive multiblock, a 3x3x3 cube structure.$(br)You can replace any Beehive Structure Box with functional part to improve the beehive.$(br)Modular Beehive doesn't allow shared blocks."
+    },
+    {
+      "type": "patchouli:multiblock",
+      "name": "Modular Beehive",
+      "multiblock": {
+        "pattern": [
+          ["XXX", "XXX", "XXX"],
+          ["XXX", "X0X", "XCX"],
+          ["XXX", "XXX", "XXX"]
+        ],
+        "mapping": {
+          "X": "modularbees:modular_beehive_part",
+          "0": "modularbees:modular_beehive_part",
+          "C": "modularbees:modular_beehive_core[facing=east]"
+        },
+        "symmetrical": true
+      },
+      "enable_visualize": false
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Features",
+      "text": "Modular Beehive has a built-in simulate upgrade, so bees won't come out of the hive.$(br)Bees won't breed and do in-world transformation recipes in modular beehive to save performance, instead they will produce combs and honey at incredible speed with upgrades."
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "modularbees:modular_beehive_core",
+      "recipe2": "modularbees:modular_beehive_part"
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "modularbees:scented_plank"
+    }
+  ]
+}

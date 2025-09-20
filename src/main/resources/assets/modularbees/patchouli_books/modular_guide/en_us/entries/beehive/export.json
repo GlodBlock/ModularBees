@@ -1,0 +1,17 @@
+{
+  "name": "Beehive Export Hatch",
+  "icon": "modularbees:modular_export",
+  "read_by_default": true,
+  "category": "modularbees:beehive",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "title": "Beehive Export Hatch",
+      "text": "A proxy of the core block for logistics, it can auto send products and honey to its facing chest/tank."
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "modularbees:modular_export"
+    }
+  ]
+}
