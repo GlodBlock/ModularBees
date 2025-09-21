@@ -131,7 +131,7 @@ public class TileBeehiveAlveary extends TileBeehivePart implements ServerTickTil
         if (BeeCage.isFilled(in)) {
             if (!this.isFull()) {
                 var bee = BeeCage.getEntityFromStack(in, world, true);
-                if (bee != null && !(bee instanceof SolitaryBee)) {
+                if (bee != null && !(bee instanceof SolitaryBee) && bee.getAge() >= 0) {
                     this.addBee(world, bee);
                     this.cageIn.setStackInSlot(0, this.emptyCage(in));
                     this.notifyCore();
@@ -180,6 +180,7 @@ public class TileBeehiveAlveary extends TileBeehivePart implements ServerTickTil
         for (var data : this.bees) {
             var entity = data.toOccupant().createEntity(world, releasePos);
             if (entity != null) {
+                entity.setPos(releasePos.getCenter());
                 world.addFreshEntity(entity);
             }
         }

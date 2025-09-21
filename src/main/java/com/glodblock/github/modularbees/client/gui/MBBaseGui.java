@@ -88,11 +88,15 @@ public abstract class MBBaseGui<C extends ContainerMBBase<? extends TileMBBase>>
     }
 
     protected void drawStringCenter(@NotNull GuiGraphics graphics, Component text, int centerX, int y) {
+        this.drawStringCenter(graphics, text, centerX, y, false);
+    }
+
+    protected void drawStringCenter(@NotNull GuiGraphics graphics, Component text, int centerX, int y, boolean shadow) {
         var length = this.font.width(text);
         graphics.drawString(
                 this.font, text,
                 centerX - length / 2, y,
-                DEFAULT_TEXT_COLOR, false
+                DEFAULT_TEXT_COLOR, shadow
         );
     }
 

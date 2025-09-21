@@ -5,6 +5,8 @@ import com.glodblock.github.modularbees.client.gui.elements.BeeDisplay;
 import com.glodblock.github.modularbees.client.util.PicData;
 import com.glodblock.github.modularbees.common.MBSingletons;
 import com.glodblock.github.modularbees.container.ContainerMBAlveary;
+import cy.jdkdigital.productivebees.common.entity.bee.SolitaryBee;
+import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Inventory;
@@ -50,6 +52,19 @@ public class MBAlvearyGui extends MBBaseGui<ContainerMBAlveary> {
         }
         if (this.getMenu().renderOutputSlot()) {
             OUTPUT.render(graphics, 129 + this.leftPos, 36 + this.topPos);
+        }
+    }
+
+    @Override
+    protected void renderLabels(@NotNull GuiGraphics graphics, int mouseX, int mouseY) {
+        super.renderLabels(graphics, mouseX, mouseY);
+        var inputBee = this.getMenu().getInputBee();
+        if (inputBee != null) {
+            if (inputBee instanceof SolitaryBee) {
+                this.drawStringCenter(graphics, Component.translatable("modularbees.gui.modular_beehive_alveary.solitary").withStyle(ChatFormatting.RED), 87, -9, true);
+            } else if (inputBee.getAge() < 0) {
+                this.drawStringCenter(graphics, Component.translatable("modularbees.gui.modular_beehive_alveary.child").withStyle(ChatFormatting.RED), 87, -9, true);
+            }
         }
     }
 

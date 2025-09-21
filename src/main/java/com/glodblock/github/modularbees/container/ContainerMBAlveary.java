@@ -2,6 +2,8 @@ package com.glodblock.github.modularbees.container;
 
 import com.glodblock.github.modularbees.common.tileentities.hive.TileBeehiveAlveary;
 import com.glodblock.github.modularbees.util.GameUtil;
+import cy.jdkdigital.productivebees.common.item.BeeCage;
+import net.minecraft.world.entity.animal.Bee;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.inventory.Slot;
@@ -37,6 +39,15 @@ public class ContainerMBAlveary extends ContainerMBBase<TileBeehiveAlveary> {
             return !this.output.hasItem();
         }
         return false;
+    }
+
+    @Nullable
+    public Bee getInputBee() {
+        var cage = this.input.getItem();
+        if (!cage.isEmpty()) {
+            return BeeCage.getEntityFromStack(cage, this.getPlayer().level(), true);
+        }
+        return null;
     }
 
     public BeehiveBlockEntity.BeeData getBee(int x) {
