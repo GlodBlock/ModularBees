@@ -42,6 +42,8 @@ public class MBOverclockerGui extends MBBaseGui<ContainerMBOverclocker> {
             if (item instanceof TileBeehiveOverclocker.HiveElectrode electrode) {
                 this.drawStringCenter(graphics, Component.translatable("modularbees.gui.modular_beehive_overclocker.boost"), 135, 33);
                 this.drawStringCenter(graphics, "x" + GameUtil.NUMBER_F.format(electrode.getPower()), 132, 44);
+            } else {
+                this.drawStringCenter(graphics, Component.translatable("modularbees.gui.modular_beehive_overclocker.empty"), 135, 39);
             }
         }
     }

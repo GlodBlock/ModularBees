@@ -1,6 +1,6 @@
 {
   "type": "modularbees:treater_food",
-  "boost": 1.6,
+  "boost": 2.1,
   "food": {
     "item": "productivebees:honey_treat"
   },

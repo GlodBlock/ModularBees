@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    {
+      "item": "minecraft:book"
+    },
+    {
+      "item": "modularbees:scented_plank"
+    }
+  ],
+  "result": {
+    "type": "component",
+    "id": "patchouli:guide_book",
+    "components": {
+      "patchouli:book": "modularbees:modular_guide"
+    }
+  },
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "patchouli"
+    }
+  ]
+}

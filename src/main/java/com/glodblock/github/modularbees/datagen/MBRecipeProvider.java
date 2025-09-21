@@ -38,25 +38,25 @@ public class MBRecipeProvider extends RecipeProvider {
     protected void buildRecipes(@NotNull RecipeOutput c) {
         TreaterRecipe.builder()
                 .input(ModItems.HONEY_TREAT.get())
-                .boost(1.6f)
+                .boost(2.1f)
                 .save(c, ModularBees.id("treater/honey_treat"));
         TreaterRecipe.builder()
                 .input(ModItems.HONEY_BUCKET.get())
                 .output(Items.BUCKET)
-                .boost(3.5f)
+                .boost(4.5f)
                 .save(c, ModularBees.id("treater/honey_bucket"));
         TreaterRecipe.builder()
                 .input(Items.HONEY_BOTTLE)
                 .output(Items.GLASS_BOTTLE)
-                .boost(1.2f)
+                .boost(1.6f)
                 .save(c, ModularBees.id("treater/honey_bottle"));
         TreaterRecipe.builder()
                 .input(Blocks.HONEY_BLOCK)
-                .boost(3.5f)
+                .boost(4.5f)
                 .save(c, ModularBees.id("treater/honey_block"));
         TreaterRecipe.builder()
                 .input(Items.SUGAR)
-                .boost(1.3f)
+                .boost(1.1f)
                 .save(c, ModularBees.id("treater/sugar"));
         ShapedRecipeBuilder.shaped(RecipeCategory.BUILDING_BLOCKS, MBSingletons.SCENTED_PLANK, 3)
                 .pattern("WHW")
