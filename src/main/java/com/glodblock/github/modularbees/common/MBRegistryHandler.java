@@ -7,6 +7,7 @@ import com.glodblock.github.modularbees.common.blocks.base.BlockMBTileBase;
 import com.glodblock.github.modularbees.common.caps.EnergyHandlerHost;
 import com.glodblock.github.modularbees.common.caps.FluidHandlerHost;
 import com.glodblock.github.modularbees.common.caps.ItemHandlerHost;
+import com.glodblock.github.modularbees.common.fluids.FluidDragonBreath;
 import com.glodblock.github.modularbees.common.items.ItemMBBlock;
 import com.glodblock.github.modularbees.common.recipe.TreaterRecipe;
 import com.glodblock.github.modularbees.common.tileentities.base.TileMBBase;
@@ -29,6 +30,7 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
+import net.neoforged.neoforge.registries.NeoForgeRegistries;
 import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.Collection;
@@ -59,6 +61,8 @@ public class MBRegistryHandler extends RegistryHandler {
     @Override
     protected void onRegisterBlocks() {
         super.onRegisterBlocks();
+        // Special handler for fluid block
+        Registry.register(BuiltInRegistries.BLOCK, ModularBees.id("dragon_breath"), MBSingletons.DRAGON_BREATH);
         this.blocks.forEach(e -> {
             if (e.getRight() instanceof RegisterTask task) {
                 task.onRegister(ModularBees.id(e.getLeft()));
@@ -90,9 +94,16 @@ public class MBRegistryHandler extends RegistryHandler {
         Registry.register(BuiltInRegistries.RECIPE_SERIALIZER, TreaterRecipe.ID, TreaterRecipe.SERIALIZER);
     }
 
+    private void registerFluid() {
+        Registry.register(NeoForgeRegistries.FLUID_TYPES, ModularBees.id("dragon_breath"), FluidDragonBreath.TYPE);
+        Registry.register(BuiltInRegistries.FLUID, ModularBees.id("dragon_breath"), FluidDragonBreath.getFluid());
+        Registry.register(BuiltInRegistries.FLUID, ModularBees.id("dragon_breath_flow"), FluidDragonBreath.getFlowFluid());
+    }
+
     @Override
     public void runRegister() {
         super.runRegister();
+        this.registerFluid();
         this.registerContainer();
         this.registerRecipe();
     }

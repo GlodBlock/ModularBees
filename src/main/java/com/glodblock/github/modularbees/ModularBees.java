@@ -3,6 +3,7 @@ package com.glodblock.github.modularbees;
 import com.glodblock.github.modularbees.client.MBClientRegistryHandler;
 import com.glodblock.github.modularbees.common.MBRegistryHandler;
 import com.glodblock.github.modularbees.common.MBSingletons;
+import com.glodblock.github.modularbees.common.fluids.FluidDragonBreath;
 import com.glodblock.github.modularbees.common.hooks.TooltipHook;
 import com.glodblock.github.modularbees.dynamic.DyDataPack;
 import com.glodblock.github.modularbees.dynamic.DyResourcePack;
@@ -10,6 +11,8 @@ import com.glodblock.github.modularbees.dynamic.MBPackSource;
 import com.glodblock.github.modularbees.network.MBNetworkHandler;
 import com.glodblock.github.modularbees.util.DataProvider;
 import com.mojang.logging.LogUtils;
+import net.minecraft.client.renderer.ItemBlockRenderTypes;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.PackType;
@@ -76,7 +79,8 @@ public class ModularBees {
     }
 
     public void clientSetup(FMLClientSetupEvent event) {
-
+        ItemBlockRenderTypes.setRenderLayer(FluidDragonBreath.getFluid(), RenderType.translucent());
+        ItemBlockRenderTypes.setRenderLayer(FluidDragonBreath.getFlowFluid(), RenderType.translucent());
     }
 
     public static ResourceLocation id(String id) {

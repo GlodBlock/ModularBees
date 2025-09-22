@@ -7,7 +7,9 @@ import com.glodblock.github.modularbees.common.blocks.hive.BlockBeehiveOverclock
 import com.glodblock.github.modularbees.common.blocks.hive.BlockBeehivePart;
 import com.glodblock.github.modularbees.common.blocks.hive.BlockBeehiveTreater;
 import com.glodblock.github.modularbees.common.blocks.hive.BlockModularBeehive;
+import com.glodblock.github.modularbees.common.blocks.misc.BlockFluidDragonBreath;
 import com.glodblock.github.modularbees.common.blocks.misc.BlockScentedPlank;
+import com.glodblock.github.modularbees.common.fluids.FluidDragonBreath;
 import com.glodblock.github.modularbees.common.items.ItemElectrode;
 import com.glodblock.github.modularbees.common.tileentities.hive.TileBeehiveAlveary;
 import com.glodblock.github.modularbees.common.tileentities.hive.TileBeehiveExport;
@@ -17,6 +19,9 @@ import com.glodblock.github.modularbees.common.tileentities.hive.TileBeehivePart
 import com.glodblock.github.modularbees.common.tileentities.hive.TileBeehiveTreater;
 import com.glodblock.github.modularbees.common.tileentities.hive.TileModularBeehive;
 import com.glodblock.github.modularbees.util.GameConstants;
+import net.minecraft.world.item.BucketItem;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.neoforged.neoforge.common.Tags;
 
@@ -30,11 +35,13 @@ public class MBSingletons {
     public static BlockBeehiveTreater MODULAR_TREATER;
     public static BlockBeehiveExport MODULAR_EXPORT;
     public static BlockScentedPlank SCENTED_PLANK;
+    public static BlockFluidDragonBreath DRAGON_BREATH;
 
     public static ItemElectrode ELECTRODE_COPPER;
     public static ItemElectrode ELECTRODE_IRON;
     public static ItemElectrode ELECTRODE_GOLD;
     public static ItemElectrode ELECTRODE_NETHERITE;
+    public static Item DRAGON_BREATH_BUCKET;
 
     public static void init(MBRegistryHandler regHandler) {
         MODULAR_BEEHIVE_CORE = new BlockModularBeehive();
@@ -44,11 +51,13 @@ public class MBSingletons {
         MODULAR_OVERCLOCKER = new BlockBeehiveOverclocker();
         MODULAR_TREATER = new BlockBeehiveTreater();
         MODULAR_EXPORT = new BlockBeehiveExport();
+        SCENTED_PLANK = new BlockScentedPlank();
+        DRAGON_BREATH = new BlockFluidDragonBreath();
         ELECTRODE_COPPER = new ItemElectrode(3 * GameConstants.MINUTE, 1.8f, Ingredient.of(Tags.Items.INGOTS_COPPER));
         ELECTRODE_IRON = new ItemElectrode(10 * GameConstants.MINUTE, 3, Ingredient.of(Tags.Items.INGOTS_IRON));
         ELECTRODE_GOLD = new ItemElectrode(10 * GameConstants.MINUTE, 8, Ingredient.of(Tags.Items.INGOTS_GOLD));
         ELECTRODE_NETHERITE = new ItemElectrode(25 * GameConstants.MINUTE, 25, Ingredient.of(Tags.Items.INGOTS_NETHERITE));
-        SCENTED_PLANK = new BlockScentedPlank();
+        DRAGON_BREATH_BUCKET = new BucketItem(FluidDragonBreath.getFluid(), new Item.Properties().craftRemainder(Items.BUCKET).stacksTo(1));
         regHandler.block("modular_beehive_core", MODULAR_BEEHIVE_CORE, TileModularBeehive.class, TileModularBeehive::new);
         regHandler.block("modular_beehive_part", MODULAR_BEEHIVE_PART, TileBeehivePart.class, TileBeehivePart::new);
         regHandler.block("modular_beehive_alveary", MODULAR_ALVEARY, TileBeehiveAlveary.class, TileBeehiveAlveary::new);
@@ -61,6 +70,7 @@ public class MBSingletons {
         regHandler.item("electrode_iron", ELECTRODE_IRON);
         regHandler.item("electrode_gold", ELECTRODE_GOLD);
         regHandler.item("electrode_netherite", ELECTRODE_NETHERITE);
+        regHandler.item("dragon_breath_bucket", DRAGON_BREATH_BUCKET);
     }
 
 }
