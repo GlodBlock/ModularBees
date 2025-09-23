@@ -47,7 +47,7 @@ import java.util.function.Consumer;
 
 public class TileModularBeehive extends TileMBModularCore implements ItemHandlerHost, FluidHandlerHost, SlotListener {
 
-    private static final int WAITING_TICKS = ProductiveBeesConfig.GENERAL.timeInHive.getAsInt();
+    private static final int WAITING_TICKS = ProductiveBeesConfig.GENERAL.timeInHive.getAsInt() / 100;
     @Nullable
     private ObjectSet<BlockPos> allPos;
     @Nullable
@@ -114,16 +114,23 @@ public class TileModularBeehive extends TileMBModularCore implements ItemHandler
                     var outputs = new StackCacheMap(world.getRandom());
                     this.table.collectOutput(outputs::add);
                     float treaterMultiplier = 0;
+                    int working = this.table.getWorkingBee();
+                    TileBeehiveDragon dragonHive = null;
                     for (var component : components) {
                         if (component instanceof TileBeehiveTreater treater) {
-                            treaterMultiplier += treater.getBoostAndConsume(this.table.getBeeCount());
+                            treaterMultiplier += treater.getBoostAndConsume(working);
+                        } else if (dragonHive == null && component instanceof TileBeehiveDragon dragon) {
+                            dragonHive = dragon;
                         }
                     }
                     treaterMultiplier = Math.max(1, treaterMultiplier);
                     this.sending.addAll(outputs.getItems(this.blockMode, this.upgradeMultiplier * treaterMultiplier));
-                    var honeyAmt = world.getRandom().nextInt(this.table.getBeeCount() / 2, this.table.getBeeCount()) * 300;
+                    var honeyAmt = world.getRandom().nextInt(working / 2, working + 1) * 300;
                     if (honeyAmt > 0) {
                         this.honey.forceFill(new FluidStack(ModFluids.HONEY.get(), honeyAmt), IFluidHandler.FluidAction.EXECUTE);
+                    }
+                    if (dragonHive != null && this.table.getDragonBee() > 0) {
+                        dragonHive.addDragonBreath(this.table.getDragonBee(), world);
                     }
                     this.setChanged();
                 }

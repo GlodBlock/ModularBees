@@ -14,6 +14,7 @@ public class MBDataGen {
         var file = dataEvent.getExistingFileHelper();
         var lookup = dataEvent.getLookupProvider();
         var block = pack.addProvider(c -> new MBBlockTagProvider(c, lookup, file));
+        pack.addProvider(c -> new MBFluidTagProvider(c, lookup, file));
         pack.addProvider(p -> new MBRecipeProvider(p, lookup));
         pack.addProvider(c -> new MBItemTagProvider(c, lookup, block.contentsGetter(), file));
     }

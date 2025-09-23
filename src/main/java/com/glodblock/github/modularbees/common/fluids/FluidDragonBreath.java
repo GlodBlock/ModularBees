@@ -1,8 +1,6 @@
 package com.glodblock.github.modularbees.common.fluids;
 
 import com.glodblock.github.modularbees.common.MBSingletons;
-import net.minecraft.core.particles.ParticleOptions;
-import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.material.Fluid;
@@ -37,11 +35,6 @@ public abstract class FluidDragonBreath extends BaseFlowingFluid {
 
     public static BaseFlowingFluid getFlowFluid() {
         return Flow.INSTANCE;
-    }
-
-    @Override
-    protected ParticleOptions getDripParticle() {
-        return ParticleTypes.DRAGON_BREATH;
     }
 
     @Override

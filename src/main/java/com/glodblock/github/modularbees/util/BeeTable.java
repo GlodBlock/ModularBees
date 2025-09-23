@@ -52,13 +52,19 @@ public class BeeTable {
     private final List<BeeCache> data = new ArrayList<>();
     private final Function<BeehiveBlockEntity.BeeData, TileBeehiveFeeder.FeedSlot> linker;
     private final BlockEntity host;
+    private int dragonCount = 0;
 
     public BeeTable(BlockEntity host, Function<BeehiveBlockEntity.BeeData, TileBeehiveFeeder.FeedSlot> linker) {
         this.host = host;
         this.linker = linker;
     }
 
+    @SuppressWarnings("deprecation")
     public void loadBee(BeehiveBlockEntity.BeeData beeData) {
+        var tag = beeData.toOccupant().entityData().getUnsafe();
+        if (tag.getString("type").equals("productivebees:draconic")) {
+            this.dragonCount ++;
+        }
         var cache = new BeeCache(beeData, this.host);
         this.data.add(cache);
         this.add(null, -1, cache);
@@ -100,6 +106,18 @@ public class BeeTable {
         return this.data.size();
     }
 
+    public int getWorkingBee() {
+        var idle = this.index.get(null);
+        if (idle == null) {
+            return this.data.size();
+        }
+        return this.data.size() - idle.size();
+    }
+
+    public int getDragonBee() {
+        return this.dragonCount;
+    }
+
     private void add(IItemHandler handler, int slot, BeeCache cache) {
         var map = this.index.computeIfAbsent(handler, k -> new Int2ReferenceOpenHashMap<>());
         var list = map.computeIfAbsent(slot, k -> new ArrayList<>());
@@ -119,6 +137,7 @@ public class BeeTable {
     public void clear() {
         this.data.clear();
         this.index.clear();
+        this.dragonCount = 0;
     }
 
     private record Output(List<ChanceStack> outputs) {

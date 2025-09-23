@@ -2,6 +2,7 @@ package com.glodblock.github.modularbees.client;
 
 import com.glodblock.github.modularbees.ModularBees;
 import com.glodblock.github.modularbees.client.gui.MBAlvearyGui;
+import com.glodblock.github.modularbees.client.gui.MBDragonGui;
 import com.glodblock.github.modularbees.client.gui.MBFeederGui;
 import com.glodblock.github.modularbees.client.gui.MBModularBeehiveGui;
 import com.glodblock.github.modularbees.client.gui.MBOverclockerGui;
@@ -9,6 +10,7 @@ import com.glodblock.github.modularbees.client.gui.MBTreaterGui;
 import com.glodblock.github.modularbees.client.model.ModularConnectModelLoader;
 import com.glodblock.github.modularbees.common.fluids.FluidDragonBreath;
 import com.glodblock.github.modularbees.container.ContainerMBAlveary;
+import com.glodblock.github.modularbees.container.ContainerMBDragon;
 import com.glodblock.github.modularbees.container.ContainerMBFeeder;
 import com.glodblock.github.modularbees.container.ContainerMBModularBeehive;
 import com.glodblock.github.modularbees.container.ContainerMBOverclocker;
@@ -64,6 +66,7 @@ public class MBClientRegistryHandler {
         event.register(ContainerMBFeeder.TYPE.castType(), MBFeederGui::new);
         event.register(ContainerMBOverclocker.TYPE.castType(), MBOverclockerGui::new);
         event.register(ContainerMBTreater.TYPE.castType(), MBTreaterGui::new);
+        event.register(ContainerMBDragon.TYPE.castType(), MBDragonGui::new);
     }
 
 }

@@ -1,6 +1,7 @@
 package com.glodblock.github.modularbees.common;
 
 import com.glodblock.github.modularbees.common.blocks.hive.BlockBeehiveAlveary;
+import com.glodblock.github.modularbees.common.blocks.hive.BlockBeehiveDragon;
 import com.glodblock.github.modularbees.common.blocks.hive.BlockBeehiveExport;
 import com.glodblock.github.modularbees.common.blocks.hive.BlockBeehiveFeeder;
 import com.glodblock.github.modularbees.common.blocks.hive.BlockBeehiveOverclocker;
@@ -12,6 +13,7 @@ import com.glodblock.github.modularbees.common.blocks.misc.BlockScentedPlank;
 import com.glodblock.github.modularbees.common.fluids.FluidDragonBreath;
 import com.glodblock.github.modularbees.common.items.ItemElectrode;
 import com.glodblock.github.modularbees.common.tileentities.hive.TileBeehiveAlveary;
+import com.glodblock.github.modularbees.common.tileentities.hive.TileBeehiveDragon;
 import com.glodblock.github.modularbees.common.tileentities.hive.TileBeehiveExport;
 import com.glodblock.github.modularbees.common.tileentities.hive.TileBeehiveFeeder;
 import com.glodblock.github.modularbees.common.tileentities.hive.TileBeehiveOverclocker;
@@ -34,6 +36,7 @@ public class MBSingletons {
     public static BlockBeehiveOverclocker MODULAR_OVERCLOCKER;
     public static BlockBeehiveTreater MODULAR_TREATER;
     public static BlockBeehiveExport MODULAR_EXPORT;
+    public static BlockBeehiveDragon MODULAR_DRAGON_HIVE;
     public static BlockScentedPlank SCENTED_PLANK;
     public static BlockFluidDragonBreath DRAGON_BREATH;
 
@@ -51,6 +54,7 @@ public class MBSingletons {
         MODULAR_OVERCLOCKER = new BlockBeehiveOverclocker();
         MODULAR_TREATER = new BlockBeehiveTreater();
         MODULAR_EXPORT = new BlockBeehiveExport();
+        MODULAR_DRAGON_HIVE = new BlockBeehiveDragon();
         SCENTED_PLANK = new BlockScentedPlank();
         DRAGON_BREATH = new BlockFluidDragonBreath();
         ELECTRODE_COPPER = new ItemElectrode(3 * GameConstants.MINUTE, 1.8f, Ingredient.of(Tags.Items.INGOTS_COPPER));
@@ -65,6 +69,7 @@ public class MBSingletons {
         regHandler.block("modular_beehive_overclocker", MODULAR_OVERCLOCKER, TileBeehiveOverclocker.class, TileBeehiveOverclocker::new);
         regHandler.block("modular_treater", MODULAR_TREATER, TileBeehiveTreater.class, TileBeehiveTreater::new);
         regHandler.block("modular_export", MODULAR_EXPORT, TileBeehiveExport.class, TileBeehiveExport::new);
+        regHandler.block("modular_dragon_hive", MODULAR_DRAGON_HIVE, TileBeehiveDragon.class, TileBeehiveDragon::new);
         regHandler.block("scented_plank", SCENTED_PLANK);
         regHandler.item("electrode_copper", ELECTRODE_COPPER);
         regHandler.item("electrode_iron", ELECTRODE_IRON);

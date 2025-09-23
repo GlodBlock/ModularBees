@@ -3,6 +3,9 @@ package com.glodblock.github.modularbees.datagen;
 import com.glodblock.github.modularbees.ModularBees;
 import com.glodblock.github.modularbees.common.MBSingletons;
 import com.glodblock.github.modularbees.common.recipe.TreaterRecipe;
+import com.glodblock.github.modularbees.util.GameConstants;
+import com.glodblock.github.modularbees.util.MBTags;
+import cy.jdkdigital.productivebees.common.recipe.BottlerRecipe;
 import cy.jdkdigital.productivebees.init.ModBlocks;
 import cy.jdkdigital.productivebees.init.ModItems;
 import cy.jdkdigital.productivebees.init.ModTags;
@@ -15,13 +18,17 @@ import net.minecraft.data.recipes.RecipeProvider;
 import net.minecraft.data.recipes.ShapedRecipeBuilder;
 import net.minecraft.data.recipes.ShapelessRecipeBuilder;
 import net.minecraft.data.recipes.SmithingTransformRecipeBuilder;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.block.Blocks;
 import net.neoforged.neoforge.common.Tags;
+import net.neoforged.neoforge.fluids.crafting.SizedFluidIngredient;
+import net.neoforged.neoforge.fluids.crafting.TagFluidIngredient;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.concurrent.CompletableFuture;
@@ -125,6 +132,11 @@ public class MBRecipeProvider extends RecipeProvider {
                 .define('P', MBSingletons.MODULAR_BEEHIVE_PART)
                 .unlockedBy(C, has(MBSingletons.MODULAR_BEEHIVE_PART))
                 .save(c, ModularBees.id("modular_export"));
+        ShapelessRecipeBuilder.shapeless(RecipeCategory.DECORATIONS, MBSingletons.MODULAR_DRAGON_HIVE)
+                .requires(ModBlocks.DRAGON_EGG_HIVE.get())
+                .requires(MBSingletons.MODULAR_BEEHIVE_PART)
+                .unlockedBy(C, has(ModBlocks.DRAGON_EGG_HIVE.get()))
+                .save(c, ModularBees.id("modular_dragon_hive"));
         this.electrode(MBSingletons.ELECTRODE_COPPER, Tags.Items.INGOTS_COPPER, "copper", c);
         this.electrode(MBSingletons.ELECTRODE_IRON, Tags.Items.INGOTS_IRON, "iron", c);
         this.electrode(MBSingletons.ELECTRODE_GOLD, Tags.Items.INGOTS_GOLD, "gold", c);
@@ -136,6 +148,21 @@ public class MBRecipeProvider extends RecipeProvider {
                 MBSingletons.ELECTRODE_NETHERITE)
                 .unlocks(C, has(MBSingletons.ELECTRODE_GOLD))
                 .save(c, ModularBees.id("electrode_netherite"));
+        this.bottle(
+                c,
+                new BottlerRecipe(new SizedFluidIngredient(new TagFluidIngredient(MBTags.DRAGON_BREATH), GameConstants.BOTTLE), Ingredient.of(Items.GLASS_BOTTLE), new ItemStack(Items.DRAGON_BREATH)),
+                ModularBees.id("bottle/dragon_breath")
+        );
+        ShapelessRecipeBuilder.shapeless(RecipeCategory.MISC, Items.DRAGON_BREATH, 4)
+                .requires(MBSingletons.DRAGON_BREATH_BUCKET)
+                .requires(Items.GLASS_BOTTLE, 4)
+                .unlockedBy(C, has(MBSingletons.DRAGON_BREATH_BUCKET))
+                .save(c, ModularBees.id("fill_dragon_breath"));
+        ShapelessRecipeBuilder.shapeless(RecipeCategory.MISC, MBSingletons.DRAGON_BREATH_BUCKET)
+                .requires(Items.BUCKET)
+                .requires(Items.DRAGON_BREATH, 4)
+                .unlockedBy(C, has(Items.DRAGON_BREATH))
+                .save(c, ModularBees.id("fill_dragon_breath_bucket"));
     }
 
     private void electrode(Item electrode, TagKey<Item> material, String name, @NotNull RecipeOutput c) {
@@ -148,6 +175,10 @@ public class MBRecipeProvider extends RecipeProvider {
                 .define('M', material)
                 .unlockedBy(C, has(material))
                 .save(c, ModularBees.id("electrode_" + name));
+    }
+
+    private void bottle(@NotNull RecipeOutput c, BottlerRecipe recipe, ResourceLocation id) {
+        c.accept(id, recipe, null);
     }
 
 }

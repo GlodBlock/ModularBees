@@ -12,6 +12,7 @@ import com.glodblock.github.modularbees.common.items.ItemMBBlock;
 import com.glodblock.github.modularbees.common.recipe.TreaterRecipe;
 import com.glodblock.github.modularbees.common.tileentities.base.TileMBBase;
 import com.glodblock.github.modularbees.container.ContainerMBAlveary;
+import com.glodblock.github.modularbees.container.ContainerMBDragon;
 import com.glodblock.github.modularbees.container.ContainerMBFeeder;
 import com.glodblock.github.modularbees.container.ContainerMBModularBeehive;
 import com.glodblock.github.modularbees.container.ContainerMBOverclocker;
@@ -87,6 +88,7 @@ public class MBRegistryHandler extends RegistryHandler {
         ContainerMBFeeder.TYPE.register();
         ContainerMBOverclocker.TYPE.register();
         ContainerMBTreater.TYPE.register();
+        ContainerMBDragon.TYPE.register();
     }
 
     private void registerRecipe() {

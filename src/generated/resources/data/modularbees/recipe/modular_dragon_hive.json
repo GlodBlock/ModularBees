@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "productivebees:dragon_egg_hive"
+    },
+    {
+      "item": "modularbees:modular_beehive_part"
+    }
+  ],
+  "result": {
+    "count": 1,
+    "id": "modularbees:modular_dragon_hive"
+  }
+}
