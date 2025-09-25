@@ -23,6 +23,7 @@
   "modularbees.gui.fluid_tank.amount": "%s/%s mB",
   "modularbees.gui.energy_bar.amount": "FE: %s/%s",
   "modularbees.gui.empty": "Empty",
+  "modularbees.gui.modular_beehive_alveary.invalid": "The bee data is corrupted.",
   "modularbees.gui.modular_beehive_alveary.solitary": "Solitary bee can't live in hive.",
   "modularbees.gui.modular_beehive_alveary.child": "Child bee can't live in alveary.",
   "modularbees.jei.treater_boost": "Productivity +%s"

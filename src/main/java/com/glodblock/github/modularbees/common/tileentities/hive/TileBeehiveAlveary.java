@@ -74,8 +74,8 @@ public class TileBeehiveAlveary extends TileBeehivePart implements ServerTickTil
         this.notifyCore();
     }
 
-    public boolean isFull() {
-        return this.bees.size() >= MAX_BEES;
+    public boolean hasRoom() {
+        return this.bees.size() < MAX_BEES;
     }
 
     public void addBee(Level world, Bee bee) {
@@ -129,7 +129,7 @@ public class TileBeehiveAlveary extends TileBeehivePart implements ServerTickTil
     public void tickServer(Level world, BlockState state) {
         var in = this.cageIn.getStackInSlot(0);
         if (BeeCage.isFilled(in)) {
-            if (!this.isFull()) {
+            if (this.hasRoom()) {
                 var bee = BeeCage.getEntityFromStack(in, world, true);
                 if (bee != null && !(bee instanceof SolitaryBee) && bee.getAge() >= 0) {
                     this.addBee(world, bee);
@@ -154,7 +154,7 @@ public class TileBeehiveAlveary extends TileBeehivePart implements ServerTickTil
         }
     }
 
-    protected void notifyCore() {
+    public void notifyCore() {
         if (this.isActive() && this.core instanceof TileModularBeehive hive) {
             hive.onBeeChange();
         }

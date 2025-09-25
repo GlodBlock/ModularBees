@@ -7,17 +7,28 @@ import com.glodblock.github.modularbees.container.ContainerMBModularBeehive;
 import com.glodblock.github.modularbees.container.MBGuiHandler;
 import com.glodblock.github.modularbees.dynamic.DyResourcePack;
 import com.glodblock.github.modularbees.util.ContainerResolver;
+import com.glodblock.github.modularbees.util.GameConstants;
+import com.glodblock.github.modularbees.util.GameUtil;
 import com.glodblock.github.modularbees.util.RotorBlocks;
+import cy.jdkdigital.productivebees.init.ModItems;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.TagKey;
+import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.BlockHitResult;
+import net.neoforged.neoforge.fluids.capability.IFluidHandler;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.List;
 
 public class BlockModularBeehive extends BlockMBGuiBase<TileModularBeehive> implements ConnectBlock, Hive {
 
@@ -28,6 +39,29 @@ public class BlockModularBeehive extends BlockMBGuiBase<TileModularBeehive> impl
     @Override
     public TagKey<Block> harvestTool() {
         return BlockTags.MINEABLE_WITH_AXE;
+    }
+
+    @Override
+    public ItemInteractionResult check(TileModularBeehive tile, ItemStack stack, Level world, BlockPos pos, BlockHitResult hit, Player p) {
+        if (!world.isClientSide()) {
+            var tank = tile.getFluidInventory();
+            if (stack.is(Items.GLASS_BOTTLE) && tank.getFluidAmount() >= GameConstants.BOTTLE) {
+                stack.shrink(1);
+                tank.drain(GameConstants.BOTTLE, IFluidHandler.FluidAction.EXECUTE);
+                if (!p.addItem(new ItemStack(Items.HONEY_BOTTLE))) {
+                    GameUtil.spawnDrops(world, p.getOnPos(), List.of(new ItemStack(Items.HONEY_BOTTLE)));
+                }
+                return ItemInteractionResult.SUCCESS;
+            } else if (stack.is(Items.BUCKET) && tank.getFluidAmount() >= GameConstants.BUCKET) {
+                stack.shrink(1);
+                tank.drain(GameConstants.BUCKET, IFluidHandler.FluidAction.EXECUTE);
+                if (!p.addItem(new ItemStack(ModItems.HONEY_BUCKET))) {
+                    GameUtil.spawnDrops(world, p.getOnPos(), List.of(new ItemStack(ModItems.HONEY_BUCKET)));
+                }
+                return ItemInteractionResult.SUCCESS;
+            }
+        }
+        return null;
     }
 
     @Override
