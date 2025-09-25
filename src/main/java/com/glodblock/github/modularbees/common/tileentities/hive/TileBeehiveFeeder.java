@@ -32,7 +32,7 @@ public class TileBeehiveFeeder extends TileBeehivePart implements ItemHandlerHos
         for (int x = 0; x < this.feeder.getSlots(); x ++) {
             var item = this.feeder.getStackInSlot(x);
             if (item.isEmpty()) {
-                return FeedSlot.FAIL;
+                continue;
             }
             var block = GameUtil.getBlockFromItem(item);
             if (bee instanceof ProductiveBee productiveBee) {

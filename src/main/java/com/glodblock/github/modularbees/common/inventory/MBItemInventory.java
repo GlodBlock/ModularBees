@@ -32,6 +32,14 @@ public class MBItemInventory extends ItemStackHandler {
         Arrays.fill(this.mode, IO.ALL);
     }
 
+    public IO getIO(int slot) {
+        return this.mode[slot];
+    }
+
+    public ItemFilter getFilter() {
+        return this.filter;
+    }
+
     public MBItemInventory setSlotLimit(int limit) {
         this.slotLimit = limit;
         return this;

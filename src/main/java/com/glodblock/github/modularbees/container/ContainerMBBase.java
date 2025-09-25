@@ -2,8 +2,10 @@ package com.glodblock.github.modularbees.container;
 
 import com.glodblock.github.glodium.network.packet.sync.ActionMap;
 import com.glodblock.github.glodium.network.packet.sync.IActionHolder;
+import com.glodblock.github.modularbees.common.inventory.MBItemInventory;
 import com.glodblock.github.modularbees.common.tileentities.base.TileMBBase;
 import com.glodblock.github.modularbees.container.slot.DisplaySlot;
+import com.glodblock.github.modularbees.container.slot.MBInventorySlot;
 import com.glodblock.github.modularbees.network.MBNetworkHandler;
 import com.glodblock.github.modularbees.network.SMBGenericPacket;
 import com.glodblock.github.modularbees.util.ContainerResolver;
@@ -81,13 +83,20 @@ public abstract class ContainerMBBase<T extends TileMBBase> extends AbstractCont
         for (int index = 0; index < handler.getSlots(); index ++) {
             int x = index % columns;
             int y = index / columns;
-            this.addSlot(new SlotItemHandler(handler, index, posX + x * 18, posY + y * 18));
+            if (handler instanceof MBItemInventory inv) {
+                this.addSlot(new MBInventorySlot(inv, index, posX + x * 18, posY + y * 18));
+            } else {
+                this.addSlot(new SlotItemHandler(handler, index, posX + x * 18, posY + y * 18));
+            }
         }
     }
 
     protected Slot addSlot(@Nullable IItemHandler handler, int index, int posX, int posY) {
         if (handler == null) {
             return null;
+        }
+        if (handler instanceof MBItemInventory inv) {
+            return this.addSlot(new MBInventorySlot(inv, index, posX, posY));
         }
         return this.addSlot(new SlotItemHandler(handler, index, posX, posY));
     }

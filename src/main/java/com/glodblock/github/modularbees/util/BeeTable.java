@@ -111,7 +111,7 @@ public class BeeTable {
         if (idle == null) {
             return this.data.size();
         }
-        return this.data.size() - idle.size();
+        return this.data.size() - idle.getOrDefault(-1, List.of()).size();
     }
 
     public int getDragonBee() {
