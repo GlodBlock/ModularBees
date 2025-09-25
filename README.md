@@ -1,26 +1,14 @@
 <img alt="logo" height="128" src="https://github.com/GlodBlock/ModularBees/blob/master/src/main/resources/logo.png?raw=true" width="128"/>
 
-## Features
+[![Downloads](https://cf.way2muchnoise.eu/full_1350380_downloads.svg)](https://www.curseforge.com/minecraft/mc-mods/modular-bees) ![MCVsrsion](https://cf.way2muchnoise.eu/versions/1350380.svg)
 
-- 36 slots pattern provider
+Add a Modular Beehive for Productive Bees
 
-<img alt="epp" src="https://github.com/GlodBlock/AE2FluidCraft-Rework/blob/pic/epp.png?raw=true" width="250" height="304"/>
+<img alt="main" src="https://media.forgecdn.net/attachments/1336/10/show.png" width="769" height="718"/>
 
-- 36 slots interface
+The Modular Beehive is 3x3x3 structure. You can build it with any beehive parts as you want to maximize production efficiency.
 
-<img alt="ei" src="https://github.com/GlodBlock/AE2FluidCraft-Rework/blob/pic/2.png?raw=true" width="250" height="304"/>
+<img alt="blocks" src="https://media.forgecdn.net/attachments/1336/12/blocks.png" width="769" height="718"/>
 
-- infinity water/cobblestone cell
-
-<img alt="cell2" src="https://github.com/GlodBlock/AE2FluidCraft-Rework/blob/pic/cell2.png?raw=true" width="180" height="60"/>
-<img alt="cell1" src="https://github.com/GlodBlock/AE2FluidCraft-Rework/blob/pic/cell1.png?raw=true" width="200" height="60"/>
-
-- better pattern access terminal
-
-<img alt="cell2" src="https://github.com/GlodBlock/AE2FluidCraft-Rework/blob/pic/pat.png?raw=true" width="270" height="304"/>
-<img alt="cell1" src="https://github.com/GlodBlock/AE2FluidCraft-Rework/blob/pic/hl.png?raw=true" width="500" height="304"/>
-
-- 8x faster import/export bus
-
-<img alt="buss" src="https://github.com/GlodBlock/AE2FluidCraft-Rework/blob/pic/buss.png?raw=true" width="200" height="90"/>
+You can get more details from the in-game guide book.
 
