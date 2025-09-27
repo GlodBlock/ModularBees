@@ -7,6 +7,8 @@ import com.glodblock.github.modularbees.common.inventory.MBItemInventory;
 import com.glodblock.github.modularbees.common.inventory.SlotListener;
 import com.glodblock.github.modularbees.util.GameUtil;
 import cy.jdkdigital.productivebees.common.entity.bee.ProductiveBee;
+import it.unimi.dsi.fastutil.ints.IntArrayList;
+import it.unimi.dsi.fastutil.ints.IntList;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
@@ -18,7 +20,9 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.neoforge.items.IItemHandler;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.stream.IntStream;
 
 public class TileBeehiveFeeder extends TileBeehivePart implements ItemHandlerHost, SlotListener {
 
@@ -29,7 +33,7 @@ public class TileBeehiveFeeder extends TileBeehivePart implements ItemHandlerHos
     }
 
     public FeedSlot checkFlower(Bee bee) {
-        for (int x = 0; x < this.feeder.getSlots(); x ++) {
+        for (int x : this.getRandomSlots()) {
             var item = this.feeder.getStackInSlot(x);
             if (item.isEmpty()) {
                 continue;
@@ -55,6 +59,12 @@ public class TileBeehiveFeeder extends TileBeehivePart implements ItemHandlerHos
             }
         }
         return FeedSlot.FAIL;
+    }
+
+    private IntList getRandomSlots() {
+        IntList slots = new IntArrayList(IntStream.range(0, this.feeder.getSlots()).iterator());
+        Collections.shuffle(slots);
+        return slots;
     }
 
     @Override

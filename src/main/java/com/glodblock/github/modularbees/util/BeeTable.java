@@ -5,7 +5,7 @@ import com.mojang.authlib.GameProfile;
 import cy.jdkdigital.productivebees.ProductiveBees;
 import cy.jdkdigital.productivebees.common.block.Amber;
 import cy.jdkdigital.productivebees.common.block.entity.AmberBlockEntity;
-import cy.jdkdigital.productivebees.common.entity.bee.ConfigurableBee;
+import cy.jdkdigital.productivebees.common.entity.bee.ProductiveBee;
 import cy.jdkdigital.productivebees.common.recipe.AdvancedBeehiveRecipe;
 import cy.jdkdigital.productivebees.init.ModEntities;
 import cy.jdkdigital.productivebees.init.ModRecipeTypes;
@@ -70,7 +70,7 @@ public class BeeTable {
         this.add(null, -1, cache);
     }
 
-    public void collectOutput(Consumer<ItemStack> collector) {
+    public void collectOutput(Level world, Consumer<ItemStack> collector) {
         for (var cache : this.data) {
             if (cache.needLookup()) {
                 var result = this.linker.apply(cache.key);
@@ -85,7 +85,7 @@ public class BeeTable {
                 }
             }
             var output = cache.getOutput();
-            output.output(collector, this.host.getLevel().getRandom());
+            output.output(collector, world.getRandom());
         }
     }
 
@@ -235,7 +235,7 @@ public class BeeTable {
                     if (entity.hasData(ProductiveBees.ATTRIBUTE_HANDLER)) {
                         this.beeMultiplier = entity.getData(ProductiveBees.ATTRIBUTE_HANDLER).getAttributeValue(GeneAttribute.PRODUCTIVITY).getValue() + 1;
                     }
-                    this.beeId = (bee instanceof ConfigurableBee cBee) ? Objects.requireNonNull(cBee.getBeeType()).toString() : bee.getEncodeId();
+                    this.beeId = (bee instanceof ProductiveBee cBee) ? Objects.requireNonNull(cBee.getBeeType()).toString() : bee.getEncodeId();
                     var hiveRecipe = this.lookupRecipe(world);
                     if (hiveRecipe != null) {
                         this.output = new Output(
@@ -246,7 +246,7 @@ public class BeeTable {
                                 .map(e -> Output.ChanceStack.of(e.getKey(), this.multi(e.getValue())))
                                 .toList()
                         );
-                    } else if (bee instanceof ConfigurableBee) {
+                    } else if (bee instanceof ProductiveBee) {
                         if (SPECIAL_BEES.contains(this.beeId)) {
                             this.special = () -> this.lookupSpecialOutput(world, host.getBlockPos());
                         }
