@@ -16,7 +16,7 @@ public class MBTreaterGui extends MBBaseGui<ContainerMBTreater> {
     }
 
     @Override
-    PicData getBackground() {
+    protected PicData getBackground() {
         return BG;
     }
 

@@ -40,7 +40,7 @@ public class MBAlvearyGui extends MBBaseGui<ContainerMBAlveary> {
     }
 
     @Override
-    PicData getBackground() {
+    protected PicData getBackground() {
         return BG;
     }
 

@@ -1,6 +1,8 @@
 package com.glodblock.github.modularbees.container;
 
 import com.glodblock.github.modularbees.common.tileentities.hive.TileBeehiveAlveary;
+import com.glodblock.github.modularbees.container.base.ContainerMBBase;
+import com.glodblock.github.modularbees.container.base.MBGuiHandler;
 import com.glodblock.github.modularbees.util.GameUtil;
 import cy.jdkdigital.productivebees.common.item.BeeCage;
 import net.minecraft.world.entity.animal.Bee;
@@ -55,12 +57,12 @@ public class ContainerMBAlveary extends ContainerMBBase<TileBeehiveAlveary> {
     }
 
     @Override
-    int getHeight() {
+    protected int getHeight() {
         return 166;
     }
 
     @Override
-    int getWidth() {
+    protected int getWidth() {
         return 176;
     }
 

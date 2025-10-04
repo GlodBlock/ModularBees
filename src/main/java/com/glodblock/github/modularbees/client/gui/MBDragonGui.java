@@ -26,7 +26,7 @@ public class MBDragonGui extends MBBaseGui<ContainerMBDragon> {
     }
 
     @Override
-    PicData getBackground() {
+    protected PicData getBackground() {
         return BG;
     }
 

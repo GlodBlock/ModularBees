@@ -1,4 +1,4 @@
-package com.glodblock.github.modularbees.container;
+package com.glodblock.github.modularbees.container.base;
 
 import com.glodblock.github.modularbees.ModularBees;
 import com.glodblock.github.modularbees.util.ContainerResolver;

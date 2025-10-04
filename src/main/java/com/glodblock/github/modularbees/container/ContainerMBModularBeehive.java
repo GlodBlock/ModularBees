@@ -1,6 +1,8 @@
 package com.glodblock.github.modularbees.container;
 
 import com.glodblock.github.modularbees.common.tileentities.hive.TileModularBeehive;
+import com.glodblock.github.modularbees.container.base.ContainerMBBase;
+import com.glodblock.github.modularbees.container.base.MBGuiHandler;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.MenuType;
 import net.neoforged.neoforge.fluids.FluidStack;
@@ -27,12 +29,12 @@ public class ContainerMBModularBeehive extends ContainerMBBase<TileModularBeehiv
     }
 
     @Override
-    int getHeight() {
+    protected int getHeight() {
         return 166;
     }
 
     @Override
-    int getWidth() {
+    protected int getWidth() {
         return 202;
     }
 

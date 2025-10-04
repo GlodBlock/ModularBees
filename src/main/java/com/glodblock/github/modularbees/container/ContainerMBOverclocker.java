@@ -1,6 +1,8 @@
 package com.glodblock.github.modularbees.container;
 
 import com.glodblock.github.modularbees.common.tileentities.hive.TileBeehiveOverclocker;
+import com.glodblock.github.modularbees.container.base.ContainerMBBase;
+import com.glodblock.github.modularbees.container.base.MBGuiHandler;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.MenuType;
 import org.jetbrains.annotations.Nullable;
@@ -23,12 +25,12 @@ public class ContainerMBOverclocker extends ContainerMBBase<TileBeehiveOverclock
     }
 
     @Override
-    int getHeight() {
+    protected int getHeight() {
         return 166;
     }
 
     @Override
-    int getWidth() {
+    protected int getWidth() {
         return 176;
     }
 

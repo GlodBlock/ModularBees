@@ -1,6 +1,6 @@
 package com.glodblock.github.modularbees.util;
 
-import com.glodblock.github.modularbees.container.MBGuiHandler;
+import com.glodblock.github.modularbees.container.base.MBGuiHandler;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.world.entity.player.Player;

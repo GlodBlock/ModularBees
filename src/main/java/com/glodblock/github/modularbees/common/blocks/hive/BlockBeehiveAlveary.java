@@ -4,7 +4,7 @@ import com.glodblock.github.modularbees.client.util.ConnectBlock;
 import com.glodblock.github.modularbees.common.blocks.base.BlockMBGuiBase;
 import com.glodblock.github.modularbees.common.tileentities.hive.TileBeehiveAlveary;
 import com.glodblock.github.modularbees.container.ContainerMBAlveary;
-import com.glodblock.github.modularbees.container.MBGuiHandler;
+import com.glodblock.github.modularbees.container.base.MBGuiHandler;
 import com.glodblock.github.modularbees.dynamic.DyResourcePack;
 import com.glodblock.github.modularbees.util.ContainerResolver;
 import com.glodblock.github.modularbees.util.GameUtil;

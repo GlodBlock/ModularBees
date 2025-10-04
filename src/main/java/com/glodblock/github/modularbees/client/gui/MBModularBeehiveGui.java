@@ -26,7 +26,7 @@ public class MBModularBeehiveGui extends MBBaseGui<ContainerMBModularBeehive> {
     }
 
     @Override
-    PicData getBackground() {
+    protected PicData getBackground() {
         return BG;
     }
 

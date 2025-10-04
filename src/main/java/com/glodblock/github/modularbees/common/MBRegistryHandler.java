@@ -17,7 +17,7 @@ import com.glodblock.github.modularbees.container.ContainerMBFeeder;
 import com.glodblock.github.modularbees.container.ContainerMBModularBeehive;
 import com.glodblock.github.modularbees.container.ContainerMBOverclocker;
 import com.glodblock.github.modularbees.container.ContainerMBTreater;
-import com.glodblock.github.modularbees.container.MBGuiHandler;
+import com.glodblock.github.modularbees.container.base.MBGuiHandler;
 import com.glodblock.github.modularbees.util.RegisterTask;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;

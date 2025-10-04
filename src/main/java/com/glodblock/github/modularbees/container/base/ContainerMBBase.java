@@ -1,4 +1,4 @@
-package com.glodblock.github.modularbees.container;
+package com.glodblock.github.modularbees.container.base;
 
 import com.glodblock.github.glodium.network.packet.sync.ActionMap;
 import com.glodblock.github.glodium.network.packet.sync.IActionHolder;
@@ -71,6 +71,9 @@ public abstract class ContainerMBBase<T extends TileMBBase> extends AbstractCont
             int x = i % 9;
             int y = i / 9;
             int hotBarOffset = i < Inventory.getSelectionSize() ? 0 : 4;
+            if (y > 0) {
+                y = 4 - y;
+            }
             var slot = new Slot(inventory, i, x * 18 + this.playerLeftOffset(), -y * 18 - hotBarOffset + this.getHeight() - this.playerBottomOffset());
             this.addSlot(slot);
         }
@@ -109,9 +112,9 @@ public abstract class ContainerMBBase<T extends TileMBBase> extends AbstractCont
         return 8;
     }
 
-    abstract int getHeight();
+    protected abstract int getHeight();
 
-    abstract int getWidth();
+    protected abstract int getWidth();
 
     @Override
     public void sendAllDataToRemote() {

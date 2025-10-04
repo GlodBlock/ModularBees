@@ -27,7 +27,7 @@ public class MBOverclockerGui extends MBBaseGui<ContainerMBOverclocker> {
     }
 
     @Override
-    PicData getBackground() {
+    protected PicData getBackground() {
         return BG;
     }
 

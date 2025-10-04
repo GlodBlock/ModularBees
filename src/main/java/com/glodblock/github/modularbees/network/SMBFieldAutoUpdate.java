@@ -2,14 +2,13 @@ package com.glodblock.github.modularbees.network;
 
 import com.glodblock.github.glodium.network.packet.IMessage;
 import com.glodblock.github.modularbees.ModularBees;
-import com.glodblock.github.modularbees.container.ContainerMBBase;
+import com.glodblock.github.modularbees.container.base.ContainerMBBase;
 import io.netty.buffer.Unpooled;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
 import net.neoforged.neoforge.network.connection.ConnectionType;
 
-import java.util.Arrays;
 import java.util.function.Consumer;
 
 public class SMBFieldAutoUpdate implements IMessage {

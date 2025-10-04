@@ -6,7 +6,7 @@ import com.glodblock.github.modularbees.client.util.ElementGroup;
 import com.glodblock.github.modularbees.client.util.PicData;
 import com.glodblock.github.modularbees.client.util.TooltipElement;
 import com.glodblock.github.modularbees.common.tileentities.base.TileMBBase;
-import com.glodblock.github.modularbees.container.ContainerMBBase;
+import com.glodblock.github.modularbees.container.base.ContainerMBBase;
 import com.glodblock.github.modularbees.network.CMBGenericPacket;
 import com.glodblock.github.modularbees.network.MBNetworkHandler;
 import net.minecraft.client.gui.GuiGraphics;
@@ -30,7 +30,7 @@ public abstract class MBBaseGui<C extends ContainerMBBase<? extends TileMBBase>>
         super(container, inv, component);
     }
 
-    abstract PicData getBackground();
+    protected abstract PicData getBackground();
 
     protected Component getGuiName() {
         return Component.empty();
