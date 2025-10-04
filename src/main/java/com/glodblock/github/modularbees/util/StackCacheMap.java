@@ -12,7 +12,9 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.level.ItemLike;
+import net.minecraft.world.level.block.Blocks;
 
 import java.util.ArrayList;
 import java.util.IdentityHashMap;
@@ -90,6 +92,8 @@ public class StackCacheMap {
                     key = ModBlocks.COMB_MILKY.get();
                 } else if (key == ModItems.HONEYCOMB_POWDERY.get()) {
                     key = ModBlocks.COMB_POWDERY.get();
+                } else if (key == Items.HONEYCOMB) {
+                    key = Blocks.HONEYCOMB_BLOCK;
                 }
             }
             int amt = entry.getValue();

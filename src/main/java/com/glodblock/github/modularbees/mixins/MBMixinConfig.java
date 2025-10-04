@@ -1,5 +1,6 @@
 package com.glodblock.github.modularbees.mixins;
 
+import com.glodblock.github.modularbees.xmod.ModIDs;
 import it.unimi.dsi.fastutil.objects.Object2ObjectMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import net.neoforged.fml.ModList;
@@ -17,7 +18,8 @@ public class MBMixinConfig implements IMixinConfigPlugin {
     private static final Object2ObjectMap<String, String> MOD_MIXINS = new Object2ObjectOpenHashMap<>();
 
     static {
-        MOD_MIXINS.put("com.glodblock.github.modularbees.mixins.MixinNeoForgeClientXplatImpl", "patchouli");
+        MOD_MIXINS.put("com.glodblock.github.modularbees.mixins.NeoForgeClientXplatImplMixin", ModIDs.PATCHOULI);
+        MOD_MIXINS.put("com.glodblock.github.modularbees.mixins.ItemBlockCardboardBoxMixin", ModIDs.MEKANISM);
     }
 
     @Override

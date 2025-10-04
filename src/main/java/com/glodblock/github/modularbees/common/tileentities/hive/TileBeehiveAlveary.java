@@ -6,6 +6,7 @@ import com.glodblock.github.modularbees.common.MBSingletons;
 import com.glodblock.github.modularbees.common.caps.ItemHandlerHost;
 import com.glodblock.github.modularbees.common.inventory.MBItemInventory;
 import com.glodblock.github.modularbees.util.ServerTickTile;
+import com.glodblock.github.modularbees.xmod.mek.CardboxWrap;
 import cy.jdkdigital.productivebees.common.entity.bee.SolitaryBee;
 import cy.jdkdigital.productivebees.common.item.BeeCage;
 import cy.jdkdigital.productivebees.init.ModItems;
@@ -30,13 +31,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 
-public class TileBeehiveAlveary extends TileBeehivePart implements ServerTickTile, ItemHandlerHost {
+public class TileBeehiveAlveary extends TileBeehivePart implements ServerTickTile, ItemHandlerHost, CardboxWrap {
 
     public static int MAX_BEES = 5;
     protected final List<BeehiveBlockEntity.BeeData> bees = new ArrayList<>();
     protected final MBItemInventory cageIn = new MBItemInventory(this, 1, BeeCage::isFilled).setSlotLimit(1);
     protected final MBItemInventory cageOut = new MBItemInventory(this, 1, this::isEmptyCage).setSlotLimit(1);
     private final IItemHandler exposed = new CombinedInvWrapper(this.cageIn, this.cageOut);
+    private boolean wrap = false;
 
     public TileBeehiveAlveary(BlockPos pos, BlockState state) {
         super(GlodUtil.getTileType(TileBeehiveAlveary.class, TileBeehiveAlveary::new, MBSingletons.MODULAR_ALVEARY), pos, state);
@@ -167,6 +169,9 @@ public class TileBeehiveAlveary extends TileBeehivePart implements ServerTickTil
 
     @Override
     public void addInventoryDrops(Level world, @NotNull BlockPos pos, List<ItemStack> drops) {
+        if (this.wrap) {
+            return;
+        }
         drops.addAll(this.cageIn.toList());
         drops.addAll(this.cageOut.toList());
         var releasePos = this.getBlockPos();
@@ -184,6 +189,11 @@ public class TileBeehiveAlveary extends TileBeehivePart implements ServerTickTil
                 world.addFreshEntity(entity);
             }
         }
+    }
+
+    @Override
+    public void onWrap() {
+        this.wrap = true;
     }
 
 }
