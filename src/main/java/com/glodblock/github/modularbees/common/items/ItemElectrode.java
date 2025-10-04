@@ -1,28 +1,20 @@
 package com.glodblock.github.modularbees.common.items;
 
-import com.glodblock.github.modularbees.common.tileentities.hive.TileBeehiveOverclocker;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 import org.jetbrains.annotations.NotNull;
 
-public class ItemElectrode extends ItemMB implements TileBeehiveOverclocker.HiveElectrode {
+public class ItemElectrode extends ItemMB {
 
-    private final float power;
     private final Ingredient type;
 
-    public ItemElectrode(int durability, float power, Ingredient type) {
+    public ItemElectrode(int durability, Ingredient type) {
         super(new Properties().durability(durability));
-        this.power = power;
         this.type = type;
     }
 
-    public ItemElectrode(int durability, float power) {
-        this(durability, power, Ingredient.EMPTY);
-    }
-
-    @Override
-    public float getPower() {
-        return this.power;
+    public ItemElectrode(int durability) {
+        this(durability, Ingredient.EMPTY);
     }
 
     @Override

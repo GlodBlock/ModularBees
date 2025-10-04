@@ -43,7 +43,7 @@ public class MBTreaterCategory extends MBRecipeCategory<TreaterRecipe> {
     @Override
     public void draw(@NotNull TreaterRecipe recipe, @NotNull IRecipeSlotsView recipeSlotsView, @NotNull GuiGraphics guiGraphics, double mouseX, double mouseY) {
         this.arrow.draw(guiGraphics, 33, 1);
-        guiGraphics.drawString(Minecraft.getInstance().font, Component.translatable("modularbees.jei.treater_boost", GameUtil.NUMBER_F.format((recipe.boost() - 1) * 100) + '%'),0, 23, MBBaseGui.DEFAULT_TEXT_COLOR, false);
+        guiGraphics.drawString(Minecraft.getInstance().font, Component.translatable("modularbees.jei.treater_boost", GameUtil.NUMBER_F.format((recipe.boost() - 1) * 100) + '%'), 0, 23, MBBaseGui.DEFAULT_TEXT_COLOR, false);
     }
 
 }

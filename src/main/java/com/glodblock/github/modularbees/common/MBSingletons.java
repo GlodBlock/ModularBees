@@ -57,10 +57,10 @@ public class MBSingletons {
         MODULAR_DRAGON_HIVE = new BlockBeehiveDragon();
         SCENTED_PLANK = new BlockScentedPlank();
         DRAGON_BREATH = new BlockFluidDragonBreath();
-        ELECTRODE_COPPER = new ItemElectrode(3 * GameConstants.MINUTE, 1.8f, Ingredient.of(Tags.Items.INGOTS_COPPER));
-        ELECTRODE_IRON = new ItemElectrode(10 * GameConstants.MINUTE, 3, Ingredient.of(Tags.Items.INGOTS_IRON));
-        ELECTRODE_GOLD = new ItemElectrode(10 * GameConstants.MINUTE, 8, Ingredient.of(Tags.Items.INGOTS_GOLD));
-        ELECTRODE_NETHERITE = new ItemElectrode(25 * GameConstants.MINUTE, 25, Ingredient.of(Tags.Items.INGOTS_NETHERITE));
+        ELECTRODE_COPPER = new ItemElectrode(3 * GameConstants.MINUTE, Ingredient.of(Tags.Items.INGOTS_COPPER));
+        ELECTRODE_IRON = new ItemElectrode(10 * GameConstants.MINUTE, Ingredient.of(Tags.Items.INGOTS_IRON));
+        ELECTRODE_GOLD = new ItemElectrode(10 * GameConstants.MINUTE, Ingredient.of(Tags.Items.INGOTS_GOLD));
+        ELECTRODE_NETHERITE = new ItemElectrode(25 * GameConstants.MINUTE, Ingredient.of(Tags.Items.INGOTS_NETHERITE));
         DRAGON_BREATH_BUCKET = new BucketItem(FluidDragonBreath.getFluid(), new Item.Properties().craftRemainder(Items.BUCKET).stacksTo(1));
         regHandler.block("modular_beehive_core", MODULAR_BEEHIVE_CORE, TileModularBeehive.class, TileModularBeehive::new);
         regHandler.block("modular_beehive_part", MODULAR_BEEHIVE_PART, TileBeehivePart.class, TileBeehivePart::new);

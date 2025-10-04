@@ -4,7 +4,7 @@ import com.glodblock.github.modularbees.ModularBees;
 import com.glodblock.github.modularbees.client.gui.elements.EnergyDisplay;
 import com.glodblock.github.modularbees.client.util.PicData;
 import com.glodblock.github.modularbees.common.MBSingletons;
-import com.glodblock.github.modularbees.common.tileentities.hive.TileBeehiveOverclocker;
+import com.glodblock.github.modularbees.common.recipe.ElectrodeRecipe;
 import com.glodblock.github.modularbees.container.ContainerMBOverclocker;
 import com.glodblock.github.modularbees.util.GameUtil;
 import net.minecraft.client.gui.GuiGraphics;
@@ -39,9 +39,10 @@ public class MBOverclockerGui extends MBBaseGui<ContainerMBOverclocker> {
             this.drawStringCenter(graphics, Component.translatable("modularbees.gui.modular_beehive_overclocker.empty"), 135, 39);
         } else {
             var item = stack.getItem();
-            if (item instanceof TileBeehiveOverclocker.HiveElectrode electrode) {
+            var recipe = ElectrodeRecipe.getCache(this.getMenu().getPlayer().level()).get(item);
+            if (recipe != null) {
                 this.drawStringCenter(graphics, Component.translatable("modularbees.gui.modular_beehive_overclocker.boost"), 135, 33);
-                this.drawStringCenter(graphics, "x" + GameUtil.NUMBER_F.format(electrode.getPower()), 132, 44);
+                this.drawStringCenter(graphics, "x" + GameUtil.NUMBER_F.format(recipe.power()), 132, 44);
             } else {
                 this.drawStringCenter(graphics, Component.translatable("modularbees.gui.modular_beehive_overclocker.empty"), 135, 39);
             }

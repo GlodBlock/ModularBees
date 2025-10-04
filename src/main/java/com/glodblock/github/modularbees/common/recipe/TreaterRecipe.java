@@ -144,10 +144,10 @@ public record TreaterRecipe(Ingredient input, ItemStack output, float boost) imp
 
         public void save(RecipeOutput consumer, ResourceLocation id) {
             if (this.input == null || this.output == null) {
-                throw new NullPointerException("Input and output cannot be null!");
+                throw new NullPointerException("Input and output cannot be null! %s".formatted(id));
             }
             if (this.boost < 1) {
-                throw new IllegalArgumentException("Boost must be greater than one!");
+                throw new IllegalArgumentException("Boost must be greater than one! %s".formatted(id));
             }
             var recipe = new TreaterRecipe(this.input, this.output, this.boost);
             consumer.accept(id, recipe, null);

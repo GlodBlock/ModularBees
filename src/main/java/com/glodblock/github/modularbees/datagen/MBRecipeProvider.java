@@ -2,6 +2,7 @@ package com.glodblock.github.modularbees.datagen;
 
 import com.glodblock.github.modularbees.ModularBees;
 import com.glodblock.github.modularbees.common.MBSingletons;
+import com.glodblock.github.modularbees.common.recipe.ElectrodeRecipe;
 import com.glodblock.github.modularbees.common.recipe.TreaterRecipe;
 import com.glodblock.github.modularbees.util.GameConstants;
 import com.glodblock.github.modularbees.util.MBTags;
@@ -65,6 +66,22 @@ public class MBRecipeProvider extends RecipeProvider {
                 .input(Items.SUGAR)
                 .boost(1.1f)
                 .save(c, ModularBees.id("treater/sugar"));
+        ElectrodeRecipe.builder()
+                .input(MBSingletons.ELECTRODE_COPPER)
+                .power(1.8f)
+                .save(c, ModularBees.id("electrode/electrode_copper"));
+        ElectrodeRecipe.builder()
+                .input(MBSingletons.ELECTRODE_IRON)
+                .power(3f)
+                .save(c, ModularBees.id("electrode/electrode_iron"));
+        ElectrodeRecipe.builder()
+                .input(MBSingletons.ELECTRODE_GOLD)
+                .power(8f)
+                .save(c, ModularBees.id("electrode/electrode_gold"));
+        ElectrodeRecipe.builder()
+                .input(MBSingletons.ELECTRODE_NETHERITE)
+                .power(25f)
+                .save(c, ModularBees.id("electrode/electrode_netherite"));
         ShapedRecipeBuilder.shaped(RecipeCategory.BUILDING_BLOCKS, MBSingletons.SCENTED_PLANK, 3)
                 .pattern("WHW")
                 .pattern("PPP")

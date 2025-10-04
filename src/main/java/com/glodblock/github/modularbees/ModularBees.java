@@ -5,6 +5,7 @@ import com.glodblock.github.modularbees.common.MBRegistryHandler;
 import com.glodblock.github.modularbees.common.MBSingletons;
 import com.glodblock.github.modularbees.common.fluids.FluidDragonBreath;
 import com.glodblock.github.modularbees.common.hooks.TooltipHook;
+import com.glodblock.github.modularbees.common.recipe.ElectrodeRecipe;
 import com.glodblock.github.modularbees.dynamic.DyDataPack;
 import com.glodblock.github.modularbees.dynamic.DyResourcePack;
 import com.glodblock.github.modularbees.dynamic.MBPackSource;
@@ -61,6 +62,7 @@ public class ModularBees {
         bus.addListener(MBNetworkHandler.INSTANCE::onRegister);
         bus.register(MBRegistryHandler.INSTANCE);
         NeoForge.EVENT_BUS.register(TooltipHook.INSTANCE);
+        NeoForge.EVENT_BUS.register(ElectrodeRecipe.class);
     }
 
     public void addPackFinders(AddPackFindersEvent event) {

@@ -177,6 +177,7 @@ public class MBGuiHandler {
             return this.factory.construct(this.type, id, inv, host);
         }
 
+        @SuppressWarnings("DataFlowIssue")
         private void toBytes(RegistryFriendlyByteBuf buf, ContainerResolver resolver) {
             buf.writeByte(RESOLVERS.inverse().get(resolver.getClass()));
             resolver.toBytes(buf);

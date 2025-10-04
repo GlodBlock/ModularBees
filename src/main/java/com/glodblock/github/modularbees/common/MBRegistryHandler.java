@@ -9,6 +9,7 @@ import com.glodblock.github.modularbees.common.caps.FluidHandlerHost;
 import com.glodblock.github.modularbees.common.caps.ItemHandlerHost;
 import com.glodblock.github.modularbees.common.fluids.FluidDragonBreath;
 import com.glodblock.github.modularbees.common.items.ItemMBBlock;
+import com.glodblock.github.modularbees.common.recipe.ElectrodeRecipe;
 import com.glodblock.github.modularbees.common.recipe.TreaterRecipe;
 import com.glodblock.github.modularbees.common.tileentities.base.TileMBBase;
 import com.glodblock.github.modularbees.container.ContainerMBAlveary;
@@ -94,6 +95,8 @@ public class MBRegistryHandler extends RegistryHandler {
     private void registerRecipe() {
         Registry.register(BuiltInRegistries.RECIPE_TYPE, TreaterRecipe.ID, TreaterRecipe.TYPE);
         Registry.register(BuiltInRegistries.RECIPE_SERIALIZER, TreaterRecipe.ID, TreaterRecipe.SERIALIZER);
+        Registry.register(BuiltInRegistries.RECIPE_TYPE, ElectrodeRecipe.ID, ElectrodeRecipe.TYPE);
+        Registry.register(BuiltInRegistries.RECIPE_SERIALIZER, ElectrodeRecipe.ID, ElectrodeRecipe.SERIALIZER);
     }
 
     private void registerFluid() {

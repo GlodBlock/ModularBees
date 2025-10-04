@@ -6,6 +6,8 @@ import com.glodblock.github.modularbees.common.caps.EnergyHandlerHost;
 import com.glodblock.github.modularbees.common.caps.ItemHandlerHost;
 import com.glodblock.github.modularbees.common.inventory.MBEnergyInventory;
 import com.glodblock.github.modularbees.common.inventory.MBItemInventory;
+import com.glodblock.github.modularbees.common.inventory.SlotListener;
+import com.glodblock.github.modularbees.common.recipe.ElectrodeRecipe;
 import com.glodblock.github.modularbees.util.GameConstants;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -17,14 +19,17 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.neoforge.items.IItemHandler;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
-public class TileBeehiveOverclocker extends TileBeehivePart implements ItemHandlerHost, EnergyHandlerHost {
+public class TileBeehiveOverclocker extends TileBeehivePart implements ItemHandlerHost, EnergyHandlerHost, SlotListener {
 
     public static final int POWER_USE = 100;
-    protected final MBItemInventory electrode = new MBItemInventory(this, 1).setFilter(stack -> stack.getItem() instanceof HiveElectrode);
+    protected final MBItemInventory electrode = new MBItemInventory(this, 1).setFilter(this::isElectrode);
     protected final MBEnergyInventory energy = new MBEnergyInventory(this, 2 * GameConstants.M).inputOnly();
+    private ElectrodeRecipe running = null;
+    private boolean stuck = false;
 
     public TileBeehiveOverclocker(BlockPos pos, BlockState state) {
         super(GlodUtil.getTileType(TileBeehiveOverclocker.class, TileBeehiveOverclocker::new, MBSingletons.MODULAR_OVERCLOCKER), pos, state);
@@ -33,12 +38,17 @@ public class TileBeehiveOverclocker extends TileBeehivePart implements ItemHandl
     public float getBoostAndConsume(int bees) {
         if (this.level instanceof ServerLevel server && this.isActive()) {
             var stack = this.electrode.getStackInSlot(0);
-            if (!stack.isEmpty() && stack.getItem() instanceof HiveElectrode e) {
-                if (this.energy.getEnergyStored() >= bees * POWER_USE) {
-                    int power = this.energy.forceExtractEnergy(bees * POWER_USE, false);
-                    if (power >= bees * POWER_USE) {
-                        stack.hurtAndBreak(1, server, null, item -> this.electrode.setStackInSlot(0, ItemStack.EMPTY));
-                        return e.getPower();
+            if (!stack.isEmpty()) {
+                if (this.running == null) {
+                    this.running = this.findRecipe(stack);
+                }
+                if (this.running != null) {
+                    if (this.energy.getEnergyStored() >= bees * POWER_USE) {
+                        int power = this.energy.forceExtractEnergy(bees * POWER_USE, false);
+                        if (power >= bees * POWER_USE) {
+                            stack.hurtAndBreak(1, server, null, item -> this.electrode.setStackInSlot(0, ItemStack.EMPTY));
+                            return this.running.power();
+                        }
                     }
                 }
             }
@@ -95,10 +105,27 @@ public class TileBeehiveOverclocker extends TileBeehivePart implements ItemHandl
         return MBSingletons.MODULAR_OVERCLOCKER.getFacing(this.getBlockState());
     }
 
-    public interface HiveElectrode {
+    @Nullable
+    private ElectrodeRecipe findRecipe(ItemStack stack) {
+        if (this.stuck || this.level == null) {
+            return null;
+        }
+        return ElectrodeRecipe.getCache(this.level).get(stack.getItem());
+    }
 
-        float getPower();
+    private boolean isElectrode(ItemStack stack) {
+        if (this.level == null) {
+            return false;
+        }
+        return ElectrodeRecipe.getCache(this.level).containsKey(stack.getItem());
+    }
 
+    @Override
+    public void onChange(IItemHandler inv, int slot) {
+        if (inv == this.electrode) {
+            this.stuck = false;
+            this.running = null;
+        }
     }
 
 }
