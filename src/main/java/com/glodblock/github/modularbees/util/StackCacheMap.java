@@ -27,7 +27,10 @@ public class StackCacheMap {
     private final Object2IntMap<ResourceLocation> comb = new Object2IntOpenHashMap<>();
     private final Object2IntMap<ItemStack> nbtItem = new Object2IntOpenCustomHashMap<>(new Hash.Strategy<>() {
         @Override
-        public int hashCode(ItemStack stack) {
+        public int hashCode(@Nullable ItemStack stack) {
+            if (stack == null) {
+                return 0;
+            }
             return ItemStack.hashItemAndComponents(stack);
         }
 

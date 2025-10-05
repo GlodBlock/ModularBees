@@ -1,6 +1,7 @@
 package com.glodblock.github.modularbees.common.tileentities.hive;
 
 import com.glodblock.github.glodium.util.GlodUtil;
+import com.glodblock.github.modularbees.common.MBConfig;
 import com.glodblock.github.modularbees.common.MBSingletons;
 import com.glodblock.github.modularbees.common.caps.FluidHandlerHost;
 import com.glodblock.github.modularbees.common.caps.ItemHandlerHost;
@@ -24,7 +25,7 @@ import java.util.function.Supplier;
 
 public class TileBeehiveExport extends TileBeehivePart implements ServerTickTile, ItemHandlerHost, FluidHandlerHost {
 
-    private static final int AUTO_EXPORT_INTERVAL = 8;
+    private static final int AUTO_EXPORT_INTERVAL = MBConfig.AUTO_EXPORT_INTERVAL.get();
     private final IItemHandler item;
     private final IFluidHandler fluid;
     private BlockCapabilityCache<IItemHandler, Direction> itemCache;

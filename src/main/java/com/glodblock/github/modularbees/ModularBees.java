@@ -1,6 +1,7 @@
 package com.glodblock.github.modularbees;
 
 import com.glodblock.github.modularbees.client.MBClientRegistryHandler;
+import com.glodblock.github.modularbees.common.MBConfig;
 import com.glodblock.github.modularbees.common.MBRegistryHandler;
 import com.glodblock.github.modularbees.common.MBSingletons;
 import com.glodblock.github.modularbees.common.fluids.FluidDragonBreath;
@@ -20,6 +21,7 @@ import net.minecraft.server.packs.PackType;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
+import net.neoforged.fml.config.ModConfig;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.neoforged.fml.loading.FMLEnvironment;
@@ -43,6 +45,7 @@ public class ModularBees {
         if (!container.getModId().equals(MODID)) {
             throw new IllegalArgumentException("Invalid ID: " + MODID);
         }
+        container.registerConfig(ModConfig.Type.COMMON, MBConfig.SPEC);
         bus.addListener((RegisterEvent e) -> {
             if (e.getRegistryKey().equals(Registries.CREATIVE_MODE_TAB)) {
                 MBRegistryHandler.INSTANCE.registerTab(e.getRegistry(Registries.CREATIVE_MODE_TAB));

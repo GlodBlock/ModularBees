@@ -1,6 +1,7 @@
 package com.glodblock.github.modularbees.common.tileentities.hive;
 
 import com.glodblock.github.glodium.util.GlodUtil;
+import com.glodblock.github.modularbees.common.MBConfig;
 import com.glodblock.github.modularbees.common.MBSingletons;
 import com.glodblock.github.modularbees.common.caps.FluidHandlerHost;
 import com.glodblock.github.modularbees.common.caps.ItemHandlerHost;
@@ -125,7 +126,7 @@ public class TileModularBeehive extends TileMBModularCore implements ItemHandler
                     }
                     treaterMultiplier = Math.max(1, treaterMultiplier);
                     this.sending.addAll(outputs.getItems(this.blockMode, this.upgradeMultiplier * treaterMultiplier));
-                    var honeyAmt = world.getRandom().nextInt(working / 2, working + 1) * 300;
+                    var honeyAmt = world.getRandom().nextInt(working / 2, working + 1) * MBConfig.HONEY_PRODUCE_BASE.get();
                     if (honeyAmt > 0) {
                         this.honey.forceFill(new FluidStack(ModFluids.HONEY.get(), honeyAmt), IFluidHandler.FluidAction.EXECUTE);
                     }

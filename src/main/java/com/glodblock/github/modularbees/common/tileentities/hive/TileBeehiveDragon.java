@@ -1,6 +1,7 @@
 package com.glodblock.github.modularbees.common.tileentities.hive;
 
 import com.glodblock.github.glodium.util.GlodUtil;
+import com.glodblock.github.modularbees.common.MBConfig;
 import com.glodblock.github.modularbees.common.MBSingletons;
 import com.glodblock.github.modularbees.common.caps.FluidHandlerHost;
 import com.glodblock.github.modularbees.common.caps.ItemHandlerHost;
@@ -32,7 +33,7 @@ public class TileBeehiveDragon extends TileBeehivePart implements ItemHandlerHos
     }
 
     public void addDragonBreath(int bees, Level world) {
-        var amount = world.random.nextInt(bees / 2, bees + 1) * 400;
+        var amount = world.random.nextInt(bees / 2, bees + 1) * MBConfig.DRAGON_BREATH_PRODUCE_BASE.get();
         if (amount > 0) {
             this.tank.forceFill(new FluidStack(FluidDragonBreath.getFluid(), amount), IFluidHandler.FluidAction.EXECUTE);
         }

@@ -1,6 +1,7 @@
 package com.glodblock.github.modularbees.common.tileentities.hive;
 
 import com.glodblock.github.glodium.util.GlodUtil;
+import com.glodblock.github.modularbees.common.MBConfig;
 import com.glodblock.github.modularbees.common.MBSingletons;
 import com.glodblock.github.modularbees.common.caps.EnergyHandlerHost;
 import com.glodblock.github.modularbees.common.caps.ItemHandlerHost;
@@ -25,7 +26,7 @@ import java.util.List;
 
 public class TileBeehiveOverclocker extends TileBeehivePart implements ItemHandlerHost, EnergyHandlerHost, SlotListener {
 
-    public static final int POWER_USE = 100;
+    public static final int POWER_USE = MBConfig.OVERCLOCKER_POWER_USAGE.get();
     protected final MBItemInventory electrode = new MBItemInventory(this, 1).setFilter(this::isElectrode);
     protected final MBEnergyInventory energy = new MBEnergyInventory(this, 2 * GameConstants.M).inputOnly();
     private ElectrodeRecipe running = null;
