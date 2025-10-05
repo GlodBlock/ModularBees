@@ -15,6 +15,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.block.Blocks;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.IdentityHashMap;
@@ -31,7 +32,13 @@ public class StackCacheMap {
         }
 
         @Override
-        public boolean equals(ItemStack s1, ItemStack s2) {
+        public boolean equals(@Nullable ItemStack s1, @Nullable ItemStack s2) {
+            if (s1 == s2) {
+                return true;
+            }
+            if (s1 == null || s2 == null) {
+                return false;
+            }
             return ItemStack.isSameItemSameComponents(s1, s2);
         }
     });
