@@ -43,11 +43,12 @@ public class TileBeehiveOverclocker extends TileBeehivePart implements ItemHandl
                     this.running = this.findRecipe(stack);
                 }
                 if (this.running != null) {
+                    var boost = this.running.power();
                     if (this.energy.getEnergyStored() >= bees * POWER_USE) {
                         int power = this.energy.forceExtractEnergy(bees * POWER_USE, false);
                         if (power >= bees * POWER_USE) {
                             stack.hurtAndBreak(1, server, null, item -> this.electrode.setStackInSlot(0, ItemStack.EMPTY));
-                            return this.running.power();
+                            return boost;
                         }
                     }
                 }
