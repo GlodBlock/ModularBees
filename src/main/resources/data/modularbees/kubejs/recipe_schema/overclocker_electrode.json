@@ -1,0 +1,17 @@
+{
+  "keys": [
+    {
+      "name": "electrode",
+      "role": "input",
+      "type": "strict_item_stack"
+    },
+    {
+      "name": "power",
+      "role": "other",
+      "type": "float<1.0,max>",
+      "optional": 1.0,
+      "always_write": true
+    }
+  ],
+  "unique": ["electrode"]
+}

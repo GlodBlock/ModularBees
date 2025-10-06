@@ -67,6 +67,11 @@ public record ElectrodeRecipe(ItemStack electrode, float power) implements Recip
         return true;
     }
 
+    @Override
+    public @NotNull String getGroup() {
+        return "electrode";
+    }
+
     public static Builder builder() {
         return new Builder();
     }
@@ -137,9 +142,6 @@ public record ElectrodeRecipe(ItemStack electrode, float power) implements Recip
         public void save(RecipeOutput consumer, ResourceLocation id) {
             if (this.electrode == null) {
                 throw new NullPointerException("Input cannot be null! ID: %s".formatted(id));
-            }
-            if (!this.electrode.isDamageableItem()) {
-                throw new IllegalArgumentException("Electrode must be damageable! ID: %s".formatted(id));
             }
             if (this.power < 1) {
                 throw new IllegalArgumentException("Power must be greater than one! ID: %s".formatted(id));

@@ -27,7 +27,7 @@ import java.util.List;
 public class TileBeehiveOverclocker extends TileBeehivePart implements ItemHandlerHost, EnergyHandlerHost, SlotListener {
 
     public static final int POWER_USE = MBConfig.OVERCLOCKER_POWER_USAGE.get();
-    protected final MBItemInventory electrode = new MBItemInventory(this, 1).setFilter(this::isElectrode);
+    protected final MBItemInventory electrode = new MBItemInventory(this, 1).setSlotLimit(1).setFilter(this::isElectrode);
     protected final MBEnergyInventory energy = new MBEnergyInventory(this, 2 * GameConstants.M).inputOnly();
     private ElectrodeRecipe running = null;
     private boolean stuck = false;

@@ -16,8 +16,8 @@ public class MBConfig {
             .comment("The base honey output amount for every bee.")
             .defineInRange("hive.honey_base", 300, 0, 1000);
     public static final ModConfigSpec.IntValue DRAGON_BREATH_PRODUCE_BASE = BUILDER
-            .comment("The base dragon breath output amount for every bee.")
-            .defineInRange("hive.dragon_breath", 400, 0, 1000);
+            .comment("The base dragon breath output amount for draconic bee.")
+            .defineInRange("hive.dragon_breath_base", 400, 0, 1000);
     public static final ModConfigSpec SPEC = BUILDER.build();
 
 }

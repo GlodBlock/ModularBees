@@ -63,6 +63,11 @@ public record TreaterRecipe(Ingredient input, ItemStack output, float boost) imp
         return true;
     }
 
+    @Override
+    public @NotNull String getGroup() {
+        return "treater";
+    }
+
     public boolean isValidInput(ItemStack stack) {
         return this.input.test(stack);
     }
