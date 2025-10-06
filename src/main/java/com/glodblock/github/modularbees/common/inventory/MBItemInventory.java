@@ -1,5 +1,6 @@
 package com.glodblock.github.modularbees.common.inventory;
 
+import net.minecraft.core.NonNullList;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -104,6 +105,19 @@ public class MBItemInventory extends ItemStackHandler {
     @Override
     public int getSlotLimit(int slot) {
         return this.slotLimit;
+    }
+
+    @Override
+    public void setSize(int size) {
+        if (size == this.stacks.size()) {
+            return;
+        }
+        var newStack = NonNullList.withSize(size, ItemStack.EMPTY);
+        int bound = Math.min(this.stacks.size(), size);
+        for (int i = 0; i < bound; i++) {
+            newStack.set(i, this.stacks.get(i));
+        }
+        this.stacks = newStack;
     }
 
     public List<ItemStack> toList() {
