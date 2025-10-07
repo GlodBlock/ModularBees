@@ -68,19 +68,19 @@ public class MBRecipeProvider extends RecipeProvider {
                 .save(c, ModularBees.id("treater/sugar"));
         ElectrodeRecipe.builder()
                 .input(MBSingletons.ELECTRODE_COPPER)
-                .power(1.8f)
+                .power(1.2f)
                 .save(c, ModularBees.id("electrode/electrode_copper"));
         ElectrodeRecipe.builder()
                 .input(MBSingletons.ELECTRODE_IRON)
-                .power(3f)
+                .power(1.5f)
                 .save(c, ModularBees.id("electrode/electrode_iron"));
         ElectrodeRecipe.builder()
                 .input(MBSingletons.ELECTRODE_GOLD)
-                .power(8f)
+                .power(2.8f)
                 .save(c, ModularBees.id("electrode/electrode_gold"));
         ElectrodeRecipe.builder()
                 .input(MBSingletons.ELECTRODE_NETHERITE)
-                .power(25f)
+                .power(5f)
                 .save(c, ModularBees.id("electrode/electrode_netherite"));
         ShapedRecipeBuilder.shaped(RecipeCategory.BUILDING_BLOCKS, MBSingletons.SCENTED_PLANK, 3)
                 .pattern("WHW")
