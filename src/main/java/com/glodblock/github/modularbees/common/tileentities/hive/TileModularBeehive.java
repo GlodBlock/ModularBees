@@ -1,6 +1,7 @@
 package com.glodblock.github.modularbees.common.tileentities.hive;
 
 import com.glodblock.github.glodium.util.GlodUtil;
+import com.glodblock.github.modularbees.ModularBees;
 import com.glodblock.github.modularbees.common.MBConfig;
 import com.glodblock.github.modularbees.common.MBSingletons;
 import com.glodblock.github.modularbees.common.caps.FluidHandlerHost;
@@ -13,6 +14,7 @@ import com.glodblock.github.modularbees.common.tileentities.base.TileMBModularCo
 import com.glodblock.github.modularbees.common.tileentities.base.TileMBModularCore;
 import com.glodblock.github.modularbees.util.BeeTable;
 import com.glodblock.github.modularbees.util.GameConstants;
+import com.glodblock.github.modularbees.util.MBCodec;
 import com.glodblock.github.modularbees.util.StackCacheMap;
 import cy.jdkdigital.productivebees.ProductiveBeesConfig;
 import cy.jdkdigital.productivebees.init.ModFluids;
@@ -24,6 +26,7 @@ import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.NbtOps;
 import net.minecraft.nbt.Tag;
 import net.minecraft.world.entity.animal.Bee;
 import net.minecraft.world.item.Item;
@@ -33,6 +36,7 @@ import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BeehiveBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import net.neoforged.neoforge.common.util.DataComponentUtil;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler;
 import net.neoforged.neoforge.items.IItemHandler;
@@ -43,6 +47,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.function.Consumer;
 
@@ -82,7 +87,7 @@ public class TileModularBeehive extends TileMBModularCore implements ItemHandler
             if (this.table.getBeeCount() <= 0) {
                 return;
             }
-            float overclock = 0;
+            float overclock = 1;
             if (!this.stuck) {
                 for (var component : components) {
                     if (component instanceof TileBeehiveOverclocker overclocker) {
@@ -304,7 +309,7 @@ public class TileModularBeehive extends TileMBModularCore implements ItemHandler
             var tag = new ListTag();
             for (var stack : this.sending) {
                 if (!stack.isEmpty()) {
-                    tag.add(stack.save(provider));
+                    tag.add(this.saveBigStack(stack, provider));
                 }
             }
             if (!tag.isEmpty()) {
@@ -325,10 +330,20 @@ public class TileModularBeehive extends TileMBModularCore implements ItemHandler
             if (!tag.isEmpty()) {
                 this.sending.clear();
                 for (var stack : tag) {
-                    ItemStack.parse(provider, stack).ifPresent(this.sending::add);
+                    this.loadBigStack(stack, provider).ifPresent(this.sending::add);
                 }
             }
         }
+    }
+
+    private Tag saveBigStack(ItemStack stack, HolderLookup.@NotNull Provider provider) {
+        return DataComponentUtil.wrapEncodingExceptions(stack, MBCodec.UNLIMITED_ITEM_CODEC, provider);
+    }
+
+    private Optional<ItemStack> loadBigStack(Tag tag, HolderLookup.@NotNull Provider provider) {
+        return MBCodec.UNLIMITED_ITEM_CODEC
+                .parse(provider.createSerializationContext(NbtOps.INSTANCE), tag)
+                .resultOrPartial(err -> ModularBees.LOGGER.error("Tried to load invalid item: '{}'", err));
     }
 
     @Override
