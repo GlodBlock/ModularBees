@@ -46,6 +46,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -180,7 +181,9 @@ public class TileModularBeehive extends TileMBModularCore implements ItemHandler
         if (this.getLevel() != null) {
             var entity = data.toOccupant().createEntity(this.getLevel(), this.getBlockPos());
             if (entity instanceof Bee bee) {
-                for (var feeder : this.getComponents(TileBeehiveFeeder.class)) {
+                var feeders = new ArrayList<>(this.getComponents(TileBeehiveFeeder.class));
+                Collections.shuffle(feeders);
+                for (var feeder : feeders) {
                     var result = feeder.checkFlower(bee);
                     if (result.isSuccess()) {
                         return result;
