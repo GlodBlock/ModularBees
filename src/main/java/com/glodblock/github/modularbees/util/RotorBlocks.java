@@ -17,6 +17,18 @@ public record RotorBlocks(Direction[] faces, DirectionProperty property) {
         return this == NONE;
     }
 
+    public boolean validFace(Direction face) {
+        if (this.isNone()) {
+            return false;
+        }
+        for (Direction direction : this.faces) {
+            if (direction == face) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     public static final RotorBlocks NONE = new RotorBlocks("facing", Direction.NORTH);
     public static final RotorBlocks HORIZONTAL = new RotorBlocks("facing", Direction.NORTH, Direction.SOUTH, Direction.WEST, Direction.EAST);
     public static final RotorBlocks ALL = new RotorBlocks("facing", Direction.NORTH, Direction.SOUTH, Direction.WEST, Direction.EAST, Direction.UP, Direction.DOWN);

@@ -54,6 +54,12 @@ public class TileBeehiveExport extends TileBeehivePart implements ServerTickTile
         }
     }
 
+    public void onFacingChange() {
+        this.itemCache = null;
+        this.fluidCache = null;
+        this.invalidateCapabilities();
+    }
+
     @Override
     public IItemHandler getItemInventory() {
         return this.item;

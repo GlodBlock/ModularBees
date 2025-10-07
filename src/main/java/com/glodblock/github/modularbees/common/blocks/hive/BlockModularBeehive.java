@@ -12,6 +12,7 @@ import com.glodblock.github.modularbees.util.GameUtil;
 import com.glodblock.github.modularbees.util.RotorBlocks;
 import cy.jdkdigital.productivebees.init.ModItems;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.TagKey;
@@ -78,6 +79,14 @@ public class BlockModularBeehive extends BlockMBGuiBase<TileModularBeehive> impl
     @Override
     public boolean canConnect(BlockGetter world, BlockPos otherPos) {
         return world.getBlockState(otherPos).getBlock() instanceof Hive;
+    }
+
+    @Override
+    protected void onFacingChange(Direction facing, Level world, BlockPos pos) {
+        var tile = this.getBlockEntity(world, pos);
+        if (tile != null) {
+            tile.invalidateCapabilities();
+        }
     }
 
     @Override

@@ -8,7 +8,6 @@ import com.glodblock.github.modularbees.common.caps.EnergyHandlerHost;
 import com.glodblock.github.modularbees.common.caps.FluidHandlerHost;
 import com.glodblock.github.modularbees.common.caps.ItemHandlerHost;
 import com.glodblock.github.modularbees.common.fluids.FluidDragonBreath;
-import com.glodblock.github.modularbees.common.items.ItemMBBlock;
 import com.glodblock.github.modularbees.common.recipe.ElectrodeRecipe;
 import com.glodblock.github.modularbees.common.recipe.TreaterRecipe;
 import com.glodblock.github.modularbees.common.tileentities.base.TileMBBase;
@@ -52,7 +51,7 @@ public class MBRegistryHandler extends RegistryHandler {
 
     public <T extends TileMBBase> void block(String name, BlockMBTileBase<T> block, Class<T> clazz, BlockEntityType.BlockEntitySupplier<? extends T> supplier) {
         block.bindTileEntity(clazz, GlodUtil.getTileType(clazz, supplier, block));
-        block(name, block, b -> new ItemMBBlock(b, new Item.Properties()));
+        block(name, block, b -> block.createItem());
         tile(name, block.getBlockEntityType());
     }
 

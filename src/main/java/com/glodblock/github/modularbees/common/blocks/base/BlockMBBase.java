@@ -4,15 +4,22 @@ import com.glodblock.github.modularbees.common.items.ItemMBBlock;
 import com.glodblock.github.modularbees.dynamic.DyDataPack;
 import com.glodblock.github.modularbees.dynamic.DyResourcePack;
 import com.glodblock.github.modularbees.util.DataProvider;
+import com.glodblock.github.modularbees.util.MBTags;
 import com.glodblock.github.modularbees.util.RegisterTask;
 import com.glodblock.github.modularbees.util.ResourceProvider;
 import com.glodblock.github.modularbees.util.RotorBlocks;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.ItemInteractionResult;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
@@ -20,6 +27,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.NoteBlockInstrument;
 import net.minecraft.world.level.material.MapColor;
+import net.minecraft.world.phys.BlockHitResult;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -66,11 +74,37 @@ public class BlockMBBase extends Block implements RegisterTask, ResourceProvider
         return null;
     }
 
+    @Override
+    public @NotNull ItemInteractionResult useItemOn(@NotNull ItemStack heldItem, @NotNull BlockState state, @NotNull Level level, @NotNull BlockPos pos, @NotNull Player p, @NotNull InteractionHand hand, @NotNull BlockHitResult hit) {
+        if (heldItem.is(MBTags.WRENCH) && !this.getRotorStrategy().isNone()) {
+            var newFacing = p.isShiftKeyDown() ? hit.getDirection().getOpposite() : hit.getDirection();
+            if (this.getRotorStrategy().validFace(newFacing)) {
+                this.setFacing(state, newFacing, level, pos);
+                return ItemInteractionResult.SUCCESS;
+            } else {
+                return ItemInteractionResult.FAIL;
+            }
+        }
+        return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+    }
+
     public Direction getFacing(BlockState state) {
         if (!this.getRotorStrategy().isNone()) {
             return state.getValue(this.getRotorStrategy().property());
         }
         return null;
+    }
+
+    public void setFacing(BlockState state, Direction facing, Level world, BlockPos pos) {
+        if (this.getRotorStrategy().validFace(facing)) {
+            var newState = state.setValue(this.getRotorStrategy().property(), facing);
+            world.setBlockAndUpdate(pos, newState);
+            this.onFacingChange(facing, world, pos);
+        }
+    }
+
+    protected void onFacingChange(Direction facing, Level world, BlockPos pos) {
+
     }
 
     @Override

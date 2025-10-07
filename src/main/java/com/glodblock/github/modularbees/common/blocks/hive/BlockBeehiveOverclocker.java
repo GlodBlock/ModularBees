@@ -9,11 +9,13 @@ import com.glodblock.github.modularbees.dynamic.DyResourcePack;
 import com.glodblock.github.modularbees.util.ContainerResolver;
 import com.glodblock.github.modularbees.util.RotorBlocks;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.NotNull;
@@ -47,6 +49,14 @@ public class BlockBeehiveOverclocker extends BlockMBGuiBase<TileBeehiveOverclock
     @Override
     public RotorBlocks getRotorStrategy() {
         return RotorBlocks.HORIZONTAL;
+    }
+
+    @Override
+    protected void onFacingChange(Direction facing, Level world, BlockPos pos) {
+        var tile = this.getBlockEntity(world, pos);
+        if (tile != null) {
+            tile.invalidateCapabilities();
+        }
     }
 
     @Override
