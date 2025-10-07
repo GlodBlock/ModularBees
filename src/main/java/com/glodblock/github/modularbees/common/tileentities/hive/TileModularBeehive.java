@@ -396,9 +396,6 @@ public class TileModularBeehive extends TileMBModularCore implements ItemHandler
                 stack.getItem() == LibItems.UPGRADE_PRODUCTIVITY_4.get()) > 0;
         int amt = this.upgrade.countStack(LibItems.UPGRADE_TIME.get());
         this.tickSpeed = (float) (1 / (1 - ProductiveBeesConfig.UPGRADES.timeBonus.get() * amt));
-        if (this.blockMode) {
-            this.tickSpeed /= 2;
-        }
         this.upgradeMultiplier = 1;
         this.upgradeMultiplier += (float) (this.upgrade.countStack(LibItems.UPGRADE_PRODUCTIVITY.get()) * ProductiveBeesConfig.UPGRADES.productivityMultiplier.get());
         this.upgradeMultiplier += (float) (this.upgrade.countStack(LibItems.UPGRADE_PRODUCTIVITY_2.get()) * ProductiveBeesConfig.UPGRADES.productivityMultiplier2.get());
