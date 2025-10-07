@@ -10,11 +10,14 @@
     },
     "M": {
       "tag": "c:ingots/iron"
+    },
+    "Z": {
+      "tag": "c:storage_blocks/iron"
     }
   },
   "pattern": [
     " BG",
-    " MB",
+    " ZB",
     "M  "
   ],
   "result": {

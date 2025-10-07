@@ -154,13 +154,13 @@ public class MBRecipeProvider extends RecipeProvider {
                 .requires(MBSingletons.MODULAR_BEEHIVE_PART)
                 .unlockedBy(C, has(ModBlocks.DRAGON_EGG_HIVE.get()))
                 .save(c, ModularBees.id("modular_dragon_hive"));
-        this.electrode(MBSingletons.ELECTRODE_COPPER, Tags.Items.INGOTS_COPPER, "copper", c);
-        this.electrode(MBSingletons.ELECTRODE_IRON, Tags.Items.INGOTS_IRON, "iron", c);
-        this.electrode(MBSingletons.ELECTRODE_GOLD, Tags.Items.INGOTS_GOLD, "gold", c);
+        this.electrode(MBSingletons.ELECTRODE_COPPER, Tags.Items.INGOTS_COPPER, Tags.Items.STORAGE_BLOCKS_COPPER, "copper", c);
+        this.electrode(MBSingletons.ELECTRODE_IRON, Tags.Items.INGOTS_IRON, Tags.Items.STORAGE_BLOCKS_IRON, "iron", c);
+        this.electrode(MBSingletons.ELECTRODE_GOLD, Tags.Items.INGOTS_GOLD, Tags.Items.STORAGE_BLOCKS_GOLD, "gold", c);
         SmithingTransformRecipeBuilder.smithing(
                 Ingredient.of(Items.NETHERITE_UPGRADE_SMITHING_TEMPLATE),
                 Ingredient.of(MBSingletons.ELECTRODE_GOLD),
-                Ingredient.of(Items.NETHERITE_INGOT),
+                Ingredient.of(Blocks.NETHERITE_BLOCK),
                 RecipeCategory.MISC,
                 MBSingletons.ELECTRODE_NETHERITE)
                 .unlocks(C, has(MBSingletons.ELECTRODE_GOLD))
@@ -182,14 +182,15 @@ public class MBRecipeProvider extends RecipeProvider {
                 .save(c, ModularBees.id("fill_dragon_breath_bucket"));
     }
 
-    private void electrode(Item electrode, TagKey<Item> material, String name, @NotNull RecipeOutput c) {
+    private void electrode(Item electrode, TagKey<Item> material, TagKey<Item> material2, String name, @NotNull RecipeOutput c) {
         ShapedRecipeBuilder.shaped(RecipeCategory.MISC, electrode)
                 .pattern(" BG")
-                .pattern(" MB")
+                .pattern(" ZB")
                 .pattern("M  ")
                 .define('B', Tags.Items.DYES_BLACK)
                 .define('G', Tags.Items.NUGGETS_GOLD)
                 .define('M', material)
+                .define('Z', material2)
                 .unlockedBy(C, has(material))
                 .save(c, ModularBees.id("electrode_" + name));
     }

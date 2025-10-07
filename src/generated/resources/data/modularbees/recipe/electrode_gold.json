@@ -10,11 +10,14 @@
     },
     "M": {
       "tag": "c:ingots/gold"
+    },
+    "Z": {
+      "tag": "c:storage_blocks/gold"
     }
   },
   "pattern": [
     " BG",
-    " MB",
+    " ZB",
     "M  "
   ],
   "result": {

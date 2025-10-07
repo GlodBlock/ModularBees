@@ -1,7 +1,7 @@
 {
   "type": "minecraft:smithing_transform",
   "addition": {
-    "item": "minecraft:netherite_ingot"
+    "item": "minecraft:netherite_block"
   },
   "base": {
     "item": "modularbees:electrode_gold"
