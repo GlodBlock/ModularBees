@@ -1,16 +1,19 @@
 package com.glodblock.github.modularbees.util;
 
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.FluidTags;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.material.Fluid;
 
 public final class MBTags {
 
     public static final TagKey<Fluid> DRAGON_BREATH = FluidTags.create(ResourceLocation.fromNamespaceAndPath("c", "dragon_breath"));
-
+    // Third-party tags
     public static final TagKey<Item> WRENCH = ItemTags.create(ResourceLocation.fromNamespaceAndPath("c", "tools/wrench"));
+    public static final TagKey<Block> SOUL_BLACKLIST = BlockTags.create(ResourceLocation.fromNamespaceAndPath("industrialforegoingsouls", "cant_accelerate"));
 
 }

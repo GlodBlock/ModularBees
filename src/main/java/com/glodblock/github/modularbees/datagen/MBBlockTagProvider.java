@@ -4,6 +4,7 @@ import com.glodblock.github.modularbees.ModularBees;
 import com.glodblock.github.modularbees.common.MBRegistryHandler;
 import com.glodblock.github.modularbees.common.MBSingletons;
 import com.glodblock.github.modularbees.common.blocks.base.BlockMBBase;
+import com.glodblock.github.modularbees.util.MBTags;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.data.PackOutput;
 import net.minecraft.tags.BlockTags;
@@ -30,5 +31,6 @@ public class MBBlockTagProvider extends BlockTagsProvider {
             }
         }
         tag(BlockTags.PLANKS).add(MBSingletons.SCENTED_PLANK);
+        tag(MBTags.SOUL_BLACKLIST).add(MBSingletons.MODULAR_BEEHIVE_CORE);
     }
 }
