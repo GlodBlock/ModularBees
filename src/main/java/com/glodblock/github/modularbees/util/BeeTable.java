@@ -19,7 +19,6 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.tags.BlockTags;
-import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.animal.Bee;
@@ -148,70 +147,6 @@ public class BeeTable {
             this.outputs.forEach(c -> c.get(collector, random));
         }
 
-        private interface ChanceStack {
-
-            void get(Consumer<ItemStack> adder, RandomSource random);
-
-            static ChanceStack of(ItemStack stack, TagOutputRecipe.ChancedOutput chancedOutput) {
-                if (Mth.equal(chancedOutput.chance(), 1)) {
-                    if (chancedOutput.max() == chancedOutput.min()) {
-                        return new CommonStack(stack.copyWithCount(chancedOutput.max()));
-                    } else {
-                        return new MutableAmountStack(stack, chancedOutput.max(), chancedOutput.min());
-                    }
-                } else {
-                    if (chancedOutput.max() == chancedOutput.min()) {
-                        return new ChanceStackImpl(stack, chancedOutput.chance());
-                    } else {
-                        return new MutableAmountChanceStack(stack, chancedOutput.max(), chancedOutput.min(), chancedOutput.chance());
-                    }
-                }
-            }
-
-        }
-
-        record ChanceStackImpl(ItemStack output, float chance) implements ChanceStack {
-
-            @Override
-            public void get(Consumer<ItemStack> adder, RandomSource random) {
-                if (random.nextFloat() <= this.chance) {
-                    adder.accept(this.output.copy());
-                }
-            }
-
-        }
-
-        record MutableAmountChanceStack(ItemStack output, int max, int min, float chance) implements ChanceStack {
-
-            @Override
-            public void get(Consumer<ItemStack> adder, RandomSource random) {
-                if (random.nextFloat() <= this.chance) {
-                    int amt = Mth.nextInt(random, this.min, this.max);
-                    adder.accept(this.output.copyWithCount(amt));
-                }
-            }
-
-        }
-
-        record MutableAmountStack(ItemStack output, int max, int min) implements ChanceStack {
-
-            @Override
-            public void get(Consumer<ItemStack> adder, RandomSource random) {
-                int amt = Mth.nextInt(random, this.min, this.max);
-                adder.accept(this.output.copyWithCount(amt));
-            }
-
-        }
-
-        record CommonStack(ItemStack output) implements ChanceStack {
-
-            @Override
-            public void get(Consumer<ItemStack> adder, RandomSource random) {
-                adder.accept(this.output.copy());
-            }
-
-        }
-
     }
 
     private static class BeeCache {
@@ -243,7 +178,7 @@ public class BeeTable {
                                 .getRecipeOutputs()
                                 .entrySet()
                                 .stream()
-                                .map(e -> Output.ChanceStack.of(e.getKey(), this.multi(e.getValue())))
+                                .map(e -> ChanceStack.of(e.getKey(), this.multi(e.getValue())))
                                 .toList()
                         );
                     } else if (bee instanceof ProductiveBee) {
@@ -295,12 +230,12 @@ public class BeeTable {
             switch (this.beeId) {
                 case "productivebees:lumber_bee" -> {
                     if (inputBlock.is(ModTags.LUMBER) && !inputBlock.is(ModTags.DUPE_BLACKLIST)) {
-                        return new Output(List.of(new Output.CommonStack(input.copyWithCount(this.beeMultiplier))));
+                        return new Output(List.of(new ChanceStack.CommonStack(input.copyWithCount(this.beeMultiplier))));
                     }
                 }
                 case "productivebees:quarry_bee" -> {
                     if (inputBlock.is(ModTags.QUARRY) && !inputBlock.is(ModTags.DUPE_BLACKLIST)) {
-                        return new Output(List.of(new Output.CommonStack(input.copyWithCount(this.beeMultiplier))));
+                        return new Output(List.of(new ChanceStack.CommonStack(input.copyWithCount(this.beeMultiplier))));
                     }
                 }
                 case "productivebees:dye_bee" -> {
@@ -308,7 +243,7 @@ public class BeeTable {
                         var dye = BeeHelper.getRecipeOutputFromInput(world, input.getItem());
                         if (!dye.isEmpty()) {
                             dye.setCount(dye.getCount() * this.beeMultiplier);
-                            return new Output(List.of(new Output.CommonStack(dye)));
+                            return new Output(List.of(new ChanceStack.CommonStack(dye)));
                         }
                     }
                 }
@@ -371,7 +306,7 @@ public class BeeTable {
             return this.key.hashCode();
         }
 
-        record MobOutput(Mob mob, LootTable loot, ServerLevel world, BlockPos pos, int multiplier) implements Output.ChanceStack {
+        record MobOutput(Mob mob, LootTable loot, ServerLevel world, BlockPos pos, int multiplier) implements ChanceStack {
 
             @Override
             public void get(Consumer<ItemStack> adder, RandomSource random) {
