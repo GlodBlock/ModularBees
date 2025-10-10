@@ -6,13 +6,20 @@ import com.glodblock.github.modularbees.common.caps.ItemHandlerHost;
 import com.glodblock.github.modularbees.common.inventory.MBItemInventory;
 import com.glodblock.github.modularbees.common.inventory.SlotListener;
 import com.glodblock.github.modularbees.util.GameUtil;
+import cy.jdkdigital.productivebees.common.block.Amber;
+import cy.jdkdigital.productivebees.common.block.entity.AmberBlockEntity;
+import cy.jdkdigital.productivebees.common.entity.bee.ConfigurableBee;
 import cy.jdkdigital.productivebees.common.entity.bee.ProductiveBee;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
+import net.minecraft.core.component.DataComponents;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.BlockTags;
+import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.animal.Bee;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
@@ -40,6 +47,13 @@ public class TileBeehiveFeeder extends TileBeehivePart implements ItemHandlerHos
             }
             var block = GameUtil.getBlockFromItem(item);
             if (bee instanceof ProductiveBee productiveBee) {
+                if (bee instanceof ConfigurableBee cb && "entity_types".equals(cb.getFlowerType())) {
+                    if (this.checkEntity(cb, item, block)) {
+                        return new FeedSlot(FeedResult.NON_CONSUME, this.feeder, x);
+                    } else {
+                        return FeedSlot.FAIL;
+                    }
+                }
                 if (productiveBee.isFlowerBlock(block) || productiveBee.isFlowerItem(item)) {
                     return new FeedSlot(FeedResult.NON_CONSUME, this.feeder, x);
                 }
@@ -59,6 +73,17 @@ public class TileBeehiveFeeder extends TileBeehivePart implements ItemHandlerHos
             }
         }
         return FeedSlot.FAIL;
+    }
+
+    private boolean checkEntity(ConfigurableBee bee, ItemStack flower, BlockState block) {
+        var beeTag = bee.getNBTData();
+        var flowerTag = flower.get(DataComponents.ENTITY_DATA);
+        if (beeTag != null && flowerTag != null && beeTag.contains("flowerTag") && block.getBlock() instanceof Amber) {
+            var tag = TagKey.create(Registries.ENTITY_TYPE, ResourceLocation.parse(beeTag.getString("flowerTag")));
+            var entity = AmberBlockEntity.createEntity(this.level, flowerTag.copyTag());
+            return entity != null && entity.getType().is(tag);
+        }
+        return false;
     }
 
     private IntList getRandomSlots() {
