@@ -11,6 +11,7 @@ import com.glodblock.github.modularbees.dynamic.DyDataPack;
 import com.glodblock.github.modularbees.dynamic.DyResourcePack;
 import com.glodblock.github.modularbees.dynamic.MBPackSource;
 import com.glodblock.github.modularbees.network.MBNetworkHandler;
+import com.glodblock.github.modularbees.util.CombCentrifugeLookup;
 import com.glodblock.github.modularbees.util.DataProvider;
 import com.mojang.logging.LogUtils;
 import net.minecraft.client.renderer.ItemBlockRenderTypes;
@@ -66,6 +67,7 @@ public class ModularBees {
         bus.register(MBRegistryHandler.INSTANCE);
         NeoForge.EVENT_BUS.register(TooltipHook.INSTANCE);
         NeoForge.EVENT_BUS.register(ElectrodeRecipe.class);
+        NeoForge.EVENT_BUS.register(CombCentrifugeLookup.class);
     }
 
     public void addPackFinders(AddPackFindersEvent event) {

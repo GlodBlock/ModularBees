@@ -45,7 +45,7 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-public class BeeTable {
+public final class BeeTable {
 
     private final IdentityHashMap<IItemHandler, Int2ReferenceMap<List<BeeCache>>> index = new IdentityHashMap<>();
     private final List<BeeCache> data = new ArrayList<>();

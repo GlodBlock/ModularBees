@@ -27,13 +27,15 @@ public class MBInventorySlot extends SlotItemHandler {
         return false;
     }
 
+    // Always allow to extract items in GUI
     @Override
     public boolean mayPickup(@NotNull Player playerIn) {
-        IO mode = this.getItemHandler().getIO(this.index);
-        if (mode.canExtract()) {
-            return super.mayPickup(playerIn);
-        }
-        return false;
+        return !this.getItemHandler().forceExtractItem(index, 1, true).isEmpty();
+    }
+
+    @Override
+    public @NotNull ItemStack remove(int amount) {
+        return this.getItemHandler().forceExtractItem(index, amount, false);
     }
 
 }

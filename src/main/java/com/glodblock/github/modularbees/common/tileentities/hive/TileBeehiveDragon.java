@@ -26,7 +26,7 @@ import org.jetbrains.annotations.NotNull;
 public class TileBeehiveDragon extends TileBeehivePart implements ItemHandlerHost, FluidHandlerHost, ServerTickTile {
 
     private final MBFluidInventory tank = new MBFluidInventory(this, 16 * GameConstants.BUCKET).outputOnly();
-    private final MBItemInventory bottle = new MBItemInventory(this, 2, MBItemInventory.ItemFilter.of(Items.GLASS_BOTTLE)).setIO(1, IO.OUT);
+    private final MBItemInventory bottle = new MBItemInventory(this, 2, MBItemInventory.ItemFilter.of(Items.GLASS_BOTTLE)).setIO(0, IO.IN).setIO(1, IO.OUT);
 
     public TileBeehiveDragon(BlockPos pos, BlockState state) {
         super(GlodUtil.getTileType(TileBeehiveDragon.class, TileBeehiveDragon::new, MBSingletons.MODULAR_DRAGON_HIVE), pos, state);
@@ -78,7 +78,7 @@ public class TileBeehiveDragon extends TileBeehivePart implements ItemHandlerHos
             var left = this.bottle.forceInsertItem(1,  new ItemStack(Items.DRAGON_BREATH), false);
             if (left.isEmpty()) {
                 this.tank.drain(GameConstants.BOTTLE, IFluidHandler.FluidAction.EXECUTE);
-                this.bottle.extractItem(0, 1, false);
+                this.bottle.forceExtractItem(0, 1, false);
             }
         }
     }

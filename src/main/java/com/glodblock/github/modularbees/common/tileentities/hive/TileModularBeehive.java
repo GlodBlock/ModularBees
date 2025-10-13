@@ -14,7 +14,7 @@ import com.glodblock.github.modularbees.common.tileentities.base.TileMBModularCo
 import com.glodblock.github.modularbees.common.tileentities.base.TileMBModularCore;
 import com.glodblock.github.modularbees.util.BeeTable;
 import com.glodblock.github.modularbees.util.GameConstants;
-import com.glodblock.github.modularbees.util.MBCodec;
+import com.glodblock.github.modularbees.util.GameUtil;
 import com.glodblock.github.modularbees.util.StackCacheMap;
 import cy.jdkdigital.productivebees.ProductiveBeesConfig;
 import cy.jdkdigital.productivebees.init.ModFluids;
@@ -65,7 +65,7 @@ public class TileModularBeehive extends TileMBModularCore implements ItemHandler
     );
     protected final MBItemInventory outputs = new MBItemInventory(this, 18).outputOnly();
     protected final MBItemInventory upgrade = new MBItemInventory(this, 4, s -> ACCEPT_UPGRADES.contains(s.getItem())).setSlotLimit(1);
-    protected final MBItemInventory bottle = new MBItemInventory(this, 2, MBItemInventory.ItemFilter.of(Items.GLASS_BOTTLE)).setIO(1, IO.OUT);
+    protected final MBItemInventory bottle = new MBItemInventory(this, 2, MBItemInventory.ItemFilter.of(Items.GLASS_BOTTLE)).setIO(0, IO.IN).setIO(1, IO.OUT);
     protected final MBFluidInventory honey = new MBFluidInventory(this, 8 * GameConstants.BUCKET).outputOnly();
     private final IItemHandler exposed = new CombinedInvWrapper(this.outputs, this.bottle);
     private final BeeTable table = new BeeTable(this, this::lookup);
@@ -157,7 +157,7 @@ public class TileModularBeehive extends TileMBModularCore implements ItemHandler
             var left = this.bottle.forceInsertItem(1,  new ItemStack(Items.HONEY_BOTTLE), false);
             if (left.isEmpty()) {
                 this.honey.drain(GameConstants.BOTTLE, IFluidHandler.FluidAction.EXECUTE);
-                this.bottle.extractItem(0, 1, false);
+                this.bottle.forceExtractItem(0, 1, false);
             }
         }
     }
@@ -340,11 +340,11 @@ public class TileModularBeehive extends TileMBModularCore implements ItemHandler
     }
 
     private Tag saveBigStack(ItemStack stack, HolderLookup.@NotNull Provider provider) {
-        return DataComponentUtil.wrapEncodingExceptions(stack, MBCodec.UNLIMITED_ITEM_CODEC, provider);
+        return DataComponentUtil.wrapEncodingExceptions(stack, GameUtil.UNLIMITED_ITEM_CODEC, provider);
     }
 
     private Optional<ItemStack> loadBigStack(Tag tag, HolderLookup.@NotNull Provider provider) {
-        return MBCodec.UNLIMITED_ITEM_CODEC
+        return GameUtil.UNLIMITED_ITEM_CODEC
                 .parse(provider.createSerializationContext(NbtOps.INSTANCE), tag)
                 .resultOrPartial(err -> ModularBees.LOGGER.error("Tried to load invalid item: '{}'", err));
     }

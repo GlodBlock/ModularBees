@@ -1,6 +1,10 @@
 package com.glodblock.github.modularbees.util;
 
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+import it.unimi.dsi.fastutil.Hash;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.component.DataComponentPatch;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.Containers;
@@ -12,6 +16,7 @@ import net.minecraft.world.level.block.entity.BeehiveBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.fluids.FluidStack;
+import org.jetbrains.annotations.Nullable;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -36,6 +41,38 @@ public class GameUtil {
                 return list;
             }
     );
+    public static final Codec<ItemStack> UNLIMITED_ITEM_CODEC = Codec.lazyInitialized(
+            () -> RecordCodecBuilder.create(
+                    stack -> stack.group(
+                                    ItemStack.ITEM_NON_AIR_CODEC.fieldOf("id").forGetter(ItemStack::getItemHolder),
+                                    Codec.INT.fieldOf("count").orElse(1).forGetter(ItemStack::getCount),
+                                    DataComponentPatch.CODEC
+                                            .optionalFieldOf("components", DataComponentPatch.EMPTY)
+                                            .forGetter(ItemStack::getComponentsPatch)
+                            )
+                            .apply(stack, ItemStack::new)
+            )
+    );
+    public static final Hash.Strategy<ItemStack> ITEM_HASH = new Hash.Strategy<>() {
+        @Override
+        public int hashCode(@Nullable ItemStack stack) {
+            if (stack == null) {
+                return 0;
+            }
+            return ItemStack.hashItemAndComponents(stack);
+        }
+
+        @Override
+        public boolean equals(@Nullable ItemStack s1, @Nullable ItemStack s2) {
+            if (s1 == s2) {
+                return true;
+            }
+            if (s1 == null || s2 == null) {
+                return false;
+            }
+            return ItemStack.isSameItemSameComponents(s1, s2);
+        }
+    };
 
     public static void spawnDrops(Level level, BlockPos pos, List<ItemStack> drops) {
         if (!level.isClientSide()) {

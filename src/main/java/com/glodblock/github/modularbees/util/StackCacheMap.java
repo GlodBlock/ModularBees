@@ -4,7 +4,6 @@ import cy.jdkdigital.productivebees.common.item.Honeycomb;
 import cy.jdkdigital.productivebees.init.ModBlocks;
 import cy.jdkdigital.productivebees.init.ModDataComponents;
 import cy.jdkdigital.productivebees.init.ModItems;
-import it.unimi.dsi.fastutil.Hash;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenCustomHashMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
@@ -15,7 +14,6 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.block.Blocks;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.IdentityHashMap;
@@ -25,26 +23,7 @@ import java.util.Map;
 public class StackCacheMap {
 
     private final Object2IntMap<ResourceLocation> comb = new Object2IntOpenHashMap<>();
-    private final Object2IntMap<ItemStack> nbtItem = new Object2IntOpenCustomHashMap<>(new Hash.Strategy<>() {
-        @Override
-        public int hashCode(@Nullable ItemStack stack) {
-            if (stack == null) {
-                return 0;
-            }
-            return ItemStack.hashItemAndComponents(stack);
-        }
-
-        @Override
-        public boolean equals(@Nullable ItemStack s1, @Nullable ItemStack s2) {
-            if (s1 == s2) {
-                return true;
-            }
-            if (s1 == null || s2 == null) {
-                return false;
-            }
-            return ItemStack.isSameItemSameComponents(s1, s2);
-        }
-    });
+    private final Object2IntMap<ItemStack> nbtItem = new Object2IntOpenCustomHashMap<>(GameUtil.ITEM_HASH);
     private final Map<Item, Integer> item = new IdentityHashMap<>();
     private final RandomSource random;
 

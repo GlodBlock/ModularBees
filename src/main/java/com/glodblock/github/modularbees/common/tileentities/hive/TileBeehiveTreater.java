@@ -20,7 +20,7 @@ import java.util.List;
 
 public class TileBeehiveTreater extends TileBeehivePart implements ItemHandlerHost, SlotListener {
 
-    private final MBItemInventory foods = new MBItemInventory(this, 6);
+    private final MBItemInventory foods = new MBItemInventory(this, 6).inputOnly();
     private TreaterRecipe cache = null;
     private boolean stuck = false;
 

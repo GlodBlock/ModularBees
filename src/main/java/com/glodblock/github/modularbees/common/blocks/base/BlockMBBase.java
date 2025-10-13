@@ -124,6 +124,13 @@ public class BlockMBBase extends Block implements RegisterTask, ResourceProvider
                 .sound(SoundType.WOOD);
     }
 
+    public static BlockBehaviour.Properties centrifuge() {
+        return BlockBehaviour.Properties.of()
+                .mapColor(MapColor.STONE)
+                .requiresCorrectToolForDrops()
+                .strength(2.5F);
+    }
+
     @Override
     public void load(DyDataPack pack) {
         this.loadLootTable(pack);

@@ -33,7 +33,7 @@ import java.util.stream.IntStream;
 
 public class TileBeehiveFeeder extends TileBeehivePart implements ItemHandlerHost, SlotListener {
 
-    protected final MBItemInventory feeder = new MBItemInventory(this, 9);
+    protected final MBItemInventory feeder = new MBItemInventory(this, 9).inputOnly();
 
     public TileBeehiveFeeder(BlockPos pos, BlockState state) {
         super(GlodUtil.getTileType(TileBeehiveFeeder.class, TileBeehiveFeeder::new, MBSingletons.MODULAR_FEEDER), pos, state);
