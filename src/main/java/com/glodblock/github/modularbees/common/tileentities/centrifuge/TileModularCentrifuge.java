@@ -17,10 +17,12 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.Tag;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
+import net.neoforged.neoforge.common.util.INBTSerializable;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler;
 import net.neoforged.neoforge.items.IItemHandler;
@@ -35,7 +37,8 @@ import java.util.function.Consumer;
 
 public class TileModularCentrifuge extends TileMBModularCore implements ItemHandlerHost, FluidHandlerHost {
 
-    private static final int WAITING_TICKS = ProductiveBeesConfig.GENERAL.centrifugePoweredProcessingTime.getAsInt();
+    public static final int FLUID_TANKS = 3;
+    public static final int WAITING_TICKS = ProductiveBeesConfig.GENERAL.centrifugePoweredProcessingTime.getAsInt();
     @Nullable
     private ObjectSet<BlockPos> allPos;
     @Nullable
@@ -47,8 +50,9 @@ public class TileModularCentrifuge extends TileMBModularCore implements ItemHand
     protected final MBItemInventory upgrade = new MBItemInventory(this, 4, s -> ACCEPT_UPGRADES.contains(s.getItem())).setSlotLimit(1);
     protected final MBItemInventory inputs = new MBItemInventory(this, 3).inputOnly();
     protected final MBItemInventory outputs = new MBItemInventory(this, 9).outputOnly();
-    protected final IItemHandler exposed = new CombinedInvWrapper(this.outputs, this.inputs);
-    protected final IFluidHandler tanks;
+    private final IItemHandler exposed = new CombinedInvWrapper(this.outputs, this.inputs);
+    private final MultiTank tanks;
+    private float process = 0;
 
     public TileModularCentrifuge(BlockPos pos, BlockState state) {
         super(GlodUtil.getTileType(TileModularCentrifuge.class, TileModularCentrifuge::new, MBSingletons.MODULAR_CENTRIFUGE_CORE), pos, state);
@@ -57,6 +61,33 @@ public class TileModularCentrifuge extends TileMBModularCore implements ItemHand
                 new MBFluidInventory(this, 64 * GameConstants.BUCKET).outputOnly(),
                 new MBFluidInventory(this, 64 * GameConstants.BUCKET).outputOnly(),
         });
+    }
+
+    @Override
+    protected void logicTick(@NotNull Level world, BlockState state, List<TileMBModularComponent> components) {
+
+    }
+
+    public double getProcess() {
+        return this.process;
+    }
+
+    public void setProcess(double value) {
+        this.process = (float) value;
+    }
+
+    public void setTankFluid(int slot, FluidStack stack) {
+        this.tanks.tanks[slot].setFluid(stack);
+    }
+
+    @Override
+    public MBItemInventory getHandlerByName(String name) {
+        return switch (name) {
+            case "outputs" -> this.outputs;
+            case "inputs" -> this.inputs;
+            case "upgrade" -> this.upgrade;
+            default -> null;
+        };
     }
 
     @NotNull
@@ -121,7 +152,21 @@ public class TileModularCentrifuge extends TileMBModularCore implements ItemHand
     @Override
     public void saveTag(CompoundTag data, HolderLookup.@NotNull Provider provider) {
         super.saveTag(data, provider);
+        data.put("outputs", this.outputs.serializeNBT(provider));
+        data.put("inputs", this.inputs.serializeNBT(provider));
+        data.put("upgrade", this.upgrade.serializeNBT(provider));
+        data.put("tanks", this.tanks.serializeNBT(provider));
+        data.putFloat("process", this.process);
+    }
 
+    @Override
+    public void loadTag(CompoundTag data, HolderLookup.@NotNull Provider provider) {
+        super.loadTag(data, provider);
+        this.outputs.deserializeNBT(provider, data.getCompound("outputs"));
+        this.inputs.deserializeNBT(provider, data.getCompound("inputs"));
+        this.upgrade.deserializeNBT(provider, data.getCompound("upgrade"));
+        this.tanks.deserializeNBT(provider, data.getCompound("tanks"));
+        this.process = data.getFloat("process");
     }
 
     @Override
@@ -174,15 +219,10 @@ public class TileModularCentrifuge extends TileMBModularCore implements ItemHand
 
     @Override
     public IItemHandler getItemInventory() {
-        return null;
+        return this.exposed;
     }
 
-    @Override
-    protected void logicTick(@NotNull Level world, BlockState state, List<TileMBModularComponent> components) {
-
-    }
-
-    private record MultiTank(MBFluidInventory[] tanks) implements IFluidHandler {
+    private record MultiTank(MBFluidInventory[] tanks) implements IFluidHandler, INBTSerializable<CompoundTag> {
 
         @Override
         public int getTanks() {
@@ -258,6 +298,30 @@ public class TileModularCentrifuge extends TileMBModularCore implements ItemHand
                 }
             }
             return FluidStack.EMPTY;
+        }
+
+        @Override
+        public CompoundTag serializeNBT(HolderLookup.@NotNull Provider provider) {
+            var nbt = new CompoundTag();
+            for (int x = 0; x < this.tanks.length; x ++) {
+                if (!this.tanks[x].getFluid().isEmpty()) {
+                    var tankTag = this.tanks[x].writeToNBT(provider, new CompoundTag());
+                    nbt.put("#" + x, tankTag);
+                }
+            }
+            return nbt;
+        }
+
+        @Override
+        public void deserializeNBT(HolderLookup.@NotNull Provider provider, @NotNull CompoundTag nbt) {
+            for (int x = 0; x < this.tanks.length; x ++) {
+                if (nbt.contains("#" + x, Tag.TAG_COMPOUND)) {
+                    var tankTag = nbt.getCompound("#" + x);
+                    this.tanks[x].readFromNBT(provider, tankTag);
+                } else {
+                    this.tanks[x].setFluid(FluidStack.EMPTY);
+                }
+            }
         }
 
     }

@@ -3,7 +3,10 @@ package com.glodblock.github.modularbees.common.blocks.centrifuge;
 import com.glodblock.github.modularbees.client.util.ConnectBlock;
 import com.glodblock.github.modularbees.common.blocks.base.BlockMBGuiBase;
 import com.glodblock.github.modularbees.common.tileentities.centrifuge.TileModularCentrifuge;
+import com.glodblock.github.modularbees.container.ContainerMBModularCentrifuge;
+import com.glodblock.github.modularbees.container.base.MBGuiHandler;
 import com.glodblock.github.modularbees.dynamic.DyResourcePack;
+import com.glodblock.github.modularbees.util.ContainerResolver;
 import com.glodblock.github.modularbees.util.RotorBlocks;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -35,7 +38,7 @@ public class BlockModularCentrifuge extends BlockMBGuiBase<TileModularCentrifuge
     public void openGui(TileModularCentrifuge tile, Player p) {
         tile.formStructure();
         if (tile.isFormed()) {
-
+            MBGuiHandler.open(ContainerMBModularCentrifuge.TYPE.type(), p, ContainerResolver.of(tile));
         } else {
             p.displayClientMessage(Component.translatable("modularbees.chat.centrifuge_unformed"), true);
         }
