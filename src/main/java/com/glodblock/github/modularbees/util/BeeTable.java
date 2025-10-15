@@ -19,6 +19,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.tags.BlockTags;
+import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.animal.Bee;
@@ -44,6 +45,7 @@ import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
+import java.util.stream.Stream;
 
 public final class BeeTable {
 
@@ -159,7 +161,7 @@ public final class BeeTable {
         IItemHandler inv = null;
         int slot = -1;
         boolean needLookup = true;
-        int beeMultiplier = 1;
+        float geneBoost = 0;
 
         BeeCache(BeehiveBlockEntity.BeeData key, BlockEntity host) {
             this.key = key;
@@ -168,19 +170,33 @@ public final class BeeTable {
                 var entity = key.toOccupant().createEntity(world, host.getBlockPos());
                 if (entity instanceof Bee bee) {
                     if (entity.hasData(ProductiveBees.ATTRIBUTE_HANDLER)) {
-                        this.beeMultiplier = entity.getData(ProductiveBees.ATTRIBUTE_HANDLER).getAttributeValue(GeneAttribute.PRODUCTIVITY).getValue() + 1;
+                        var gene = entity.getData(ProductiveBees.ATTRIBUTE_HANDLER).getAttributeValue(GeneAttribute.PRODUCTIVITY).getValue();
+                        if (gene == 0) {
+                            this.geneBoost = 0;
+                        } else if (gene == 1) {
+                            this.geneBoost = 1;
+                        } else {
+                            this.geneBoost = 1F / (gene + 2F) + (gene + 1F) / 2F;
+                        }
                     }
                     this.beeId = (bee instanceof ProductiveBee cBee) ? Objects.requireNonNull(cBee.getBeeType()).toString() : bee.getEncodeId();
                     var hiveRecipe = this.lookupRecipe(world);
                     if (hiveRecipe != null) {
-                        this.output = new Output(
-                                hiveRecipe.value()
+                        var main = hiveRecipe.value()
                                 .getRecipeOutputs()
                                 .entrySet()
                                 .stream()
-                                .map(e -> ChanceStack.of(e.getKey(), this.multi(e.getValue())))
-                                .toList()
-                        );
+                                .map(e -> ChanceStack.of(e.getKey(), this.add(e.getValue())));
+                        var partial = this.geneBoost % 1;
+                        Stream<ChanceStack> left = Stream.empty();
+                        if (!Mth.equal(partial, 0)) {
+                            left = hiveRecipe.value()
+                                    .getRecipeOutputs()
+                                    .entrySet()
+                                    .stream()
+                                    .map(e -> ChanceStack.of(e.getKey(), this.partial(e.getValue(), partial)));
+                        }
+                        this.output = new Output(Stream.concat(main, left).toList());
                     } else if (bee instanceof ProductiveBee) {
                         if (SPECIAL_BEES.contains(this.beeId)) {
                             this.special = () -> this.lookupSpecialOutput(world, host.getBlockPos());
@@ -194,16 +210,15 @@ public final class BeeTable {
             }
         }
 
-        private TagOutputRecipe.ChancedOutput multi(TagOutputRecipe.ChancedOutput origin) {
-            if (this.beeMultiplier > 1) {
-                float chance = origin.chance();
-                if (chance * this.beeMultiplier < 1) {
-                    return new TagOutputRecipe.ChancedOutput(origin.ingredient(), origin.min(), origin.max(), chance * this.beeMultiplier);
-                } else {
-                    return new TagOutputRecipe.ChancedOutput(origin.ingredient(), origin.min() * this.beeMultiplier, origin.max() * this.beeMultiplier, origin.chance());
-                }
+        private TagOutputRecipe.ChancedOutput add(TagOutputRecipe.ChancedOutput origin) {
+            if (this.geneBoost > 0) {
+                return new TagOutputRecipe.ChancedOutput(origin.ingredient(), (int) (origin.min() + this.geneBoost), (int) (origin.max() + this.geneBoost), origin.chance());
             }
             return origin;
+        }
+
+        private TagOutputRecipe.ChancedOutput partial(TagOutputRecipe.ChancedOutput origin, float partial) {
+            return new TagOutputRecipe.ChancedOutput(origin.ingredient(), 1, 1, partial * origin.chance());
         }
 
         RecipeHolder<AdvancedBeehiveRecipe> lookupRecipe(Level world) {
@@ -227,23 +242,33 @@ public final class BeeTable {
                 return Output.EMPTY;
             }
             final var inputBlock = GameUtil.getBlockFromItem(input);
+            float partial = this.geneBoost % 1;
             switch (this.beeId) {
                 case "productivebees:lumber_bee" -> {
                     if (inputBlock.is(ModTags.LUMBER) && !inputBlock.is(ModTags.DUPE_BLACKLIST)) {
-                        return new Output(List.of(new ChanceStack.CommonStack(input.copyWithCount(this.beeMultiplier))));
+                        return new Output(List.of(
+                                new ChanceStack.CommonStack(input.copyWithCount((int) this.geneBoost)),
+                                new ChanceStack.ChanceStackImpl(input.copyWithCount(1), partial)
+                        ));
                     }
                 }
                 case "productivebees:quarry_bee" -> {
                     if (inputBlock.is(ModTags.QUARRY) && !inputBlock.is(ModTags.DUPE_BLACKLIST)) {
-                        return new Output(List.of(new ChanceStack.CommonStack(input.copyWithCount(this.beeMultiplier))));
+                        return new Output(List.of(
+                                new ChanceStack.CommonStack(input.copyWithCount((int) this.geneBoost)),
+                                new ChanceStack.ChanceStackImpl(input.copyWithCount(1), partial)
+                        ));
                     }
                 }
                 case "productivebees:dye_bee" -> {
                     if (inputBlock.is(BlockTags.FLOWERS)) {
                         var dye = BeeHelper.getRecipeOutputFromInput(world, input.getItem());
                         if (!dye.isEmpty()) {
-                            dye.setCount(dye.getCount() * this.beeMultiplier);
-                            return new Output(List.of(new ChanceStack.CommonStack(dye)));
+                            dye.setCount((int) (dye.getCount() * this.geneBoost));
+                            return new Output(List.of(
+                                    new ChanceStack.CommonStack(dye),
+                                    new ChanceStack.ChanceStackImpl(dye.copyWithCount(1), partial)
+                            ));
                         }
                     }
                 }
@@ -253,7 +278,11 @@ public final class BeeTable {
                         if (tag != null) {
                             var entity = AmberBlockEntity.createEntity(world, tag.copyTag());
                             if (entity instanceof Mob mob && world instanceof ServerLevel serverWorld) {
-                                return new Output(List.of(new MobOutput(mob, serverWorld.getServer().reloadableRegistries().getLootTable(mob.getLootTable()), serverWorld, pos, this.beeMultiplier)));
+                                var loot = serverWorld.getServer().reloadableRegistries().getLootTable(mob.getLootTable());
+                                return new Output(List.of(
+                                        new MobOutput(mob, loot, serverWorld, pos, (int) this.geneBoost),
+                                        ChanceStack.partial(new MobOutput(mob, loot, serverWorld, pos, 1), partial)
+                                ));
                             }
                         }
                     }
@@ -320,10 +349,16 @@ public final class BeeTable {
                     lootContextBuilder.withOptionalParameter(LootContextParams.DIRECT_ATTACKING_ENTITY, fakePlayer);
                     lootContextBuilder.withOptionalParameter(LootContextParams.ATTACKING_ENTITY, fakePlayer);
                     lootContextBuilder.withParameter(LootContextParams.THIS_ENTITY, this.mob);
-                    this.loot.getRandomItems(lootContextBuilder.create(LootContextParamSets.ENTITY)).stream()
-                            .filter(stack -> !stack.is(ModTags.WANNABEE_LOOT_BLACKLIST))
-                            .peek(stack -> stack.setCount(stack.getCount() * this.multiplier))
-                            .forEach(adder);
+                    var items = this.loot.getRandomItems(lootContextBuilder.create(LootContextParamSets.ENTITY));
+                    var size = items.size();
+                    if (size > 0) {
+                        items.stream()
+                                .filter(stack -> !stack.is(ModTags.WANNABEE_LOOT_BLACKLIST))
+                                .peek(stack -> stack.setCount(stack.getCount() * this.multiplier))
+                                .skip(random.nextInt(size))
+                                .findAny()
+                                .ifPresent(adder);
+                    }
                 }
             }
 

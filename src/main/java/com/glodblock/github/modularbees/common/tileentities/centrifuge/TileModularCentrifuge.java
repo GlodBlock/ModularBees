@@ -6,6 +6,7 @@ import com.glodblock.github.modularbees.common.caps.FluidHandlerHost;
 import com.glodblock.github.modularbees.common.caps.ItemHandlerHost;
 import com.glodblock.github.modularbees.common.inventory.MBFluidInventory;
 import com.glodblock.github.modularbees.common.inventory.MBItemInventory;
+import com.glodblock.github.modularbees.common.inventory.SlotListener;
 import com.glodblock.github.modularbees.common.tileentities.base.TileMBModularComponent;
 import com.glodblock.github.modularbees.common.tileentities.base.TileMBModularCore;
 import com.glodblock.github.modularbees.util.GameConstants;
@@ -19,6 +20,7 @@ import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
@@ -30,12 +32,13 @@ import net.neoforged.neoforge.items.wrapper.CombinedInvWrapper;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Consumer;
 
-public class TileModularCentrifuge extends TileMBModularCore implements ItemHandlerHost, FluidHandlerHost {
+public class TileModularCentrifuge extends TileMBModularCore implements ItemHandlerHost, FluidHandlerHost, SlotListener {
 
     public static final int FLUID_TANKS = 3;
     public static final int WAITING_TICKS = ProductiveBeesConfig.GENERAL.centrifugePoweredProcessingTime.getAsInt();
@@ -53,6 +56,10 @@ public class TileModularCentrifuge extends TileMBModularCore implements ItemHand
     private final IItemHandler exposed = new CombinedInvWrapper(this.outputs, this.inputs);
     private final MultiTank tanks;
     private float process = 0;
+    private float tickSpeed = 1;
+    private final List<ItemStack> sending = new ArrayList<>();
+    private boolean stuck = false;
+    private int para = 1;
 
     public TileModularCentrifuge(BlockPos pos, BlockState state) {
         super(GlodUtil.getTileType(TileModularCentrifuge.class, TileModularCentrifuge::new, MBSingletons.MODULAR_CENTRIFUGE_CORE), pos, state);
@@ -212,6 +219,20 @@ public class TileModularCentrifuge extends TileMBModularCore implements ItemHand
         return true;
     }
 
+    public void onLoad() {
+        super.onLoad();
+        this.updateUpgrade();
+    }
+
+    @Override
+    public void onChange(IItemHandler inv, int slot) {
+        if (inv == this.upgrade) {
+            this.updateUpgrade();
+        } else if (inv == this.outputs) {
+            this.stuck = false;
+        }
+    }
+
     @Override
     public IFluidHandler getFluidInventory() {
         return this.tanks;
@@ -220,6 +241,18 @@ public class TileModularCentrifuge extends TileMBModularCore implements ItemHand
     @Override
     public IItemHandler getItemInventory() {
         return this.exposed;
+    }
+
+    private void updateUpgrade() {
+        this.tickSpeed = (float) (1 / (1 - ProductiveBeesConfig.UPGRADES.timeBonus.get() * (this.upgrade.countStack(LibItems.UPGRADE_TIME.get()) + 2 * this.upgrade.countStack(LibItems.UPGRADE_TIME_2.get()))));
+        this.para = 0;
+        this.para += this.upgrade.countStack(LibItems.UPGRADE_PRODUCTIVITY.get()) * 4;
+        this.para += this.upgrade.countStack(LibItems.UPGRADE_PRODUCTIVITY_2.get()) * 8;
+        this.para += this.upgrade.countStack(LibItems.UPGRADE_PRODUCTIVITY_3.get()) * 16;
+        this.para += this.upgrade.countStack(LibItems.UPGRADE_PRODUCTIVITY_4.get()) * 32;
+        if (this.para <= 0) {
+            this.para = 1;
+        }
     }
 
     private record MultiTank(MBFluidInventory[] tanks) implements IFluidHandler, INBTSerializable<CompoundTag> {

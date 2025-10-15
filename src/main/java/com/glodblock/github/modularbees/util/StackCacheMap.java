@@ -95,5 +95,10 @@ public class StackCacheMap {
         return stacks;
     }
 
+    public static class CacheList {
+
+
+
+    }
 
 }

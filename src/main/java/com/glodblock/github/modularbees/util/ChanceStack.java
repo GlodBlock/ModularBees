@@ -27,6 +27,14 @@ public interface ChanceStack {
         }
     }
 
+    static ChanceStack partial(ChanceStack stack, float chance) {
+        return (adder, random) -> {
+            if (random.nextFloat() < chance) {
+                stack.get(adder, random);
+            }
+        };
+    }
+
     record ChanceStackImpl(ItemStack output, float chance) implements ChanceStack {
 
         @Override
