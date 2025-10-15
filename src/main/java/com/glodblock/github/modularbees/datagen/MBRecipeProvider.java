@@ -51,7 +51,7 @@ public class MBRecipeProvider extends RecipeProvider {
         TreaterRecipe.builder()
                 .input(ModItems.HONEY_BUCKET.get())
                 .output(Items.BUCKET)
-                .boost(4.5f)
+                .boost(3.1f)
                 .save(c, ModularBees.id("treater/honey_bucket"));
         TreaterRecipe.builder()
                 .input(Items.HONEY_BOTTLE)
@@ -60,7 +60,7 @@ public class MBRecipeProvider extends RecipeProvider {
                 .save(c, ModularBees.id("treater/honey_bottle"));
         TreaterRecipe.builder()
                 .input(Blocks.HONEY_BLOCK)
-                .boost(4.5f)
+                .boost(3.1f)
                 .save(c, ModularBees.id("treater/honey_block"));
         TreaterRecipe.builder()
                 .input(Items.SUGAR)

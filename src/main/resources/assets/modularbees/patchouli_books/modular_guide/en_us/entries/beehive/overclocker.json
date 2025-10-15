@@ -17,7 +17,7 @@
     {
       "type": "patchouli:text",
       "title": "Electrode",
-      "text": "There four tiers of electrodes.$(li)Copper: x1.8$(li)Iron: x3$(li)Gold: x8$(li)Netherite: x25"
+      "text": "There four tiers of electrodes.$(li)Copper: x1.2$(li)Iron: x1.5$(li)Gold: x2.8$(li)Netherite: x5"
     },
     {
       "type": "patchouli:crafting",
