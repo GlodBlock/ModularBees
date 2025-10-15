@@ -1,7 +1,6 @@
 package com.glodblock.github.modularbees.common.tileentities.hive;
 
 import com.glodblock.github.glodium.util.GlodUtil;
-import com.glodblock.github.modularbees.ModularBees;
 import com.glodblock.github.modularbees.common.MBConfig;
 import com.glodblock.github.modularbees.common.MBSingletons;
 import com.glodblock.github.modularbees.common.caps.FluidHandlerHost;
@@ -25,8 +24,6 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.NbtOps;
 import net.minecraft.nbt.Tag;
 import net.minecraft.world.entity.animal.Bee;
 import net.minecraft.world.item.Item;
@@ -36,7 +33,6 @@ import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BeehiveBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
-import net.neoforged.neoforge.common.util.DataComponentUtil;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler;
 import net.neoforged.neoforge.items.IItemHandler;
@@ -48,7 +44,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 import java.util.function.Consumer;
 
@@ -308,16 +303,9 @@ public class TileModularBeehive extends TileMBModularCore implements ItemHandler
         var tank = new CompoundTag();
         this.honey.writeToNBT(provider, tank);
         data.put("honey", tank);
-        if (!this.sending.isEmpty()) {
-            var tag = new ListTag();
-            for (var stack : this.sending) {
-                if (!stack.isEmpty()) {
-                    tag.add(this.saveBigStack(stack, provider));
-                }
-            }
-            if (!tag.isEmpty()) {
-                data.put("sending", tag);
-            }
+        var tag = GameUtil.saveItemList(this.sending, provider);
+        if (!tag.isEmpty()) {
+            data.put("sending", tag);
         }
     }
 
@@ -330,23 +318,8 @@ public class TileModularBeehive extends TileMBModularCore implements ItemHandler
         this.honey.readFromNBT(provider, data.getCompound("honey"));
         if (data.contains("sending")) {
             var tag = data.getList("sending", Tag.TAG_COMPOUND);
-            if (!tag.isEmpty()) {
-                this.sending.clear();
-                for (var stack : tag) {
-                    this.loadBigStack(stack, provider).ifPresent(this.sending::add);
-                }
-            }
+            GameUtil.loadItemList(tag, provider, this.sending);
         }
-    }
-
-    private Tag saveBigStack(ItemStack stack, HolderLookup.@NotNull Provider provider) {
-        return DataComponentUtil.wrapEncodingExceptions(stack, GameUtil.UNLIMITED_ITEM_CODEC, provider);
-    }
-
-    private Optional<ItemStack> loadBigStack(Tag tag, HolderLookup.@NotNull Provider provider) {
-        return GameUtil.UNLIMITED_ITEM_CODEC
-                .parse(provider.createSerializationContext(NbtOps.INSTANCE), tag)
-                .resultOrPartial(err -> ModularBees.LOGGER.error("Tried to load invalid item: '{}'", err));
     }
 
     @Override

@@ -1,10 +1,14 @@
 package com.glodblock.github.modularbees.util;
 
+import com.glodblock.github.modularbees.ModularBees;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import it.unimi.dsi.fastutil.Hash;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.core.component.DataComponentPatch;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.NbtOps;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.Containers;
@@ -15,7 +19,9 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BeehiveBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.neoforge.capabilities.Capabilities;
+import net.neoforged.neoforge.common.util.DataComponentUtil;
 import net.neoforged.neoforge.fluids.FluidStack;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.text.DecimalFormat;
@@ -101,6 +107,30 @@ public class GameUtil {
             }
         }
         return FluidStack.EMPTY;
+    }
+
+    public static ListTag saveItemList(List<ItemStack> items, HolderLookup.@NotNull Provider provider) {
+        var tag = new ListTag();
+        if (!items.isEmpty()) {
+            for (var stack : items) {
+                if (!stack.isEmpty()) {
+                    tag.add(DataComponentUtil.wrapEncodingExceptions(stack, GameUtil.UNLIMITED_ITEM_CODEC, provider));
+                }
+            }
+        }
+        return tag;
+    }
+
+    public static void loadItemList(ListTag tag, HolderLookup.@NotNull Provider provider, List<ItemStack> list) {
+        list.clear();
+        if (!tag.isEmpty()) {
+            for (var stack : tag) {
+                GameUtil.UNLIMITED_ITEM_CODEC
+                        .parse(provider.createSerializationContext(NbtOps.INSTANCE), stack)
+                        .resultOrPartial(err -> ModularBees.LOGGER.error("Tried to load invalid item: '{}'", err))
+                        .ifPresent(list::add);
+            }
+        }
     }
 
 }
