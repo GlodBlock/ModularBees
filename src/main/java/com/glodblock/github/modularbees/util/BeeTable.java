@@ -247,7 +247,7 @@ public final class BeeTable {
                 case "productivebees:lumber_bee" -> {
                     if (inputBlock.is(ModTags.LUMBER) && !inputBlock.is(ModTags.DUPE_BLACKLIST)) {
                         return new Output(List.of(
-                                new ChanceStack.CommonStack(input.copyWithCount((int) this.geneBoost)),
+                                new ChanceStack.CommonStack(input.copyWithCount(1 + (int) this.geneBoost)),
                                 new ChanceStack.ChanceStackImpl(input.copyWithCount(1), partial)
                         ));
                     }
@@ -255,7 +255,7 @@ public final class BeeTable {
                 case "productivebees:quarry_bee" -> {
                     if (inputBlock.is(ModTags.QUARRY) && !inputBlock.is(ModTags.DUPE_BLACKLIST)) {
                         return new Output(List.of(
-                                new ChanceStack.CommonStack(input.copyWithCount((int) this.geneBoost)),
+                                new ChanceStack.CommonStack(input.copyWithCount(1 + (int) this.geneBoost)),
                                 new ChanceStack.ChanceStackImpl(input.copyWithCount(1), partial)
                         ));
                     }
@@ -264,7 +264,7 @@ public final class BeeTable {
                     if (inputBlock.is(BlockTags.FLOWERS)) {
                         var dye = BeeHelper.getRecipeOutputFromInput(world, input.getItem());
                         if (!dye.isEmpty()) {
-                            dye.setCount((int) (dye.getCount() * this.geneBoost));
+                            dye.setCount((int) (dye.getCount() + this.geneBoost));
                             return new Output(List.of(
                                     new ChanceStack.CommonStack(dye),
                                     new ChanceStack.ChanceStackImpl(dye.copyWithCount(1), partial)
