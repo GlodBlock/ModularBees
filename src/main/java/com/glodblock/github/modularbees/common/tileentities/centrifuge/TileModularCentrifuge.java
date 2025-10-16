@@ -2,6 +2,7 @@ package com.glodblock.github.modularbees.common.tileentities.centrifuge;
 
 import com.glodblock.github.glodium.util.GlodUtil;
 import com.glodblock.github.modularbees.common.MBSingletons;
+import com.glodblock.github.modularbees.common.blocks.centrifuge.Centrifuge;
 import com.glodblock.github.modularbees.common.caps.FluidHandlerHost;
 import com.glodblock.github.modularbees.common.caps.ItemHandlerHost;
 import com.glodblock.github.modularbees.common.inventory.MBFluidInventory;
@@ -9,8 +10,11 @@ import com.glodblock.github.modularbees.common.inventory.MBItemInventory;
 import com.glodblock.github.modularbees.common.inventory.SlotListener;
 import com.glodblock.github.modularbees.common.tileentities.base.TileMBModularComponent;
 import com.glodblock.github.modularbees.common.tileentities.base.TileMBModularCore;
+import com.glodblock.github.modularbees.util.CombCentrifugeLookup;
 import com.glodblock.github.modularbees.util.GameConstants;
+import com.glodblock.github.modularbees.util.GameUtil;
 import cy.jdkdigital.productivebees.ProductiveBeesConfig;
+import cy.jdkdigital.productivebees.init.ModTags;
 import cy.jdkdigital.productivelib.registry.LibItems;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 import it.unimi.dsi.fastutil.objects.ObjectSet;
@@ -51,7 +55,7 @@ public class TileModularCentrifuge extends TileMBModularCore implements ItemHand
             LibItems.UPGRADE_PRODUCTIVITY_2.get(), LibItems.UPGRADE_PRODUCTIVITY_3.get(), LibItems.UPGRADE_PRODUCTIVITY_4.get()
     );
     protected final MBItemInventory upgrade = new MBItemInventory(this, 4, s -> ACCEPT_UPGRADES.contains(s.getItem())).setSlotLimit(1);
-    protected final MBItemInventory inputs = new MBItemInventory(this, 3).inputOnly();
+    protected final MBItemInventory inputs = new MBItemInventory(this, 3, this::validInput).inputOnly();
     protected final MBItemInventory outputs = new MBItemInventory(this, 9).outputOnly();
     private final IItemHandler exposed = new CombinedInvWrapper(this.outputs, this.inputs);
     private final MultiTank tanks;
@@ -72,7 +76,59 @@ public class TileModularCentrifuge extends TileMBModularCore implements ItemHand
 
     @Override
     protected void logicTick(@NotNull Level world, BlockState state, List<TileMBModularComponent> components) {
+        if (!this.notLoaded() && !this.stuck) {
+            if (!this.sending.isEmpty()) {
+                for (int i = 0; i < this.sending.size(); ++i) {
+                    var stack = this.sending.get(i).copy();
+                    for (int x = 0; x < this.outputs.getSlots(); ++x) {
+                        if (stack.isEmpty()) {
+                            break;
+                        }
+                        stack = this.outputs.forceInsertItem(x, stack, false);
+                    }
+                    this.sending.set(i, stack);
+                }
+                this.sending.removeIf(ItemStack::isEmpty);
+                if (!this.sending.isEmpty()) {
+                    this.stuck = true;
+                    this.process = 0;
+                }
+                this.setChanged();
+                return;
+            }
+            if (this.emptyInput()) {
+                if (this.sending.isEmpty()) {
+                    this.stuck = true;
+                }
+                this.process = 0;
+                return;
+            }
+            this.addTick();
+            if (this.process >= WAITING_TICKS) {
+                this.process = 0;
+                int left = this.para;
+                for (int x = 0; x < this.inputs.getSlots(); x ++) {
+                    if (left >= 0) {
+                        var comb = this.inputs.getStackInSlot(x);
+                        int used = Math.min(left, comb.getCount());
+                        if (CombCentrifugeLookup.query(this.sending::add, comb, world)) {
+                            left -= used;
+                            comb.shrink(used);
+                            this.inputs.setStackInSlot(x, comb);
+                            this.setChanged();
+                        }
+                    }
+                }
+            }
+        }
+    }
 
+    private boolean validInput(ItemStack stack) {
+        return stack.is(ModTags.Common.HONEYCOMBS) || stack.is(ModTags.Common.STORAGE_BLOCK_HONEYCOMBS);
+    }
+
+    public void addTick() {
+        this.process += this.tickSpeed;
     }
 
     public double getProcess() {
@@ -164,6 +220,10 @@ public class TileModularCentrifuge extends TileMBModularCore implements ItemHand
         data.put("upgrade", this.upgrade.serializeNBT(provider));
         data.put("tanks", this.tanks.serializeNBT(provider));
         data.putFloat("process", this.process);
+        var tag = GameUtil.saveItemList(this.sending, provider);
+        if (!tag.isEmpty()) {
+            data.put("sending", tag);
+        }
     }
 
     @Override
@@ -174,6 +234,10 @@ public class TileModularCentrifuge extends TileMBModularCore implements ItemHand
         this.upgrade.deserializeNBT(provider, data.getCompound("upgrade"));
         this.tanks.deserializeNBT(provider, data.getCompound("tanks"));
         this.process = data.getFloat("process");
+        if (data.contains("sending")) {
+            var tag = data.getList("sending", Tag.TAG_COMPOUND);
+            GameUtil.loadItemList(tag, provider, this.sending);
+        }
     }
 
     @Override
@@ -210,7 +274,11 @@ public class TileModularCentrifuge extends TileMBModularCore implements ItemHand
                 continue;
             }
             var te = world.getBlockEntity(pos);
-            if (te instanceof TileCentrifugePart centrifugePart && !centrifugePart.isActive()) {
+            if (te instanceof TileMBModularComponent centrifugePart && !centrifugePart.isActive()) {
+                var block = te.getBlockState().getBlock();
+                if (!(block instanceof Centrifuge)) {
+                    return false;
+                }
                 collector.accept(centrifugePart);
             } else {
                 return false;
@@ -224,11 +292,15 @@ public class TileModularCentrifuge extends TileMBModularCore implements ItemHand
         this.updateUpgrade();
     }
 
+    private boolean emptyInput() {
+        return !this.inputs.hasItem();
+    }
+
     @Override
     public void onChange(IItemHandler inv, int slot) {
         if (inv == this.upgrade) {
             this.updateUpgrade();
-        } else if (inv == this.outputs) {
+        } else if (inv == this.outputs ||  inv == this.inputs) {
             this.stuck = false;
         }
     }
@@ -244,7 +316,12 @@ public class TileModularCentrifuge extends TileMBModularCore implements ItemHand
     }
 
     private void updateUpgrade() {
-        this.tickSpeed = (float) (1 / (1 - ProductiveBeesConfig.UPGRADES.timeBonus.get() * (this.upgrade.countStack(LibItems.UPGRADE_TIME.get()) + 2 * this.upgrade.countStack(LibItems.UPGRADE_TIME_2.get()))));
+        double timeDiscount = (this.upgrade.countStack(LibItems.UPGRADE_TIME.get()) + 2 * this.upgrade.countStack(LibItems.UPGRADE_TIME_2.get())) * ProductiveBeesConfig.UPGRADES.timeBonus.get();
+        if (timeDiscount >= 1) {
+            this.tickSpeed = WAITING_TICKS * 2;
+        } else {
+            this.tickSpeed = (float) (1 / (1 - timeDiscount));
+        }
         this.para = 0;
         this.para += this.upgrade.countStack(LibItems.UPGRADE_PRODUCTIVITY.get()) * 4;
         this.para += this.upgrade.countStack(LibItems.UPGRADE_PRODUCTIVITY_2.get()) * 8;

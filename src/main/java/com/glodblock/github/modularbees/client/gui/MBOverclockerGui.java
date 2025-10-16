@@ -3,7 +3,6 @@ package com.glodblock.github.modularbees.client.gui;
 import com.glodblock.github.modularbees.ModularBees;
 import com.glodblock.github.modularbees.client.gui.elements.EnergyDisplay;
 import com.glodblock.github.modularbees.client.util.PicData;
-import com.glodblock.github.modularbees.common.MBSingletons;
 import com.glodblock.github.modularbees.common.recipe.ElectrodeRecipe;
 import com.glodblock.github.modularbees.container.ContainerMBOverclocker;
 import com.glodblock.github.modularbees.util.GameUtil;
@@ -51,7 +50,7 @@ public class MBOverclockerGui extends MBBaseGui<ContainerMBOverclocker> {
 
     @Override
     protected Component getGuiName() {
-        return MBSingletons.MODULAR_OVERCLOCKER.getName();
+        return this.menu.getHost().getDisplayName();
     }
 
 }

@@ -3,6 +3,7 @@ package com.glodblock.github.modularbees.common.tileentities.hive;
 import com.glodblock.github.glodium.util.GlodUtil;
 import com.glodblock.github.modularbees.common.MBConfig;
 import com.glodblock.github.modularbees.common.MBSingletons;
+import com.glodblock.github.modularbees.common.blocks.hive.Hive;
 import com.glodblock.github.modularbees.common.caps.FluidHandlerHost;
 import com.glodblock.github.modularbees.common.caps.ItemHandlerHost;
 import com.glodblock.github.modularbees.common.inventory.IO;
@@ -277,7 +278,11 @@ public class TileModularBeehive extends TileMBModularCore implements ItemHandler
             }
             var te = world.getBlockEntity(pos);
             // Each hive part belongs to one hive core
-            if (te instanceof TileBeehivePart hivePart && !hivePart.isActive()) {
+            if (te instanceof TileMBModularComponent hivePart && !hivePart.isActive()) {
+                var block = te.getBlockState().getBlock();
+                if (!(block instanceof Hive)) {
+                    return false;
+                }
                 collector.accept(hivePart);
             } else {
                 return false;
