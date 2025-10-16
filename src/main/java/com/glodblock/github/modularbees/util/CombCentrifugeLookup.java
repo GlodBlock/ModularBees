@@ -17,6 +17,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.neoforge.event.OnDatapackSyncEvent;
+import net.neoforged.neoforge.fluids.FluidStack;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -34,7 +35,7 @@ public final class CombCentrifugeLookup {
 
     }
 
-    public static boolean query(Consumer<ItemStack> accepter, ItemStack comb, @NotNull Level world) {
+    public static boolean query(Consumer<ItemStack> itemAccepter, Consumer<FluidStack> fluidAccepter, ItemStack comb, @NotNull Level world, int para) {
         if (comb.isEmpty()) {
             return false;
         }
@@ -56,10 +57,22 @@ public final class CombCentrifugeLookup {
             cache = lookupRecipe(comb, world);
         }
         if (cache != null) {
-            cache.output(accepter, world.getRandom());
+            cache.output(fluidAccepter, para);
+            while (para > 0) {
+                int batch = para > 8 ? Math.min(world.getRandom().nextInt(8, 16), para) : para;
+                para -= batch;
+                Consumer<ItemStack> m = stack -> multi(stack, batch);
+                cache.output(m.andThen(itemAccepter), world.getRandom());
+            }
             return true;
         }
         return false;
+    }
+
+    static void multi(ItemStack stack, int multiplier) {
+        if (!stack.isEmpty()) {
+            stack.setCount(stack.getCount() * multiplier);
+        }
     }
 
     @Nullable
@@ -84,7 +97,8 @@ public final class CombCentrifugeLookup {
                         .entrySet()
                         .stream()
                         .map(e -> ChanceStack.of(e.getKey(), mul4(e.getValue(), isBlock)))
-                        .toList()
+                        .toList(),
+                recipe.value().getFluidOutputs()
         );
         var item = key.getItem();
         if (item instanceof Honeycomb) {
@@ -122,10 +136,16 @@ public final class CombCentrifugeLookup {
         ITEM_MAP.clear();
     }
 
-    private record Output(List<ChanceStack> outputs) {
+    private record Output(List<ChanceStack> outputs, FluidStack fluid) {
 
         void output(Consumer<ItemStack> collector, RandomSource random) {
             this.outputs.forEach(c -> c.get(collector, random));
+        }
+
+        void output(Consumer<FluidStack> collector, int multiplier) {
+            if (!this.fluid.isEmpty()) {
+                collector.accept(this.fluid.copyWithAmount(this.fluid.getAmount() * multiplier));
+            }
         }
 
     }

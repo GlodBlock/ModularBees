@@ -62,6 +62,7 @@ public class TileModularCentrifuge extends TileMBModularCore implements ItemHand
     private float process = 0;
     private float tickSpeed = 1;
     private final List<ItemStack> sending = new ArrayList<>();
+    private final List<FluidStack> filling = new ArrayList<>();
     private boolean stuck = false;
     private int para = 1;
 
@@ -77,7 +78,7 @@ public class TileModularCentrifuge extends TileMBModularCore implements ItemHand
     @Override
     protected void logicTick(@NotNull Level world, BlockState state, List<TileMBModularComponent> components) {
         if (!this.notLoaded() && !this.stuck) {
-            if (!this.sending.isEmpty()) {
+            if (!this.sending.isEmpty() || !this.filling.isEmpty()) {
                 for (int i = 0; i < this.sending.size(); ++i) {
                     var stack = this.sending.get(i).copy();
                     for (int x = 0; x < this.outputs.getSlots(); ++x) {
@@ -93,11 +94,27 @@ public class TileModularCentrifuge extends TileMBModularCore implements ItemHand
                     this.stuck = true;
                     this.process = 0;
                 }
+                for (int i = 0; i < this.filling.size(); ++i) {
+                    var stack = this.filling.get(i).copy();
+                    for (int x = 0; x < this.tanks.getTanks(); ++x) {
+                        if (stack.isEmpty()) {
+                            break;
+                        }
+                        var filled = this.tanks.forceFill(stack, IFluidHandler.FluidAction.EXECUTE);
+                        stack.shrink(filled);
+                    }
+                    this.filling.set(i, stack);
+                }
+                this.filling.removeIf(FluidStack::isEmpty);
+                if (!this.filling.isEmpty()) {
+                    this.stuck = true;
+                    this.process = 0;
+                }
                 this.setChanged();
                 return;
             }
             if (this.emptyInput()) {
-                if (this.sending.isEmpty()) {
+                if (this.sending.isEmpty() && this.filling.isEmpty()) {
                     this.stuck = true;
                 }
                 this.process = 0;
@@ -111,7 +128,7 @@ public class TileModularCentrifuge extends TileMBModularCore implements ItemHand
                     if (left >= 0) {
                         var comb = this.inputs.getStackInSlot(x);
                         int used = Math.min(left, comb.getCount());
-                        if (CombCentrifugeLookup.query(this.sending::add, comb, world)) {
+                        if (CombCentrifugeLookup.query(this.sending::add, this.filling::add, comb, world, used)) {
                             left -= used;
                             comb.shrink(used);
                             this.inputs.setStackInSlot(x, comb);
@@ -224,6 +241,10 @@ public class TileModularCentrifuge extends TileMBModularCore implements ItemHand
         if (!tag.isEmpty()) {
             data.put("sending", tag);
         }
+        var tagFluid = GameUtil.saveFluidList(this.filling, provider);
+        if (!tagFluid.isEmpty()) {
+            data.put("filling", tagFluid);
+        }
     }
 
     @Override
@@ -237,6 +258,10 @@ public class TileModularCentrifuge extends TileMBModularCore implements ItemHand
         if (data.contains("sending")) {
             var tag = data.getList("sending", Tag.TAG_COMPOUND);
             GameUtil.loadItemList(tag, provider, this.sending);
+        }
+        if (data.contains("filling")) {
+            var tag = data.getList("filling", Tag.TAG_COMPOUND);
+            GameUtil.loadFluidList(tag, provider, this.filling);
         }
     }
 

@@ -41,11 +41,11 @@ public class FluidTankDisplay extends RelativeRect2i implements Renderable, Tool
 
     @Override
     public void render(@NotNull GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
-        if (this.contains(mouseX, mouseY)) {
-            graphics.fillGradient(RenderType.guiOverlay(), this.getX(), this.getY(), this.getX() + this.width, this.getY() + this.height, 0x80FFFFFF, 0x80FFFFFF, 0);
-        }
         var fluid = this.fluid.get();
         if (fluid == null || fluid.isEmpty() || this.capacity == 0) {
+            if (this.contains(mouseX, mouseY)) {
+                graphics.fillGradient(RenderType.guiOverlay(), this.getX(), this.getY(), this.getX() + this.width, this.getY() + this.height, 0x80FFFFFF, 0x80FFFFFF, 0);
+            }
             return;
         }
         var attributes = IClientFluidTypeExtensions.of(fluid.getFluid());
@@ -65,6 +65,9 @@ public class FluidTankDisplay extends RelativeRect2i implements Renderable, Tool
                         new Rect2i(x + this.getX(), this.height - maxY + y + this.getY(), 0, 0)
                 );
             }
+        }
+        if (this.contains(mouseX, mouseY)) {
+            graphics.fillGradient(RenderType.guiOverlay(), this.getX(), this.getY(), this.getX() + this.width, this.getY() + this.height, 0x80FFFFFF, 0x80FFFFFF, 0);
         }
     }
 

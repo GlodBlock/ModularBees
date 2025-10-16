@@ -133,4 +133,25 @@ public class GameUtil {
         }
     }
 
+    public static ListTag saveFluidList(List<FluidStack> fluids, HolderLookup.@NotNull Provider provider) {
+        var tag = new ListTag();
+        if (!fluids.isEmpty()) {
+            for (var stack : fluids) {
+                if (!stack.isEmpty()) {
+                    tag.add(stack.save(provider));
+                }
+            }
+        }
+        return tag;
+    }
+
+    public static void loadFluidList(ListTag tag, HolderLookup.@NotNull Provider provider, List<FluidStack> list) {
+        list.clear();
+        if (!tag.isEmpty()) {
+            for (var stack : tag) {
+                FluidStack.parse(provider, stack).ifPresent(list::add);
+            }
+        }
+    }
+
 }
