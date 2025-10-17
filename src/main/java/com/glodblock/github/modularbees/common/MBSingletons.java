@@ -1,5 +1,7 @@
 package com.glodblock.github.modularbees.common;
 
+import com.glodblock.github.modularbees.common.blocks.centrifuge.BlockCentrifugeExport;
+import com.glodblock.github.modularbees.common.blocks.centrifuge.BlockCentrifugeOverclocker;
 import com.glodblock.github.modularbees.common.blocks.centrifuge.BlockCentrifugePart;
 import com.glodblock.github.modularbees.common.blocks.centrifuge.BlockModularCentrifuge;
 import com.glodblock.github.modularbees.common.blocks.hive.BlockBeehiveAlveary;
@@ -14,6 +16,8 @@ import com.glodblock.github.modularbees.common.blocks.misc.BlockFluidDragonBreat
 import com.glodblock.github.modularbees.common.blocks.misc.BlockScentedPlank;
 import com.glodblock.github.modularbees.common.fluids.FluidDragonBreath;
 import com.glodblock.github.modularbees.common.items.ItemElectrode;
+import com.glodblock.github.modularbees.common.tileentities.centrifuge.TileCentrifugeExport;
+import com.glodblock.github.modularbees.common.tileentities.centrifuge.TileCentrifugeOverclocker;
 import com.glodblock.github.modularbees.common.tileentities.centrifuge.TileCentrifugePart;
 import com.glodblock.github.modularbees.common.tileentities.centrifuge.TileModularCentrifuge;
 import com.glodblock.github.modularbees.common.tileentities.hive.TileBeehiveAlveary;
@@ -37,14 +41,16 @@ public class MBSingletons {
     public static BlockBeehivePart MODULAR_BEEHIVE_PART;
     public static BlockBeehiveAlveary MODULAR_ALVEARY;
     public static BlockBeehiveFeeder MODULAR_FEEDER;
-    public static BlockBeehiveOverclocker MODULAR_OVERCLOCKER;
+    public static BlockBeehiveOverclocker MODULAR_BEEHIVE_OVERCLOCKER;
     public static BlockBeehiveTreater MODULAR_TREATER;
-    public static BlockBeehiveExport MODULAR_EXPORT;
+    public static BlockBeehiveExport MODULAR_BEEHIVE_EXPORT;
     public static BlockBeehiveDragon MODULAR_DRAGON_HIVE;
     public static BlockScentedPlank SCENTED_PLANK;
     public static BlockFluidDragonBreath DRAGON_BREATH;
     public static BlockModularCentrifuge MODULAR_CENTRIFUGE_CORE;
     public static BlockCentrifugePart MODULAR_CENTRIFUGE_PART;
+    public static BlockCentrifugeOverclocker MODULAR_CENTRIFUGE_OVERCLOCKER;
+    public static BlockCentrifugeExport MODULAR_CENTRIFUGE_EXPORT;
 
     public static ItemElectrode ELECTRODE_COPPER;
     public static ItemElectrode ELECTRODE_IRON;
@@ -57,12 +63,14 @@ public class MBSingletons {
         MODULAR_BEEHIVE_PART = new BlockBeehivePart();
         MODULAR_ALVEARY = new BlockBeehiveAlveary();
         MODULAR_FEEDER = new BlockBeehiveFeeder();
-        MODULAR_OVERCLOCKER = new BlockBeehiveOverclocker();
+        MODULAR_BEEHIVE_OVERCLOCKER = new BlockBeehiveOverclocker();
         MODULAR_TREATER = new BlockBeehiveTreater();
-        MODULAR_EXPORT = new BlockBeehiveExport();
+        MODULAR_BEEHIVE_EXPORT = new BlockBeehiveExport();
         MODULAR_DRAGON_HIVE = new BlockBeehiveDragon();
         MODULAR_CENTRIFUGE_CORE = new BlockModularCentrifuge();
         MODULAR_CENTRIFUGE_PART = new BlockCentrifugePart();
+        MODULAR_CENTRIFUGE_OVERCLOCKER = new BlockCentrifugeOverclocker();
+        MODULAR_CENTRIFUGE_EXPORT = new BlockCentrifugeExport();
         SCENTED_PLANK = new BlockScentedPlank();
         DRAGON_BREATH = new BlockFluidDragonBreath();
         ELECTRODE_COPPER = new ItemElectrode(5 * GameConstants.MINUTE, Ingredient.of(Tags.Items.INGOTS_COPPER));
@@ -74,12 +82,14 @@ public class MBSingletons {
         regHandler.block("modular_beehive_part", MODULAR_BEEHIVE_PART, TileBeehivePart.class, TileBeehivePart::new);
         regHandler.block("modular_beehive_alveary", MODULAR_ALVEARY, TileBeehiveAlveary.class, TileBeehiveAlveary::new);
         regHandler.block("modular_beehive_feeder", MODULAR_FEEDER, TileBeehiveFeeder.class, TileBeehiveFeeder::new);
-        regHandler.block("modular_beehive_overclocker", MODULAR_OVERCLOCKER, TileBeehiveOverclocker.class, TileBeehiveOverclocker::new);
+        regHandler.block("modular_beehive_overclocker", MODULAR_BEEHIVE_OVERCLOCKER, TileBeehiveOverclocker.class, TileBeehiveOverclocker::new);
         regHandler.block("modular_treater", MODULAR_TREATER, TileBeehiveTreater.class, TileBeehiveTreater::new);
-        regHandler.block("modular_export", MODULAR_EXPORT, TileBeehiveExport.class, TileBeehiveExport::new);
+        regHandler.block("modular_export", MODULAR_BEEHIVE_EXPORT, TileBeehiveExport.class, TileBeehiveExport::new);
         regHandler.block("modular_dragon_hive", MODULAR_DRAGON_HIVE, TileBeehiveDragon.class, TileBeehiveDragon::new);
         regHandler.block("modular_centrifuge_core", MODULAR_CENTRIFUGE_CORE, TileModularCentrifuge.class, TileModularCentrifuge::new);
         regHandler.block("modular_centrifuge_part", MODULAR_CENTRIFUGE_PART, TileCentrifugePart.class, TileCentrifugePart::new);
+        regHandler.block("modular_centrifuge_overclocker", MODULAR_CENTRIFUGE_OVERCLOCKER, TileCentrifugeOverclocker.class, TileCentrifugeOverclocker::new);
+        regHandler.block("modular_centrifuge_export", MODULAR_CENTRIFUGE_EXPORT, TileCentrifugeExport.class, TileCentrifugeExport::new);
         regHandler.block("scented_plank", SCENTED_PLANK);
         regHandler.item("electrode_copper", ELECTRODE_COPPER);
         regHandler.item("electrode_iron", ELECTRODE_IRON);

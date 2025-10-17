@@ -46,7 +46,7 @@ public class JEIPlugin implements IModPlugin {
     @Override
     public void registerRecipeCatalysts(@NotNull IRecipeCatalystRegistration registry) {
         registry.addRecipeCatalyst(MBSingletons.MODULAR_TREATER, MBTreaterCategory.RECIPE_TYPE);
-        registry.addRecipeCatalyst(MBSingletons.MODULAR_OVERCLOCKER, MBElectrodeCategory.RECIPE_TYPE);
+        registry.addRecipeCatalyst(MBSingletons.MODULAR_BEEHIVE_OVERCLOCKER, MBElectrodeCategory.RECIPE_TYPE);
     }
 
     private <I extends RecipeInput, T extends Recipe<I>> List<RecipeHolder<T>> getRecipes(RecipeType<T> type, RecipeManager manager) {

@@ -84,6 +84,7 @@ dependencies {
     compileOnly "mekanism:Mekanism:1.21.1-10.7.9.72"
     // runtime test
     runtimeOnly "curse.maven:jade-324717:5427817"
+    runtimeOnly "mekanism:Mekanism:1.21.1-10.7.0.55"
 }
 
 tasks.withType(ProcessResources).configureEach {

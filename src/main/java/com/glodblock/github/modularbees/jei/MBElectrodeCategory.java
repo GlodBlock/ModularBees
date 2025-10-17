@@ -21,7 +21,7 @@ public class MBElectrodeCategory extends MBRecipeCategory<ElectrodeRecipe> {
     public static RecipeType<RecipeHolder<ElectrodeRecipe>> RECIPE_TYPE = RecipeType.createFromVanilla(ElectrodeRecipe.TYPE);
 
     public MBElectrodeCategory(IGuiHelper helpers) {
-        super(helpers, RECIPE_TYPE, MBSingletons.MODULAR_OVERCLOCKER, 110, 18);
+        super(helpers, RECIPE_TYPE, MBSingletons.MODULAR_BEEHIVE_OVERCLOCKER, 110, 18);
         this.background = helpers
                 .drawableBuilder(ModularBees.id("textures/gui/jei_overclocker.png"), 0, 0, 110, 18)
                 .setTextureSize(110, 18)

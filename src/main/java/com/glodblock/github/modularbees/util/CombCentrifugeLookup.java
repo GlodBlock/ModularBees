@@ -70,7 +70,7 @@ public final class CombCentrifugeLookup {
     }
 
     static void multi(ItemStack stack, int multiplier) {
-        if (!stack.isEmpty()) {
+        if (!stack.isEmpty() && multiplier > 1) {
             stack.setCount(stack.getCount() * multiplier);
         }
     }

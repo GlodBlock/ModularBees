@@ -12,6 +12,8 @@
   "block.modularbees.dragon_breath": "Dragon Breath",
   "block.modularbees.modular_centrifuge_core": "Modular Centrifuge",
   "block.modularbees.modular_centrifuge_part": "Centrifuge Structure Wall",
+  "block.modularbees.modular_centrifuge_overclocker": "Centrifuge Overclocker",
+  "block.modularbees.modular_centrifuge_export": "Centrifuge Export Hatch",
   "item.modularbees.electrode_copper": "Copper Electrode",
   "item.modularbees.electrode_iron": "Iron Electrode",
   "item.modularbees.electrode_gold": "Gold Electrode",

@@ -120,7 +120,7 @@ public class MBRecipeProvider extends RecipeProvider {
                 .requires(MBSingletons.MODULAR_BEEHIVE_PART)
                 .unlockedBy(C, has(MBSingletons.MODULAR_BEEHIVE_PART))
                 .save(c, ModularBees.id("modular_feeder"));
-        ShapedRecipeBuilder.shaped(RecipeCategory.DECORATIONS, MBSingletons.MODULAR_OVERCLOCKER)
+        ShapedRecipeBuilder.shaped(RecipeCategory.DECORATIONS, MBSingletons.MODULAR_BEEHIVE_OVERCLOCKER)
                 .pattern("BCB")
                 .pattern("RPR")
                 .pattern("BXB")
@@ -141,7 +141,7 @@ public class MBRecipeProvider extends RecipeProvider {
                 .define('P', MBSingletons.MODULAR_BEEHIVE_PART)
                 .unlockedBy(C, has(MBSingletons.MODULAR_BEEHIVE_PART))
                 .save(c, ModularBees.id("modular_treater"));
-        ShapedRecipeBuilder.shaped(RecipeCategory.DECORATIONS, MBSingletons.MODULAR_EXPORT)
+        ShapedRecipeBuilder.shaped(RecipeCategory.DECORATIONS, MBSingletons.MODULAR_BEEHIVE_EXPORT)
                 .pattern("IPI")
                 .pattern(" H ")
                 .define('I', Ingredient.of(Blocks.PISTON, Blocks.STICKY_PISTON))

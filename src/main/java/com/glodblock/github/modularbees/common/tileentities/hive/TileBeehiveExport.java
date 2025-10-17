@@ -5,23 +5,20 @@ import com.glodblock.github.modularbees.common.MBConfig;
 import com.glodblock.github.modularbees.common.MBSingletons;
 import com.glodblock.github.modularbees.common.caps.FluidHandlerHost;
 import com.glodblock.github.modularbees.common.caps.ItemHandlerHost;
+import com.glodblock.github.modularbees.common.inventory.ProxyFluidInventory;
+import com.glodblock.github.modularbees.common.inventory.ProxyItemInventory;
 import com.glodblock.github.modularbees.util.ServerTickTile;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.neoforge.capabilities.BlockCapabilityCache;
 import net.neoforged.neoforge.capabilities.Capabilities;
-import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler;
 import net.neoforged.neoforge.fluids.capability.templates.EmptyFluidHandler;
 import net.neoforged.neoforge.items.IItemHandler;
 import net.neoforged.neoforge.items.wrapper.EmptyItemHandler;
-import org.jetbrains.annotations.NotNull;
-
-import java.util.function.Supplier;
 
 public class TileBeehiveExport extends TileBeehivePart implements ServerTickTile, ItemHandlerHost, FluidHandlerHost {
 
@@ -33,7 +30,7 @@ public class TileBeehiveExport extends TileBeehivePart implements ServerTickTile
     private long tick = 0;
 
     public TileBeehiveExport(BlockPos pos, BlockState state) {
-        super(GlodUtil.getTileType(TileBeehiveExport.class, TileBeehiveExport::new, MBSingletons.MODULAR_EXPORT), pos, state);
+        super(GlodUtil.getTileType(TileBeehiveExport.class, TileBeehiveExport::new, MBSingletons.MODULAR_BEEHIVE_EXPORT), pos, state);
         this.item = new ProxyItemInventory(this::getHostItemInventory);
         this.fluid = new ProxyFluidInventory(this::getHostFluidInventory);
     }
@@ -107,79 +104,7 @@ public class TileBeehiveExport extends TileBeehivePart implements ServerTickTile
     }
 
     public Direction getFacing() {
-        return MBSingletons.MODULAR_EXPORT.getFacing(this.getBlockState());
-    }
-
-    private record ProxyItemInventory(Supplier<IItemHandler> getter) implements IItemHandler {
-
-        @Override
-        public int getSlots() {
-            return this.getter.get().getSlots();
-        }
-
-        @Override
-        public @NotNull ItemStack getStackInSlot(int slot) {
-            return this.getter.get().getStackInSlot(slot);
-        }
-
-        @Override
-        public @NotNull ItemStack insertItem(int slot, @NotNull ItemStack stack, boolean simulate) {
-            return this.getter.get().insertItem(slot, stack, simulate);
-        }
-
-        @Override
-        public @NotNull ItemStack extractItem(int slot, int amount, boolean simulate) {
-            return this.getter.get().extractItem(slot, amount, simulate);
-        }
-
-        @Override
-        public int getSlotLimit(int slot) {
-            return this.getter.get().getSlotLimit(slot);
-        }
-
-        @Override
-        public boolean isItemValid(int slot, @NotNull ItemStack stack) {
-            return this.getter.get().isItemValid(slot, stack);
-        }
-
-    }
-
-    private record ProxyFluidInventory(Supplier<IFluidHandler> getter) implements IFluidHandler {
-
-        @Override
-        public int getTanks() {
-            return this.getter.get().getTanks();
-        }
-
-        @Override
-        public @NotNull FluidStack getFluidInTank(int tank) {
-            return this.getter.get().getFluidInTank(tank);
-        }
-
-        @Override
-        public int getTankCapacity(int tank) {
-            return this.getter.get().getTankCapacity(tank);
-        }
-
-        @Override
-        public boolean isFluidValid(int tank, @NotNull FluidStack stack) {
-            return this.getter.get().isFluidValid(tank, stack);
-        }
-
-        @Override
-        public int fill(@NotNull FluidStack resource, @NotNull FluidAction action) {
-            return this.getter.get().fill(resource, action);
-        }
-
-        @Override
-        public @NotNull FluidStack drain(@NotNull FluidStack resource, @NotNull FluidAction action) {
-            return this.getter.get().drain(resource, action);
-        }
-
-        @Override
-        public @NotNull FluidStack drain(int maxDrain, @NotNull FluidAction action) {
-            return this.getter.get().drain(maxDrain, action);
-        }
+        return MBSingletons.MODULAR_BEEHIVE_EXPORT.getFacing(this.getBlockState());
     }
 
 }

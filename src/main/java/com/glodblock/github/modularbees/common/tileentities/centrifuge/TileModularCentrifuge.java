@@ -7,6 +7,7 @@ import com.glodblock.github.modularbees.common.caps.FluidHandlerHost;
 import com.glodblock.github.modularbees.common.caps.ItemHandlerHost;
 import com.glodblock.github.modularbees.common.inventory.MBFluidInventory;
 import com.glodblock.github.modularbees.common.inventory.MBItemInventory;
+import com.glodblock.github.modularbees.common.inventory.RandomAccessTank;
 import com.glodblock.github.modularbees.common.inventory.SlotListener;
 import com.glodblock.github.modularbees.common.tileentities.base.TileMBModularComponent;
 import com.glodblock.github.modularbees.common.tileentities.base.TileMBModularCore;
@@ -30,6 +31,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.neoforge.common.util.INBTSerializable;
 import net.neoforged.neoforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.IFluidTank;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler;
 import net.neoforged.neoforge.items.IItemHandler;
 import net.neoforged.neoforge.items.wrapper.CombinedInvWrapper;
@@ -96,13 +98,11 @@ public class TileModularCentrifuge extends TileMBModularCore implements ItemHand
                 }
                 for (int i = 0; i < this.filling.size(); ++i) {
                     var stack = this.filling.get(i).copy();
-                    for (int x = 0; x < this.tanks.getTanks(); ++x) {
-                        if (stack.isEmpty()) {
-                            break;
-                        }
-                        var filled = this.tanks.forceFill(stack, IFluidHandler.FluidAction.EXECUTE);
-                        stack.shrink(filled);
+                    if (stack.isEmpty()) {
+                        continue;
                     }
+                    var filled = this.tanks.forceFill(stack, IFluidHandler.FluidAction.EXECUTE);
+                    stack.shrink(filled);
                     this.filling.set(i, stack);
                 }
                 this.filling.removeIf(FluidStack::isEmpty);
@@ -111,7 +111,6 @@ public class TileModularCentrifuge extends TileMBModularCore implements ItemHand
                     this.process = 0;
                 }
                 this.setChanged();
-                return;
             }
             if (this.emptyInput()) {
                 if (this.sending.isEmpty() && this.filling.isEmpty()) {
@@ -120,19 +119,30 @@ public class TileModularCentrifuge extends TileMBModularCore implements ItemHand
                 this.process = 0;
                 return;
             }
-            this.addTick();
-            if (this.process >= WAITING_TICKS) {
-                this.process = 0;
-                int left = this.para;
-                for (int x = 0; x < this.inputs.getSlots(); x ++) {
-                    if (left >= 0) {
-                        var comb = this.inputs.getStackInSlot(x);
-                        int used = Math.min(left, comb.getCount());
-                        if (CombCentrifugeLookup.query(this.sending::add, this.filling::add, comb, world, used)) {
-                            left -= used;
-                            comb.shrink(used);
-                            this.inputs.setStackInSlot(x, comb);
-                            this.setChanged();
+            if (this.sending.isEmpty() && this.filling.isEmpty()) {
+                float overclock = 1;
+                if (!this.stuck) {
+                    for (var component : components) {
+                        if (component instanceof TileCentrifugeOverclocker overclocker) {
+                            overclock += overclocker.getBoostAndConsume(1);
+                        }
+                    }
+                }
+                overclock = Math.max(1, overclock);
+                this.addTick(overclock);
+                if (this.process >= WAITING_TICKS) {
+                    this.process = 0;
+                    int left = this.para;
+                    for (int x = 0; x < this.inputs.getSlots(); x ++) {
+                        if (left >= 0) {
+                            var comb = this.inputs.getStackInSlot(x);
+                            int used = Math.min(left, comb.getCount());
+                            if (CombCentrifugeLookup.query(this.sending::add, this.filling::add, comb, world, used)) {
+                                left -= used;
+                                comb.shrink(used);
+                                this.inputs.setStackInSlot(x, comb);
+                                this.setChanged();
+                            }
                         }
                     }
                 }
@@ -140,12 +150,20 @@ public class TileModularCentrifuge extends TileMBModularCore implements ItemHand
         }
     }
 
+    public List<ItemStack> getSending() {
+        return this.sending;
+    }
+
+    public List<FluidStack> getFilling() {
+        return this.filling;
+    }
+
     private boolean validInput(ItemStack stack) {
         return stack.is(ModTags.Common.HONEYCOMBS) || stack.is(ModTags.Common.STORAGE_BLOCK_HONEYCOMBS);
     }
 
-    public void addTick() {
-        this.process += this.tickSpeed;
+    public void addTick(float overclock) {
+        this.process += this.tickSpeed * overclock;
     }
 
     public double getProcess() {
@@ -331,13 +349,20 @@ public class TileModularCentrifuge extends TileMBModularCore implements ItemHand
     }
 
     @Override
-    public IFluidHandler getFluidInventory() {
+    public RandomAccessTank getFluidInventory() {
         return this.tanks;
     }
 
     @Override
     public IItemHandler getItemInventory() {
         return this.exposed;
+    }
+
+    @Override
+    public void addInventoryDrops(Level level, @NotNull BlockPos pos, List<ItemStack> drops) {
+        drops.addAll(this.outputs.toList());
+        drops.addAll(this.inputs.toList());
+        drops.addAll(this.upgrade.toList());
     }
 
     private void updateUpgrade() {
@@ -357,7 +382,7 @@ public class TileModularCentrifuge extends TileMBModularCore implements ItemHand
         }
     }
 
-    private record MultiTank(MBFluidInventory[] tanks) implements IFluidHandler, INBTSerializable<CompoundTag> {
+    private record MultiTank(MBFluidInventory[] tanks) implements RandomAccessTank, INBTSerializable<CompoundTag> {
 
         @Override
         public int getTanks() {
@@ -457,6 +482,11 @@ public class TileModularCentrifuge extends TileMBModularCore implements ItemHand
                     this.tanks[x].setFluid(FluidStack.EMPTY);
                 }
             }
+        }
+
+        @Override
+        public IFluidTank getTank(int tank) {
+            return this.tanks[tank];
         }
 
     }

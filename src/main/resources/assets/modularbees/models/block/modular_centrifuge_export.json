@@ -1,0 +1,11 @@
+{
+  "loader": "modularbees:connect_model",
+  "border": "modularbees:block/centrifuge_border",
+  "north": "modularbees:block/centrifuge_export",
+  "west": "modularbees:block/centrifuge_side",
+  "east": "modularbees:block/centrifuge_side",
+  "south": "modularbees:block/centrifuge_side",
+  "up": "modularbees:block/centrifuge_end",
+  "down": "modularbees:block/centrifuge_end",
+  "particle": "modularbees:block/centrifuge_export"
+}
