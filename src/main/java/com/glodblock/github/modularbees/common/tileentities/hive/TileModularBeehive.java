@@ -116,7 +116,7 @@ public class TileModularBeehive extends TileMBModularCore implements ItemHandler
                     this.process = 0;
                     var outputs = new StackCacheMap(world.getRandom());
                     this.table.collectOutput(world, outputs::add);
-                    float treaterMultiplier = 0;
+                    float treaterMultiplier = 1;
                     int working = this.table.getWorkingBee();
                     TileBeehiveDragon dragonHive = null;
                     for (var component : components) {

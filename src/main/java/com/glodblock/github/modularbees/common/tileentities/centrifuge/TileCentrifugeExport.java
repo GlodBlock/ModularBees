@@ -164,5 +164,4 @@ public class TileCentrifugeExport extends TileCentrifugePart implements ServerTi
         return MBSingletons.MODULAR_CENTRIFUGE_EXPORT.getFacing(this.getBlockState());
     }
 
-
 }
