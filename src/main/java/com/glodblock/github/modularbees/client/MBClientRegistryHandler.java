@@ -4,6 +4,7 @@ import com.glodblock.github.modularbees.ModularBees;
 import com.glodblock.github.modularbees.client.gui.MBAlvearyGui;
 import com.glodblock.github.modularbees.client.gui.MBDragonGui;
 import com.glodblock.github.modularbees.client.gui.MBFeederGui;
+import com.glodblock.github.modularbees.client.gui.MBHeaterGui;
 import com.glodblock.github.modularbees.client.gui.MBImportGui;
 import com.glodblock.github.modularbees.client.gui.MBModularBeehiveGui;
 import com.glodblock.github.modularbees.client.gui.MBModularCentrifugeGui;
@@ -14,6 +15,7 @@ import com.glodblock.github.modularbees.common.fluids.FluidDragonBreath;
 import com.glodblock.github.modularbees.container.ContainerMBAlveary;
 import com.glodblock.github.modularbees.container.ContainerMBDragon;
 import com.glodblock.github.modularbees.container.ContainerMBFeeder;
+import com.glodblock.github.modularbees.container.ContainerMBHeater;
 import com.glodblock.github.modularbees.container.ContainerMBImport;
 import com.glodblock.github.modularbees.container.ContainerMBModularBeehive;
 import com.glodblock.github.modularbees.container.ContainerMBModularCentrifuge;
@@ -73,6 +75,7 @@ public class MBClientRegistryHandler {
         event.register(ContainerMBDragon.TYPE.castType(), MBDragonGui::new);
         event.register(ContainerMBModularCentrifuge.TYPE.castType(), MBModularCentrifugeGui::new);
         event.register(ContainerMBImport.TYPE.castType(), MBImportGui::new);
+        event.register(ContainerMBHeater.TYPE.castType(), MBHeaterGui::new);
     }
 
 }

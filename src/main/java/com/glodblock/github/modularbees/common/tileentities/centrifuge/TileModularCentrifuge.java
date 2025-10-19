@@ -48,7 +48,7 @@ import java.util.function.Consumer;
 public class TileModularCentrifuge extends TileMBModularCore implements ItemHandlerHost, FluidHandlerHost, SlotListener {
 
     public static final int FLUID_TANKS = 3;
-    public static final int WAITING_TICKS = ProductiveBeesConfig.GENERAL.centrifugePoweredProcessingTime.getAsInt();
+    public static final int WAITING_TICKS = ProductiveBeesConfig.GENERAL.centrifugeProcessingTime.getAsInt();
     @Nullable
     private ObjectSet<BlockPos> allPos;
     @Nullable
@@ -136,10 +136,13 @@ public class TileModularCentrifuge extends TileMBModularCore implements ItemHand
             }
             if (this.sending.isEmpty() && this.filling.isEmpty()) {
                 float overclock = 1;
+                boolean heated = false;
                 if (!this.stuck) {
                     for (var component : components) {
                         if (component instanceof TileCentrifugeOverclocker overclocker) {
                             overclock += overclocker.getBoostAndConsume(1);
+                        } else if (!heated && component instanceof TileCentrifugeHeater heater) {
+                            heated = heater.check(this.para);
                         }
                     }
                 }
@@ -152,13 +155,16 @@ public class TileModularCentrifuge extends TileMBModularCore implements ItemHand
                         if (left >= 0) {
                             var comb = this.getCombinedInputs().getStackInSlot(x);
                             int used = Math.min(left, comb.getCount());
-                            if (CombCentrifugeLookup.query(this.sending::add, this.filling::add, comb, world, used)) {
+                            if (CombCentrifugeLookup.query(this.sending::add, this.filling::add, comb, world, used, heated)) {
                                 left -= used;
                                 comb.shrink(used);
                                 this.getCombinedInputs().setStackInSlot(x, comb);
                                 this.setChanged();
                             }
                         }
+                    }
+                    if (left == this.para) {
+                        this.stuck = true;
                     }
                 }
             }

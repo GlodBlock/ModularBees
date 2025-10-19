@@ -3,6 +3,7 @@ package com.glodblock.github.modularbees.util;
 import cy.jdkdigital.productivebees.common.item.CombBlockItem;
 import cy.jdkdigital.productivebees.common.item.Honeycomb;
 import cy.jdkdigital.productivebees.init.ModDataComponents;
+import cy.jdkdigital.productivebees.init.ModTags;
 import cy.jdkdigital.productivebees.util.BeeHelper;
 import cy.jdkdigital.productivelib.common.block.entity.InventoryHandlerHelper;
 import cy.jdkdigital.productivelib.common.recipe.TagOutputRecipe;
@@ -35,11 +36,14 @@ public final class CombCentrifugeLookup {
 
     }
 
-    public static boolean query(Consumer<ItemStack> itemAccepter, Consumer<FluidStack> fluidAccepter, ItemStack comb, @NotNull Level world, int para) {
+    public static boolean query(Consumer<ItemStack> itemAccepter, Consumer<FluidStack> fluidAccepter, ItemStack comb, @NotNull Level world, int para, boolean heated) {
         if (comb.isEmpty()) {
             return false;
         }
         var item = comb.getItem();
+        if (item instanceof BlockItem && !heated) {
+            return false;
+        }
         Output cache;
         if (item instanceof Honeycomb || item instanceof CombBlockItem) {
             var type = comb.get(ModDataComponents.BEE_TYPE);
@@ -61,7 +65,7 @@ public final class CombCentrifugeLookup {
             while (para > 0) {
                 int batch = para > 8 ? Math.min(world.getRandom().nextInt(8, 16), para) : para;
                 para -= batch;
-                Consumer<ItemStack> m = stack -> multi(stack, batch);
+                Consumer<ItemStack> m = stack -> multi(stack, heated, batch);
                 cache.output(m.andThen(itemAccepter), world.getRandom());
             }
             return true;
@@ -69,8 +73,12 @@ public final class CombCentrifugeLookup {
         return false;
     }
 
-    static void multi(ItemStack stack, int multiplier) {
+    static void multi(ItemStack stack, boolean heated, int multiplier) {
         if (!stack.isEmpty() && multiplier > 1) {
+            if (heated && stack.is(ModTags.Common.WAXES)) {
+                stack.setCount(0);
+                return;
+            }
             stack.setCount(stack.getCount() * multiplier);
         }
     }

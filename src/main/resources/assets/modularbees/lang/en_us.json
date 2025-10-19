@@ -15,6 +15,7 @@
   "block.modularbees.modular_centrifuge_overclocker": "Centrifuge Overclocker",
   "block.modularbees.modular_centrifuge_export": "Centrifuge Export Hatch",
   "block.modularbees.modular_centrifuge_import": "Centrifuge Import Hatch",
+  "block.modularbees.modular_centrifuge_heater": "Centrifuge Heater",
   "item.modularbees.electrode_copper": "Copper Electrode",
   "item.modularbees.electrode_iron": "Iron Electrode",
   "item.modularbees.electrode_gold": "Gold Electrode",
