@@ -11,7 +11,7 @@ public class ContainerMBOverclocker extends ContainerMBBase<TileMBOverclocker> {
 
     public final static MBGuiHandler.MenuHandler TYPE = MBGuiHandler.builder(TileMBOverclocker.class)
             .factory(ContainerMBOverclocker::new)
-            .build("modular_beehive_overclocker");
+            .build("modular_overclocker");
 
     protected ContainerMBOverclocker(@Nullable MenuType<?> type, int id, Inventory inv, TileMBOverclocker host) {
         super(type, id, inv, host);

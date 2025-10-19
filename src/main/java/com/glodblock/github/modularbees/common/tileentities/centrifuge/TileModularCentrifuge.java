@@ -34,6 +34,7 @@ import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.IFluidTank;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler;
 import net.neoforged.neoforge.items.IItemHandler;
+import net.neoforged.neoforge.items.IItemHandlerModifiable;
 import net.neoforged.neoforge.items.wrapper.CombinedInvWrapper;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -59,7 +60,7 @@ public class TileModularCentrifuge extends TileMBModularCore implements ItemHand
     protected final MBItemInventory upgrade = new MBItemInventory(this, 4, s -> ACCEPT_UPGRADES.contains(s.getItem())).setSlotLimit(1);
     protected final MBItemInventory inputs = new MBItemInventory(this, 3, this::validInput).inputOnly();
     protected final MBItemInventory outputs = new MBItemInventory(this, 9).outputOnly();
-    private final IItemHandler exposed = new CombinedInvWrapper(this.outputs, this.inputs);
+    private final IItemHandlerModifiable exposed = new CombinedInvWrapper(this.outputs, this.inputs);
     private final MultiTank tanks;
     private float process = 0;
     private float tickSpeed = 1;
@@ -67,6 +68,7 @@ public class TileModularCentrifuge extends TileMBModularCore implements ItemHand
     private final List<FluidStack> filling = new ArrayList<>();
     private boolean stuck = false;
     private int para = 1;
+    private IItemHandlerModifiable combinedInputs;
 
     public TileModularCentrifuge(BlockPos pos, BlockState state) {
         super(GlodUtil.getTileType(TileModularCentrifuge.class, TileModularCentrifuge::new, MBSingletons.MODULAR_CENTRIFUGE_CORE), pos, state);
@@ -75,6 +77,19 @@ public class TileModularCentrifuge extends TileMBModularCore implements ItemHand
                 new MBFluidInventory(this, 64 * GameConstants.BUCKET).outputOnly(),
                 new MBFluidInventory(this, 64 * GameConstants.BUCKET).outputOnly(),
         });
+    }
+
+    private IItemHandlerModifiable getCombinedInputs() {
+        if (this.combinedInputs == null) {
+            List<IItemHandlerModifiable> inv = new ArrayList<>();
+            inv.add(this.inputs);
+            for (var input : this.getComponents(TileCentrifugeImport.class)) {
+                inv.add(input.getItemInventory());
+            }
+            this.combinedInputs = new CombinedInvWrapper(inv.toArray(new IItemHandlerModifiable[0]));
+            this.stuck = false;
+        }
+        return this.combinedInputs;
     }
 
     @Override
@@ -133,14 +148,14 @@ public class TileModularCentrifuge extends TileMBModularCore implements ItemHand
                 if (this.process >= WAITING_TICKS) {
                     this.process = 0;
                     int left = this.para;
-                    for (int x = 0; x < this.inputs.getSlots(); x ++) {
+                    for (int x = 0; x < this.getCombinedInputs().getSlots(); x ++) {
                         if (left >= 0) {
-                            var comb = this.inputs.getStackInSlot(x);
+                            var comb = this.getCombinedInputs().getStackInSlot(x);
                             int used = Math.min(left, comb.getCount());
                             if (CombCentrifugeLookup.query(this.sending::add, this.filling::add, comb, world, used)) {
                                 left -= used;
                                 comb.shrink(used);
-                                this.inputs.setStackInSlot(x, comb);
+                                this.getCombinedInputs().setStackInSlot(x, comb);
                                 this.setChanged();
                             }
                         }
@@ -158,7 +173,7 @@ public class TileModularCentrifuge extends TileMBModularCore implements ItemHand
         return this.filling;
     }
 
-    private boolean validInput(ItemStack stack) {
+    public boolean validInput(ItemStack stack) {
         return stack.is(ModTags.Common.HONEYCOMBS) || stack.is(ModTags.Common.STORAGE_BLOCK_HONEYCOMBS);
     }
 
@@ -244,7 +259,17 @@ public class TileModularCentrifuge extends TileMBModularCore implements ItemHand
     public void onStateChange() {
         this.allChunk = null;
         this.allPos = null;
+        this.combinedInputs = null;
         super.onStateChange();
+    }
+
+    @Override
+    public void formStructure() {
+        super.formStructure();
+        if (this.isFormed()) {
+            this.combinedInputs = null;
+            this.stuck = false;
+        }
     }
 
     @Override
@@ -336,7 +361,12 @@ public class TileModularCentrifuge extends TileMBModularCore implements ItemHand
     }
 
     private boolean emptyInput() {
-        return !this.inputs.hasItem();
+        for (var x = 0; x < this.getCombinedInputs().getSlots(); x ++) {
+            if (!this.getCombinedInputs().getStackInSlot(x).isEmpty()) {
+                return false;
+            }
+        }
+        return true;
     }
 
     @Override
@@ -346,6 +376,10 @@ public class TileModularCentrifuge extends TileMBModularCore implements ItemHand
         } else if (inv == this.outputs ||  inv == this.inputs) {
             this.stuck = false;
         }
+    }
+
+    public void unblock() {
+        this.stuck = false;
     }
 
     @Override

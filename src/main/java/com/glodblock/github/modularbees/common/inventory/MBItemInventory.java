@@ -144,15 +144,6 @@ public class MBItemInventory extends ItemStackHandler {
         return cnt;
     }
 
-    public boolean hasItem() {
-        for (var stack : this.stacks) {
-            if (!stack.isEmpty()) {
-                return true;
-            }
-        }
-        return false;
-    }
-
     public interface ItemFilter {
 
         ItemFilter PASS = s -> true;

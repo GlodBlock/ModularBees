@@ -12,6 +12,9 @@ public class MBConfig {
     public static final ModConfigSpec.IntValue AUTO_EXPORT_INTERVAL = BUILDER
             .comment("Tick interval for export hatch auto output.")
             .defineInRange("hive.auto_output_interval", 8, 1, 1000);
+    public static final ModConfigSpec.IntValue AUTO_IMPORT_INTERVAL = BUILDER
+            .comment("Tick interval for import hatch auto input.")
+            .defineInRange("hive.auto_input_interval", 8, 1, 1000);
     public static final ModConfigSpec.IntValue HONEY_PRODUCE_BASE = BUILDER
             .comment("The base honey output amount for every bee.")
             .defineInRange("hive.honey_base", 300, 0, 1000);

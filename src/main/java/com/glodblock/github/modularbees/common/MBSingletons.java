@@ -1,6 +1,7 @@
 package com.glodblock.github.modularbees.common;
 
 import com.glodblock.github.modularbees.common.blocks.centrifuge.BlockCentrifugeExport;
+import com.glodblock.github.modularbees.common.blocks.centrifuge.BlockCentrifugeImport;
 import com.glodblock.github.modularbees.common.blocks.centrifuge.BlockCentrifugeOverclocker;
 import com.glodblock.github.modularbees.common.blocks.centrifuge.BlockCentrifugePart;
 import com.glodblock.github.modularbees.common.blocks.centrifuge.BlockModularCentrifuge;
@@ -17,6 +18,7 @@ import com.glodblock.github.modularbees.common.blocks.misc.BlockScentedPlank;
 import com.glodblock.github.modularbees.common.fluids.FluidDragonBreath;
 import com.glodblock.github.modularbees.common.items.ItemElectrode;
 import com.glodblock.github.modularbees.common.tileentities.centrifuge.TileCentrifugeExport;
+import com.glodblock.github.modularbees.common.tileentities.centrifuge.TileCentrifugeImport;
 import com.glodblock.github.modularbees.common.tileentities.centrifuge.TileCentrifugeOverclocker;
 import com.glodblock.github.modularbees.common.tileentities.centrifuge.TileCentrifugePart;
 import com.glodblock.github.modularbees.common.tileentities.centrifuge.TileModularCentrifuge;
@@ -51,6 +53,7 @@ public class MBSingletons {
     public static BlockCentrifugePart MODULAR_CENTRIFUGE_PART;
     public static BlockCentrifugeOverclocker MODULAR_CENTRIFUGE_OVERCLOCKER;
     public static BlockCentrifugeExport MODULAR_CENTRIFUGE_EXPORT;
+    public static BlockCentrifugeImport MODULAR_CENTRIFUGE_IMPORT;
 
     public static ItemElectrode ELECTRODE_COPPER;
     public static ItemElectrode ELECTRODE_IRON;
@@ -71,6 +74,7 @@ public class MBSingletons {
         MODULAR_CENTRIFUGE_PART = new BlockCentrifugePart();
         MODULAR_CENTRIFUGE_OVERCLOCKER = new BlockCentrifugeOverclocker();
         MODULAR_CENTRIFUGE_EXPORT = new BlockCentrifugeExport();
+        MODULAR_CENTRIFUGE_IMPORT = new BlockCentrifugeImport();
         SCENTED_PLANK = new BlockScentedPlank();
         DRAGON_BREATH = new BlockFluidDragonBreath();
         ELECTRODE_COPPER = new ItemElectrode(5 * GameConstants.MINUTE, Ingredient.of(Tags.Items.INGOTS_COPPER));
@@ -90,6 +94,7 @@ public class MBSingletons {
         regHandler.block("modular_centrifuge_part", MODULAR_CENTRIFUGE_PART, TileCentrifugePart.class, TileCentrifugePart::new);
         regHandler.block("modular_centrifuge_overclocker", MODULAR_CENTRIFUGE_OVERCLOCKER, TileCentrifugeOverclocker.class, TileCentrifugeOverclocker::new);
         regHandler.block("modular_centrifuge_export", MODULAR_CENTRIFUGE_EXPORT, TileCentrifugeExport.class, TileCentrifugeExport::new);
+        regHandler.block("modular_centrifuge_import", MODULAR_CENTRIFUGE_IMPORT, TileCentrifugeImport.class, TileCentrifugeImport::new);
         regHandler.block("scented_plank", SCENTED_PLANK);
         regHandler.item("electrode_copper", ELECTRODE_COPPER);
         regHandler.item("electrode_iron", ELECTRODE_IRON);
