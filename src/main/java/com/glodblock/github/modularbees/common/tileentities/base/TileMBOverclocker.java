@@ -37,7 +37,7 @@ public abstract class TileMBOverclocker extends TileMBModularComponent implement
     }
 
     public float getBoostAndConsume(int bees) {
-        if (this.level instanceof ServerLevel server && this.isActive()) {
+        if (this.level instanceof ServerLevel server && this.isActive() && bees > 0) {
             var stack = this.electrode.getStackInSlot(0);
             if (!stack.isEmpty()) {
                 if (this.running == null) {
@@ -48,7 +48,7 @@ public abstract class TileMBOverclocker extends TileMBModularComponent implement
                     if (boost > 0 && this.energy.getEnergyStored() >= bees * POWER_USE) {
                         int power = this.energy.forceExtractEnergy(bees * POWER_USE, false);
                         if (power >= bees * POWER_USE) {
-                            stack.hurtAndBreak(1, server, null, item -> this.electrode.setStackInSlot(0, ItemStack.EMPTY));
+                            stack.hurtAndBreak(this.damage(bees), server, null, item -> this.electrode.setStackInSlot(0, ItemStack.EMPTY));
                             return boost;
                         }
                     }
@@ -56,6 +56,12 @@ public abstract class TileMBOverclocker extends TileMBModularComponent implement
             }
         }
         return 0;
+    }
+
+    private int damage(int base) {
+        float a = base / 15F + 1;
+        float e = (float) Math.pow(1.03, base);
+        return (int) (a * e);
     }
 
     @Override

@@ -88,7 +88,7 @@ public abstract class ConnectBorderlineBakedModel implements IDynamicBakedModel 
             connect = modelData.get(CONNECT_STATE);
         }
         if (connect == null) {
-            return Collections.emptyList();
+            connect = new Connect();
         }
         List<BakedQuad> quads = new ArrayList<>();
         if (renderType == null || renderType == RenderType.CUTOUT_MIPPED) {
