@@ -1,0 +1,17 @@
+{
+  "name": "模块化喂食器",
+  "icon": "modularbees:modular_beehive_feeder",
+  "read_by_default": true,
+  "category": "modularbees:beehive",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "title": "模块化喂食器",
+      "text": "模块化蜂箱中的蜜蜂只会寻找模块化喂食器中的花朵，模块化喂食器可以容纳 9 种花朵。$(br)如果蜜蜂需要花液，可以放一个装有相应花液的桶或储罐。"
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "modularbees:modular_feeder"
+    }
+  ]
+}

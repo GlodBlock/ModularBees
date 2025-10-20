@@ -1,0 +1,22 @@
+{
+  "name": "蜂箱处理器",
+  "icon": "modularbees:modular_treater",
+  "read_by_default": true,
+  "category": "modularbees:beehive",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "title": "蜂箱处理器",
+      "text": "蜂箱处理器为蜜蜂提供额外的食物，使它们生产更多的蜜脾。$(br)当您同时使用多个处理器时，产量的提升是累加的。$(br)您可以在 JEI 中找到有效的食物及其增强信息。"
+    },
+    {
+      "type": "patchouli:text",
+      "title": "零食供应",
+      "text": "与蜂箱超频器不同，蜂箱处理器仅在蜜蜂完成花蜜采集后才会消耗食物。然而，每只蜜蜂都需要食物供应。如果食物无法满足每只蜜蜂的需求，其增幅效果就会减弱。$(br)剩余部分将被送往输出库存。"
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "modularbees:modular_treater"
+    }
+  ]
+}

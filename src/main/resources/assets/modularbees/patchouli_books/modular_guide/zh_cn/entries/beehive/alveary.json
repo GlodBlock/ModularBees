@@ -1,0 +1,17 @@
+{
+  "name": "模块化蜂房",
+  "icon": "modularbees:modular_beehive_alveary",
+  "read_by_default": true,
+  "category": "modularbees:beehive",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "title": "模块化蜂房",
+      "text": "蜂箱核心本身不能容纳蜜蜂，所以你需要蜂房来容纳你所有的蜜蜂。$(br)每个蜂房可以容纳 5 只蜜蜂，你需要使用蜂笼将蜜蜂放入蜂房。"
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "modularbees:modular_alveary"
+    }
+  ]
+}
