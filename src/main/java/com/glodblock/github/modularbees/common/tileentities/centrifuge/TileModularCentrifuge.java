@@ -69,6 +69,7 @@ public class TileModularCentrifuge extends TileMBModularCore implements ItemHand
     private boolean stuck = false;
     private int para = 1;
     private IItemHandlerModifiable combinedInputs;
+    private TileCentrifugeHeater heater;
 
     public TileModularCentrifuge(BlockPos pos, BlockState state) {
         super(GlodUtil.getTileType(TileModularCentrifuge.class, TileModularCentrifuge::new, MBSingletons.MODULAR_CENTRIFUGE_CORE), pos, state);
@@ -135,36 +136,40 @@ public class TileModularCentrifuge extends TileMBModularCore implements ItemHand
                 return;
             }
             if (this.sending.isEmpty() && this.filling.isEmpty()) {
-                float overclock = 1;
-                boolean heated = false;
                 if (!this.stuck) {
+                    float overclock = 1;
+                    if (this.heater != null) {
+                        if (this.heater.check(this.para)) {
+                            overclock *= 3;
+                        } else {
+                            return;
+                        }
+                    }
                     for (var component : components) {
                         if (component instanceof TileCentrifugeOverclocker overclocker) {
                             overclock += overclocker.getBoostAndConsume(1);
-                        } else if (!heated && component instanceof TileCentrifugeHeater heater) {
-                            heated = heater.check(this.para);
                         }
                     }
-                }
-                overclock = Math.max(1, overclock);
-                this.addTick(overclock);
-                if (this.process >= WAITING_TICKS) {
-                    this.process = 0;
-                    int left = this.para;
-                    for (int x = 0; x < this.getCombinedInputs().getSlots(); x ++) {
-                        if (left >= 0) {
-                            var comb = this.getCombinedInputs().getStackInSlot(x);
-                            int used = Math.min(left, comb.getCount());
-                            if (CombCentrifugeLookup.query(this.sending::add, this.filling::add, comb, world, used, heated)) {
-                                left -= used;
-                                comb.shrink(used);
-                                this.getCombinedInputs().setStackInSlot(x, comb);
-                                this.setChanged();
+                    overclock = Math.max(1, overclock);
+                    this.addTick(overclock);
+                    if (this.process >= WAITING_TICKS) {
+                        this.process = 0;
+                        int left = this.para;
+                        for (int x = 0; x < this.getCombinedInputs().getSlots(); x ++) {
+                            if (left >= 0) {
+                                var comb = this.getCombinedInputs().getStackInSlot(x);
+                                int used = Math.min(left, comb.getCount());
+                                if (CombCentrifugeLookup.query(this.sending::add, this.filling::add, comb, world, used, this.heater != null)) {
+                                    left -= used;
+                                    comb.shrink(used);
+                                    this.getCombinedInputs().setStackInSlot(x, comb);
+                                    this.setChanged();
+                                }
                             }
                         }
-                    }
-                    if (left == this.para) {
-                        this.stuck = true;
+                        if (left == this.para) {
+                            this.stuck = true;
+                        }
                     }
                 }
             }
@@ -336,6 +341,7 @@ public class TileModularCentrifuge extends TileMBModularCore implements ItemHand
     @Override
     protected boolean buildStructure(Consumer<TileMBModularComponent> collector, Level world) {
         var face = MBSingletons.MODULAR_CENTRIFUGE_CORE.getFacing(this.getBlockState());
+        this.heater = null;
         if (face == null) {
             return false;
         }
@@ -353,6 +359,14 @@ public class TileModularCentrifuge extends TileMBModularCore implements ItemHand
                 if (!(block instanceof Centrifuge)) {
                     return false;
                 }
+                if (te instanceof TileCentrifugeHeater h) {
+                    if (this.heater == null) {
+                        this.heater = h;
+                    } else {
+                        // Multiplier Heaters
+                        return false;
+                    }
+                }
                 collector.accept(centrifugePart);
             } else {
                 return false;
@@ -368,8 +382,18 @@ public class TileModularCentrifuge extends TileMBModularCore implements ItemHand
 
     private boolean emptyInput() {
         for (var x = 0; x < this.getCombinedInputs().getSlots(); x ++) {
-            if (!this.getCombinedInputs().getStackInSlot(x).isEmpty()) {
-                return false;
+            var stack = this.getCombinedInputs().getStackInSlot(x);
+            if (stack.isEmpty()) {
+                continue;
+            }
+            if (this.heater != null) {
+                if (stack.is(ModTags.Common.HONEYCOMBS) || stack.is(ModTags.Common.STORAGE_BLOCK_HONEYCOMBS)) {
+                    return false;
+                }
+            } else {
+                if (stack.is(ModTags.Common.HONEYCOMBS)) {
+                    return false;
+                }
             }
         }
         return true;
