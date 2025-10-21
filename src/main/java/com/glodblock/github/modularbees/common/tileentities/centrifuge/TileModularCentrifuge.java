@@ -185,7 +185,7 @@ public class TileModularCentrifuge extends TileMBModularCore implements ItemHand
     }
 
     public boolean validInput(ItemStack stack) {
-        return stack.is(ModTags.Common.HONEYCOMBS) || stack.is(ModTags.Common.STORAGE_BLOCK_HONEYCOMBS);
+        return CombCentrifugeLookup.validInput(stack, this.level);
     }
 
     public void addTick(float overclock) {
@@ -387,11 +387,9 @@ public class TileModularCentrifuge extends TileMBModularCore implements ItemHand
                 continue;
             }
             if (this.heater != null) {
-                if (stack.is(ModTags.Common.HONEYCOMBS) || stack.is(ModTags.Common.STORAGE_BLOCK_HONEYCOMBS)) {
-                    return false;
-                }
+                return false;
             } else {
-                if (stack.is(ModTags.Common.HONEYCOMBS)) {
+                if (!stack.is(ModTags.Common.STORAGE_BLOCK_HONEYCOMBS)) {
                     return false;
                 }
             }

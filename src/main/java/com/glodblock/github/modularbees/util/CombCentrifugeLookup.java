@@ -3,6 +3,7 @@ package com.glodblock.github.modularbees.util;
 import cy.jdkdigital.productivebees.common.item.CombBlockItem;
 import cy.jdkdigital.productivebees.common.item.Honeycomb;
 import cy.jdkdigital.productivebees.init.ModDataComponents;
+import cy.jdkdigital.productivebees.init.ModRecipeTypes;
 import cy.jdkdigital.productivebees.init.ModTags;
 import cy.jdkdigital.productivebees.util.BeeHelper;
 import cy.jdkdigital.productivelib.common.block.entity.InventoryHandlerHelper;
@@ -12,7 +13,6 @@ import it.unimi.dsi.fastutil.objects.Object2ReferenceOpenCustomHashMap;
 import it.unimi.dsi.fastutil.objects.Object2ReferenceOpenHashMap;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.RandomSource;
-import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
@@ -22,8 +22,10 @@ import net.neoforged.neoforge.fluids.FluidStack;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Collections;
 import java.util.IdentityHashMap;
 import java.util.List;
+import java.util.Set;
 import java.util.function.Consumer;
 
 public final class CombCentrifugeLookup {
@@ -31,9 +33,33 @@ public final class CombCentrifugeLookup {
     private static final Object2ReferenceMap<ResourceLocation, Output> RL_MAP = new Object2ReferenceOpenHashMap<>();
     private static final IdentityHashMap<Item, Output> ITEM_MAP = new IdentityHashMap<>();
     private static final Object2ReferenceMap<ItemStack, Output> NBT_MAP = new Object2ReferenceOpenCustomHashMap<>(GameUtil.ITEM_HASH);
+    private static final Set<Item> VALID_INPUT = Collections.newSetFromMap(new IdentityHashMap<>());
+    private static boolean needInit = true;
+    private static final Consumer<ItemStack> PREPROCESS = CombCentrifugeLookup::filterWax;
 
     private CombCentrifugeLookup() {
+        // NO-OP
+    }
 
+    public static boolean validInput(ItemStack stack, Level world) {
+        if (stack.isEmpty()) {
+            return false;
+        }
+        if (stack.is(ModTags.Common.HONEYCOMBS) || stack.is(ModTags.Common.STORAGE_BLOCK_HONEYCOMBS)) {
+            return true;
+        }
+        if (needInit) {
+            needInit = false;
+            for (var holder : world.getRecipeManager().byType(ModRecipeTypes.CENTRIFUGE_TYPE.get())) {
+                var input = holder.value().ingredient;
+                for (var item : input.getItems()) {
+                    if (!stack.is(ModTags.Common.HONEYCOMBS) && !stack.is(ModTags.Common.STORAGE_BLOCK_HONEYCOMBS)) {
+                        VALID_INPUT.add(item.getItem());
+                    }
+                }
+            }
+        }
+        return VALID_INPUT.contains(stack.getItem());
     }
 
     public static boolean query(Consumer<ItemStack> itemAccepter, Consumer<FluidStack> fluidAccepter, ItemStack comb, @NotNull Level world, int para, boolean heated) {
@@ -41,7 +67,7 @@ public final class CombCentrifugeLookup {
             return false;
         }
         var item = comb.getItem();
-        if (item instanceof BlockItem && !heated) {
+        if (comb.is(ModTags.Common.STORAGE_BLOCK_HONEYCOMBS) && !heated) {
             return false;
         }
         Output cache;
@@ -62,32 +88,27 @@ public final class CombCentrifugeLookup {
         }
         if (cache != null) {
             cache.output(fluidAccepter, para);
-            while (para > 0) {
-                int batch = para > 8 ? Math.min(world.getRandom().nextInt(8, 16), para) : para;
-                para -= batch;
-                Consumer<ItemStack> m = stack -> multi(stack, heated, batch);
-                cache.output(m.andThen(itemAccepter), world.getRandom());
+            if (heated) {
+                cache.output(PREPROCESS.andThen(itemAccepter), para, world.getRandom());
+            } else {
+                cache.output(itemAccepter, para, world.getRandom());
             }
             return true;
         }
         return false;
     }
 
-    static void multi(ItemStack stack, boolean heated, int multiplier) {
-        if (!stack.isEmpty() && multiplier > 1) {
-            if (heated && stack.is(ModTags.Common.WAXES)) {
-                stack.setCount(0);
-                return;
-            }
-            stack.setCount(stack.getCount() * multiplier);
+    private static void filterWax(ItemStack stack) {
+        if (stack.is(ModTags.Common.WAXES)) {
+            stack.setCount(0);
         }
     }
 
     @Nullable
     private static Output lookupRecipe(@NotNull ItemStack comb, @NotNull Level world) {
         ItemStack key = comb.copy();
-        boolean isBlock = comb.getItem() instanceof BlockItem;
-        if (comb.getItem() instanceof BlockItem) {
+        boolean isBlock = comb.is(ModTags.Common.STORAGE_BLOCK_HONEYCOMBS);
+        if (isBlock) {
             key = BeeHelper.getSingleComb(comb);
         }
         if (key.isEmpty()) {
@@ -142,18 +163,43 @@ public final class CombCentrifugeLookup {
         RL_MAP.clear();
         NBT_MAP.clear();
         ITEM_MAP.clear();
+        VALID_INPUT.clear();
+        needInit = true;
     }
 
     private record Output(List<ChanceStack> outputs, FluidStack fluid) {
 
-        void output(Consumer<ItemStack> collector, RandomSource random) {
-            this.outputs.forEach(c -> c.get(collector, random));
+        void output(Consumer<ItemStack> collector, int multiplier, RandomSource random) {
+            // If N is small, use brute simulation
+            if (multiplier <= 8) {
+                this.outputs.forEach(c -> {
+                    for (int i = 0; i <= multiplier; i ++) {
+                        c.get(collector, random);
+                    }
+                });
+            } else {
+                // If N is large, use normal distribution simulation
+                this.outputs.forEach(c -> collector.accept(this.roll(c, multiplier, random)));
+            }
         }
 
         void output(Consumer<FluidStack> collector, int multiplier) {
             if (!this.fluid.isEmpty()) {
                 collector.accept(this.fluid.copyWithAmount(this.fluid.getAmount() * multiplier));
             }
+        }
+
+        ItemStack roll(ChanceStack chance, int n, RandomSource random) {
+            var stack = chance.getBaseStack();
+            float w = chance.getAverageAmount();
+            float p = chance.getChance();
+            double u = w * n * p;
+            double o = Math.sqrt(w * w * n * p * (1 - p));
+            int x = (int) Math.round(u + o * random.nextGaussian());
+            if (x > 0) {
+                return stack.copyWithCount(x);
+            }
+            return ItemStack.EMPTY;
         }
 
     }

@@ -2,6 +2,8 @@
   "values": [
     "modularbees:modular_centrifuge_part",
     "modularbees:modular_centrifuge_overclocker",
-    "modularbees:modular_centrifuge_export"
+    "modularbees:modular_centrifuge_export",
+    "modularbees:modular_centrifuge_import",
+    "modularbees:modular_centrifuge_heater"
   ]
 }

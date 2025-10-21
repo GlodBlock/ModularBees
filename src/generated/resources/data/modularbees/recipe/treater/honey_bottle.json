@@ -1,6 +1,6 @@
 {
   "type": "modularbees:treater_food",
-  "boost": 1.6,
+  "boost": 1.03,
   "food": {
     "item": "minecraft:honey_bottle"
   },

@@ -7,9 +7,11 @@ import com.glodblock.github.modularbees.common.recipe.TreaterRecipe;
 import com.glodblock.github.modularbees.util.GameConstants;
 import com.glodblock.github.modularbees.util.MBTags;
 import cy.jdkdigital.productivebees.common.recipe.BottlerRecipe;
+import cy.jdkdigital.productivebees.datagen.recipe.builder.CentrifugeRecipeBuilder;
 import cy.jdkdigital.productivebees.init.ModBlocks;
 import cy.jdkdigital.productivebees.init.ModItems;
 import cy.jdkdigital.productivebees.init.ModTags;
+import cy.jdkdigital.productivelib.common.recipe.TagOutputRecipe;
 import cy.jdkdigital.productivelib.registry.LibItems;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.data.PackOutput;
@@ -27,7 +29,9 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.material.Fluids;
 import net.neoforged.neoforge.common.Tags;
+import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.crafting.SizedFluidIngredient;
 import net.neoforged.neoforge.fluids.crafting.TagFluidIngredient;
 import org.jetbrains.annotations.NotNull;
@@ -46,26 +50,22 @@ public class MBRecipeProvider extends RecipeProvider {
     protected void buildRecipes(@NotNull RecipeOutput c) {
         TreaterRecipe.builder()
                 .input(ModItems.HONEY_TREAT.get())
-                .boost(2.1f)
+                .boost(1.06f)
                 .save(c, ModularBees.id("treater/honey_treat"));
         TreaterRecipe.builder()
                 .input(ModItems.HONEY_BUCKET.get())
                 .output(Items.BUCKET)
-                .boost(3.1f)
+                .boost(1.15f)
                 .save(c, ModularBees.id("treater/honey_bucket"));
         TreaterRecipe.builder()
                 .input(Items.HONEY_BOTTLE)
                 .output(Items.GLASS_BOTTLE)
-                .boost(1.6f)
+                .boost(1.03f)
                 .save(c, ModularBees.id("treater/honey_bottle"));
         TreaterRecipe.builder()
                 .input(Blocks.HONEY_BLOCK)
-                .boost(3.1f)
+                .boost(1.15f)
                 .save(c, ModularBees.id("treater/honey_block"));
-        TreaterRecipe.builder()
-                .input(Items.SUGAR)
-                .boost(1.1f)
-                .save(c, ModularBees.id("treater/sugar"));
         ElectrodeRecipe.builder()
                 .input(MBSingletons.ELECTRODE_COPPER)
                 .power(1.2f)
@@ -180,6 +180,10 @@ public class MBRecipeProvider extends RecipeProvider {
                 .requires(Items.DRAGON_BREATH, 4)
                 .unlockedBy(C, has(Items.DRAGON_BREATH))
                 .save(c, ModularBees.id("fill_dragon_breath_bucket"));
+        CentrifugeRecipeBuilder.item(Blocks.HONEY_BLOCK.asItem())
+                .setFluidOutput(new FluidStack(Fluids.WATER, 250))
+                .addOutput(new TagOutputRecipe.ChancedOutput(Ingredient.of(MBSingletons.HONEY_JELLY), 1, 1, 0.1F))
+                .save(c, ModularBees.id("centrifuge/honey_jelly"));
     }
 
     private void electrode(Item electrode, TagKey<Item> material, TagKey<Item> material2, String name, @NotNull RecipeOutput c) {

@@ -362,6 +362,21 @@ public final class BeeTable {
                 }
             }
 
+            @Override
+            public ItemStack getBaseStack() {
+                throw new UnsupportedOperationException();
+            }
+
+            @Override
+            public float getChance() {
+                throw new UnsupportedOperationException();
+            }
+
+            @Override
+            public float getAverageAmount() {
+                throw new UnsupportedOperationException();
+            }
+
         }
 
     }

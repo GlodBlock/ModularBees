@@ -1,0 +1,21 @@
+{
+  "type": "productivebees:centrifuge",
+  "fluid": {
+    "amount": 250,
+    "fluid": "minecraft:water"
+  },
+  "ingredient": {
+    "item": "minecraft:honey_block"
+  },
+  "outputs": [
+    {
+      "chance": 0.1,
+      "item": {
+        "item": "modularbees:honey_jelly"
+      },
+      "max": 1,
+      "min": 1
+    }
+  ],
+  "processingTime": 0
+}
