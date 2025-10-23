@@ -65,6 +65,7 @@ public class MBSingletons {
     public static ItemElectrode ELECTRODE_NETHERITE;
     public static Item DRAGON_BREATH_BUCKET;
     public static ItemMB HONEY_JELLY;
+    public static ItemMB LOYAL_TREAT;
 
     public static void init(MBRegistryHandler regHandler) {
         MODULAR_BEEHIVE_CORE = new BlockModularBeehive();
@@ -89,6 +90,7 @@ public class MBSingletons {
         ELECTRODE_NETHERITE = new ItemElectrode(25 * GameConstants.MINUTE, Ingredient.of(Tags.Items.INGOTS_NETHERITE));
         DRAGON_BREATH_BUCKET = new BucketItem(FluidDragonBreath.getFluid(), new Item.Properties().craftRemainder(Items.BUCKET).stacksTo(1));
         HONEY_JELLY = new ItemMB();
+        LOYAL_TREAT = new ItemMB();
         regHandler.block("modular_beehive_core", MODULAR_BEEHIVE_CORE, TileModularBeehive.class, TileModularBeehive::new);
         regHandler.block("modular_beehive_part", MODULAR_BEEHIVE_PART, TileBeehivePart.class, TileBeehivePart::new);
         regHandler.block("modular_beehive_alveary", MODULAR_ALVEARY, TileBeehiveAlveary.class, TileBeehiveAlveary::new);
@@ -110,6 +112,7 @@ public class MBSingletons {
         regHandler.item("electrode_netherite", ELECTRODE_NETHERITE);
         regHandler.item("dragon_breath_bucket", DRAGON_BREATH_BUCKET);
         regHandler.item("honey_jelly", HONEY_JELLY);
+        regHandler.item("royal_treat", LOYAL_TREAT);
     }
 
 }

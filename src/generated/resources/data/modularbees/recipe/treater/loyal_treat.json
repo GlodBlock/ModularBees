@@ -1,0 +1,8 @@
+{
+  "type": "modularbees:treater_food",
+  "boost": 2.0,
+  "food": {
+    "item": "modularbees:royal_treat"
+  },
+  "output": {}
+}

@@ -1,7 +1,7 @@
 {
   "type": "productivebees:centrifuge",
   "fluid": {
-    "amount": 250,
+    "amount": 20,
     "fluid": "minecraft:water"
   },
   "ingredient": {

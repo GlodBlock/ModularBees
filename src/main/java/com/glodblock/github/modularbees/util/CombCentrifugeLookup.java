@@ -179,7 +179,7 @@ public final class CombCentrifugeLookup {
                 });
             } else {
                 // If N is large, use normal distribution simulation
-                this.outputs.forEach(c -> collector.accept(this.roll(c, multiplier, random)));
+                this.outputs.forEach(c -> this.roll(collector, c, multiplier, random));
             }
         }
 
@@ -189,7 +189,7 @@ public final class CombCentrifugeLookup {
             }
         }
 
-        ItemStack roll(ChanceStack chance, int n, RandomSource random) {
+        void roll(Consumer<ItemStack> collector, ChanceStack chance, int n, RandomSource random) {
             var stack = chance.getBaseStack();
             float w = chance.getAverageAmount();
             float p = chance.getChance();
@@ -197,9 +197,8 @@ public final class CombCentrifugeLookup {
             double o = Math.sqrt(w * w * n * p * (1 - p));
             int x = (int) Math.round(u + o * random.nextGaussian());
             if (x > 0) {
-                return stack.copyWithCount(x);
+                collector.accept(stack.copyWithCount(x));
             }
-            return ItemStack.EMPTY;
         }
 
     }

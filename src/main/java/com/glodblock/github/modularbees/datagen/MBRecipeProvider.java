@@ -14,6 +14,7 @@ import cy.jdkdigital.productivebees.init.ModTags;
 import cy.jdkdigital.productivelib.common.recipe.TagOutputRecipe;
 import cy.jdkdigital.productivelib.registry.LibItems;
 import net.minecraft.core.HolderLookup;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.data.PackOutput;
 import net.minecraft.data.recipes.RecipeCategory;
 import net.minecraft.data.recipes.RecipeOutput;
@@ -27,10 +28,13 @@ import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.item.alchemy.PotionContents;
+import net.minecraft.world.item.alchemy.Potions;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.material.Fluids;
 import net.neoforged.neoforge.common.Tags;
+import net.neoforged.neoforge.common.crafting.DataComponentIngredient;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.crafting.SizedFluidIngredient;
 import net.neoforged.neoforge.fluids.crafting.TagFluidIngredient;
@@ -66,6 +70,14 @@ public class MBRecipeProvider extends RecipeProvider {
                 .input(Blocks.HONEY_BLOCK)
                 .boost(1.15f)
                 .save(c, ModularBees.id("treater/honey_block"));
+        TreaterRecipe.builder()
+                .input(MBSingletons.HONEY_JELLY)
+                .boost(1.4f)
+                .save(c, ModularBees.id("treater/honey_jelly"));
+        TreaterRecipe.builder()
+                .input(MBSingletons.LOYAL_TREAT)
+                .boost(2f)
+                .save(c, ModularBees.id("treater/loyal_treat"));
         ElectrodeRecipe.builder()
                 .input(MBSingletons.ELECTRODE_COPPER)
                 .power(1.2f)
@@ -87,7 +99,7 @@ public class MBRecipeProvider extends RecipeProvider {
                 .pattern("PPP")
                 .pattern("WHW")
                 .define('W', ModItems.WAX.get())
-                .define('H', Blocks.HONEY_BLOCK)
+                .define('H', MBSingletons.HONEY_JELLY)
                 .define('P', ItemTags.PLANKS)
                 .unlockedBy(C, has(ModItems.WAX.get()))
                 .save(c, ModularBees.id("scented_plank"));
@@ -154,6 +166,14 @@ public class MBRecipeProvider extends RecipeProvider {
                 .requires(MBSingletons.MODULAR_BEEHIVE_PART)
                 .unlockedBy(C, has(ModBlocks.DRAGON_EGG_HIVE.get()))
                 .save(c, ModularBees.id("modular_dragon_hive"));
+        ShapelessRecipeBuilder.shapeless(RecipeCategory.MISC, MBSingletons.LOYAL_TREAT)
+                .requires(ModItems.HONEY_TREAT.get())
+                .requires(MBSingletons.HONEY_JELLY)
+                .requires(MBSingletons.HONEY_JELLY)
+                .requires(MBSingletons.HONEY_JELLY)
+                .requires(DataComponentIngredient.of(false, DataComponents.POTION_CONTENTS, new PotionContents(Potions.HEALING), Items.POTION))
+                .unlockedBy(C, has(MBSingletons.HONEY_JELLY))
+                .save(c, ModularBees.id("royal_treat"));
         this.electrode(MBSingletons.ELECTRODE_COPPER, Tags.Items.INGOTS_COPPER, Tags.Items.STORAGE_BLOCKS_COPPER, "copper", c);
         this.electrode(MBSingletons.ELECTRODE_IRON, Tags.Items.INGOTS_IRON, Tags.Items.STORAGE_BLOCKS_IRON, "iron", c);
         this.electrode(MBSingletons.ELECTRODE_GOLD, Tags.Items.INGOTS_GOLD, Tags.Items.STORAGE_BLOCKS_GOLD, "gold", c);
@@ -181,7 +201,7 @@ public class MBRecipeProvider extends RecipeProvider {
                 .unlockedBy(C, has(Items.DRAGON_BREATH))
                 .save(c, ModularBees.id("fill_dragon_breath_bucket"));
         CentrifugeRecipeBuilder.item(Blocks.HONEY_BLOCK.asItem())
-                .setFluidOutput(new FluidStack(Fluids.WATER, 250))
+                .setFluidOutput(new FluidStack(Fluids.WATER, 20))
                 .addOutput(new TagOutputRecipe.ChancedOutput(Ingredient.of(MBSingletons.HONEY_JELLY), 1, 1, 0.1F))
                 .save(c, ModularBees.id("centrifuge/honey_jelly"));
     }

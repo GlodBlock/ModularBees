@@ -3,7 +3,7 @@
   "category": "building",
   "key": {
     "H": {
-      "item": "minecraft:honey_block"
+      "item": "modularbees:honey_jelly"
     },
     "P": {
       "tag": "minecraft:planks"
