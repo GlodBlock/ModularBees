@@ -18,6 +18,9 @@
       "item": "productivebees:draconic_chunk"
     },
     {
+      "item": "productivebees:draconic_chunk"
+    },
+    {
       "type": "neoforge:components",
       "components": {
         "minecraft:potion_contents": {

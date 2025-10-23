@@ -15,7 +15,10 @@
       "item": "minecraft:sculk"
     },
     {
-      "item": "minecraft:disc_fragment_5"
+      "item": "minecraft:sculk"
+    },
+    {
+      "item": "minecraft:sculk_catalyst"
     },
     {
       "type": "neoforge:components",

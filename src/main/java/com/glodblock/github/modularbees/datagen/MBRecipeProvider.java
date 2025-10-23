@@ -84,7 +84,7 @@ public class MBRecipeProvider extends RecipeProvider {
                 .save(c, ModularBees.id("treater/ender_treat"));
         TreaterRecipe.builder()
                 .input(MBSingletons.SOUL_TREAT)
-                .boost(4.7f)
+                .boost(4.5f)
                 .save(c, ModularBees.id("treater/soul_treat"));
         ElectrodeRecipe.builder()
                 .input(MBSingletons.ELECTRODE_COPPER)
@@ -188,6 +188,7 @@ public class MBRecipeProvider extends RecipeProvider {
                 .requires(MBSingletons.HONEY_JELLY)
                 .requires(Items.DRAGON_BREATH)
                 .requires(ModItems.DRACONIC_CHUNK.get())
+                .requires(ModItems.DRACONIC_CHUNK.get())
                 .requires(DataComponentIngredient.of(false, DataComponents.POTION_CONTENTS, new PotionContents(Potions.SWIFTNESS), Items.POTION))
                 .unlockedBy(C, has(MBSingletons.LOYAL_TREAT))
                 .save(c, ModularBees.id("ender_treat"));
@@ -196,7 +197,8 @@ public class MBRecipeProvider extends RecipeProvider {
                 .requires(MBSingletons.ENDER_TREAT)
                 .requires(MBSingletons.LOYAL_TREAT)
                 .requires(Blocks.SCULK)
-                .requires(Items.DISC_FRAGMENT_5)
+                .requires(Blocks.SCULK)
+                .requires(Blocks.SCULK_CATALYST)
                 .requires(DataComponentIngredient.of(false, DataComponents.POTION_CONTENTS, new PotionContents(Potions.REGENERATION), Items.POTION))
                 .unlockedBy(C, has(MBSingletons.ENDER_TREAT))
                 .save(c, ModularBees.id("soul_treat"));
