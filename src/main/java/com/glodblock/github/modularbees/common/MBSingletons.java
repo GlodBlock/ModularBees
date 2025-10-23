@@ -66,6 +66,8 @@ public class MBSingletons {
     public static Item DRAGON_BREATH_BUCKET;
     public static ItemMB HONEY_JELLY;
     public static ItemMB LOYAL_TREAT;
+    public static ItemMB ENDER_TREAT;
+    public static ItemMB SOUL_TREAT;
 
     public static void init(MBRegistryHandler regHandler) {
         MODULAR_BEEHIVE_CORE = new BlockModularBeehive();
@@ -91,6 +93,8 @@ public class MBSingletons {
         DRAGON_BREATH_BUCKET = new BucketItem(FluidDragonBreath.getFluid(), new Item.Properties().craftRemainder(Items.BUCKET).stacksTo(1));
         HONEY_JELLY = new ItemMB();
         LOYAL_TREAT = new ItemMB();
+        ENDER_TREAT = new ItemMB();
+        SOUL_TREAT = new ItemMB();
         regHandler.block("modular_beehive_core", MODULAR_BEEHIVE_CORE, TileModularBeehive.class, TileModularBeehive::new);
         regHandler.block("modular_beehive_part", MODULAR_BEEHIVE_PART, TileBeehivePart.class, TileBeehivePart::new);
         regHandler.block("modular_beehive_alveary", MODULAR_ALVEARY, TileBeehiveAlveary.class, TileBeehiveAlveary::new);
@@ -113,6 +117,8 @@ public class MBSingletons {
         regHandler.item("dragon_breath_bucket", DRAGON_BREATH_BUCKET);
         regHandler.item("honey_jelly", HONEY_JELLY);
         regHandler.item("royal_treat", LOYAL_TREAT);
+        regHandler.item("ender_treat", ENDER_TREAT);
+        regHandler.item("soul_treat", SOUL_TREAT);
     }
 
 }

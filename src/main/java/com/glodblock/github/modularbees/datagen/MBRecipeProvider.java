@@ -78,6 +78,14 @@ public class MBRecipeProvider extends RecipeProvider {
                 .input(MBSingletons.LOYAL_TREAT)
                 .boost(2f)
                 .save(c, ModularBees.id("treater/loyal_treat"));
+        TreaterRecipe.builder()
+                .input(MBSingletons.ENDER_TREAT)
+                .boost(3f)
+                .save(c, ModularBees.id("treater/ender_treat"));
+        TreaterRecipe.builder()
+                .input(MBSingletons.SOUL_TREAT)
+                .boost(4.7f)
+                .save(c, ModularBees.id("treater/soul_treat"));
         ElectrodeRecipe.builder()
                 .input(MBSingletons.ELECTRODE_COPPER)
                 .power(1.2f)
@@ -174,6 +182,24 @@ public class MBRecipeProvider extends RecipeProvider {
                 .requires(DataComponentIngredient.of(false, DataComponents.POTION_CONTENTS, new PotionContents(Potions.HEALING), Items.POTION))
                 .unlockedBy(C, has(MBSingletons.HONEY_JELLY))
                 .save(c, ModularBees.id("royal_treat"));
+        ShapelessRecipeBuilder.shapeless(RecipeCategory.MISC, MBSingletons.ENDER_TREAT)
+                .requires(MBSingletons.LOYAL_TREAT)
+                .requires(MBSingletons.LOYAL_TREAT)
+                .requires(MBSingletons.HONEY_JELLY)
+                .requires(Items.DRAGON_BREATH)
+                .requires(ModItems.DRACONIC_CHUNK.get())
+                .requires(DataComponentIngredient.of(false, DataComponents.POTION_CONTENTS, new PotionContents(Potions.SWIFTNESS), Items.POTION))
+                .unlockedBy(C, has(MBSingletons.LOYAL_TREAT))
+                .save(c, ModularBees.id("ender_treat"));
+        ShapelessRecipeBuilder.shapeless(RecipeCategory.MISC, MBSingletons.SOUL_TREAT)
+                .requires(MBSingletons.ENDER_TREAT)
+                .requires(MBSingletons.ENDER_TREAT)
+                .requires(MBSingletons.LOYAL_TREAT)
+                .requires(Blocks.SCULK)
+                .requires(Items.DISC_FRAGMENT_5)
+                .requires(DataComponentIngredient.of(false, DataComponents.POTION_CONTENTS, new PotionContents(Potions.REGENERATION), Items.POTION))
+                .unlockedBy(C, has(MBSingletons.ENDER_TREAT))
+                .save(c, ModularBees.id("soul_treat"));
         this.electrode(MBSingletons.ELECTRODE_COPPER, Tags.Items.INGOTS_COPPER, Tags.Items.STORAGE_BLOCKS_COPPER, "copper", c);
         this.electrode(MBSingletons.ELECTRODE_IRON, Tags.Items.INGOTS_IRON, Tags.Items.STORAGE_BLOCKS_IRON, "iron", c);
         this.electrode(MBSingletons.ELECTRODE_GOLD, Tags.Items.INGOTS_GOLD, Tags.Items.STORAGE_BLOCKS_GOLD, "gold", c);

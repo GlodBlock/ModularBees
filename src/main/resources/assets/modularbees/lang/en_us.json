@@ -23,6 +23,8 @@
   "item.modularbees.dragon_breath_bucket": "Dragon Breath Bucket",
   "item.modularbees.honey_jelly": "Honey Jelly",
   "item.modularbees.royal_treat": "Royal Treat",
+  "item.modularbees.ender_treat": "Ender Treat",
+  "item.modularbees.soul_treat": "Soul Treat",
   "fluid_type.modularbees.dragon_breath": "Dragon Breath",
   "modularbees.tooltip.electrode_power": "Gives x%s speed boost",
   "modularbees.chat.beehive_unformed": "Modular Beehive is unformed yet",

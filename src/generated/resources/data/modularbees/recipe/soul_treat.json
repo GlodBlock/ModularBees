@@ -1,0 +1,34 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "modularbees:ender_treat"
+    },
+    {
+      "item": "modularbees:ender_treat"
+    },
+    {
+      "item": "modularbees:royal_treat"
+    },
+    {
+      "item": "minecraft:sculk"
+    },
+    {
+      "item": "minecraft:disc_fragment_5"
+    },
+    {
+      "type": "neoforge:components",
+      "components": {
+        "minecraft:potion_contents": {
+          "potion": "minecraft:regeneration"
+        }
+      },
+      "items": "minecraft:potion"
+    }
+  ],
+  "result": {
+    "count": 1,
+    "id": "modularbees:soul_treat"
+  }
+}
