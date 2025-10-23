@@ -353,9 +353,9 @@ public final class BeeTable {
                     var size = items.size();
                     if (size > 0) {
                         items.stream()
-                                .filter(stack -> !stack.is(ModTags.WANNABEE_LOOT_BLACKLIST))
-                                .peek(stack -> stack.setCount(stack.getCount() * this.multiplier))
                                 .skip(random.nextInt(size))
+                                .filter(stack -> !stack.is(ModTags.WANNABEE_LOOT_BLACKLIST))
+                                .map(stack -> stack.copyWithCount(stack.getCount() * this.multiplier))
                                 .findAny()
                                 .ifPresent(adder);
                     }

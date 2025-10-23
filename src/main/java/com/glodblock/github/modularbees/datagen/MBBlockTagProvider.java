@@ -32,5 +32,7 @@ public class MBBlockTagProvider extends BlockTagsProvider {
         }
         tag(BlockTags.PLANKS).add(MBSingletons.SCENTED_PLANK);
         tag(MBTags.SOUL_BLACKLIST).add(MBSingletons.MODULAR_BEEHIVE_CORE);
+        tag(MBTags.JDT_BLACKLIST).add(MBSingletons.MODULAR_BEEHIVE_CORE);
+        tag(MBTags.TIAB_BLACKLIST).add(MBSingletons.MODULAR_BEEHIVE_CORE);
     }
 }

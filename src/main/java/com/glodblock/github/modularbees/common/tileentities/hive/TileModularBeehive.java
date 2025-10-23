@@ -91,9 +91,9 @@ public class TileModularBeehive extends TileMBModularCore implements ItemHandler
                         overclock += overclocker.getBoostAndConsume(this.table.getBeeCount());
                     }
                 }
+                overclock = Math.max(1, overclock);
+                this.addTick(overclock);
             }
-            overclock = Math.max(1, overclock);
-            this.addTick(overclock);
             if (!this.sending.isEmpty() && !this.stuck) {
                 for (int i = 0; i < this.sending.size(); ++i) {
                     var stack = this.sending.get(i).copy();

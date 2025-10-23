@@ -15,5 +15,7 @@ public final class MBTags {
     // Third-party tags
     public static final TagKey<Item> WRENCH = ItemTags.create(ResourceLocation.fromNamespaceAndPath("c", "tools/wrench"));
     public static final TagKey<Block> SOUL_BLACKLIST = BlockTags.create(ResourceLocation.fromNamespaceAndPath("industrialforegoingsouls", "cant_accelerate"));
+    public static final TagKey<Block> JDT_BLACKLIST = BlockTags.create(ResourceLocation.fromNamespaceAndPath("justdirethings", "tick_speed_deny"));
+    public static final TagKey<Block> TIAB_BLACKLIST = BlockTags.create(ResourceLocation.fromNamespaceAndPath("tiab", "un_acceleratable"));
 
 }
