@@ -1,0 +1,17 @@
+{
+  "name": "Centrifuge Import Hatch",
+  "icon": "modularbees:modular_centrifuge_import",
+  "read_by_default": true,
+  "category": "modularbees:centrifuge",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "title": "Centrifuge Import Hatch",
+      "text": "An input buffer for centrifuge, it can auto extract combs from its facing chest/tank.$(br)Centrifuge can take its inventory as input directly."
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "modularbees:modular_centrifuge_import"
+    }
+  ]
+}

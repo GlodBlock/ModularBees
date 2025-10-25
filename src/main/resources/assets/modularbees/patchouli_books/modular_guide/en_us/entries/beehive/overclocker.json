@@ -7,7 +7,7 @@
     {
       "type": "patchouli:text",
       "title": "Beehive Overclocker",
-      "text": "You can use Beehive Overclocker to make your bee produce even more faster. It needs energy and Electrode to work, better Electrode has higher speed boost.$(br)When you use multiple overclockers at the same time, the speed boosts are additive. That means two Netherite Electrodes(x25) can make bees work x50 faster."
+      "text": "You can use Beehive Overclocker to make your bee produce even more faster. It needs energy and Electrode to work, better Electrode has higher speed boost.$(br)When you use multiple overclockers at the same time, the speed boosts are additive. That means two Netherite Electrodes(x5) can make bees work x10 faster."
     },
     {
       "type": "patchouli:crafting",
@@ -17,7 +17,7 @@
     {
       "type": "patchouli:text",
       "title": "Electrode",
-      "text": "There four tiers of electrodes.$(li)Copper: x1.2$(li)Iron: x1.5$(li)Gold: x2.8$(li)Netherite: x5"
+      "text": "There four tiers of electrodes, and you can find their boost in JEI/tooltip.$(br)Electrodes will get more damage with more bees in hive. The formula: floor[(x/15+1)*(1.03^x)], x is amount of bees."
     },
     {
       "type": "patchouli:crafting",

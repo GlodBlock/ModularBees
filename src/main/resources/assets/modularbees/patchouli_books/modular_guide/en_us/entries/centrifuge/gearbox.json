@@ -1,0 +1,17 @@
+{
+  "name": "Centrifuge Gearbox",
+  "icon": "modularbees:modular_centrifuge_gearbox",
+  "read_by_default": true,
+  "category": "modularbees:centrifuge",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "title": "Centrifuge Gearbox",
+      "text": "Gearbox can increase parallel by 1.5 and needs wax to work.$(br)When you use multiple gearboxes at the same time, the parallel boosts are additive.$(br)It needs 40 wax at every work cycle."
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "modularbees:modular_centrifuge_gearbox"
+    }
+  ]
+}

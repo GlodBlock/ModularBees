@@ -1,0 +1,41 @@
+{
+  "name": "Modular Centrifuge Core",
+  "icon": "modularbees:modular_centrifuge_core",
+  "read_by_default": true,
+  "category": "modularbees:centrifuge",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "title": "Modular Centrifuge Core",
+      "text": "The controller of the Modular Centrifuge multiblock, a 3x3x3 structure with 4 four corners at bottom layer.$(br)You can replace any Centrifuge Structure Box with functional part to improve the centrifuge.$(br)Modular Centrifuge doesn't allow shared blocks."
+    },
+    {
+      "type": "patchouli:multiblock",
+      "name": "Modular Centrifuge",
+      "multiblock": {
+        "pattern": [
+          ["XXX", "XXX", "XXX"],
+          ["XXX", "X0X", "XCX"],
+          ["X X", "   ", "X X"]
+        ],
+        "mapping": {
+          "X": "modularbees:modular_centrifuge_part",
+          "0": "modularbees:modular_centrifuge_part",
+          "C": "modularbees:modular_centrifuge_core[facing=east]"
+        },
+        "symmetrical": true
+      },
+      "enable_visualize": false
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Features",
+      "text": "Modular Centrifuge supports all centrifuge upgrades. Speed upgrades can shorten process time and productivity upgrades can increase parallel.$(br)The base process time is the same as basic centrifuge(15s)."
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "modularbees:modular_centrifuge_core",
+      "recipe2": "modularbees:modular_centrifuge_part"
+    }
+  ]
+}

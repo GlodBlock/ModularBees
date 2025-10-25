@@ -1,0 +1,17 @@
+{
+  "name": "Centrifuge Heater",
+  "icon": "modularbees:modular_centrifuge_heater",
+  "read_by_default": true,
+  "category": "modularbees:centrifuge",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "title": "Centrifuge Heater",
+      "text": "Heater can make centrifuge work like Heated Centrifuge, which can process comb blocks and destroy all wax.$(br)Every centrifuge only allow $(l)one$() Heater installed. Heater needs power to work and can make centrifuge work 3 times faster.$(br)When Heater installed, centrifuge will only work when heater is powered."
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "modularbees:modular_centrifuge_heater"
+    }
+  ]
+}

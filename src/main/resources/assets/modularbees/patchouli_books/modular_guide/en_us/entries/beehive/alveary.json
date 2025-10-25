@@ -7,7 +7,7 @@
     {
       "type": "patchouli:text",
       "title": "Modular Alveary",
-      "text": "The core hive itself can't hold bees, so you need Alveary to house all your bees.$(br)Every Alveary can hold 5 bees, you need to use bee cages to put bees into the Alveary."
+      "text": "The core hive itself can't hold bees, so you need Alveary to house all your bees.$(br)Every Alveary can hold 5 bees, you need to use bee cages to put bees into the Alveary.$(br)Tip: You can right-click Alveary with bee cages to input/extract bees."
     },
     {
       "type": "patchouli:crafting",
