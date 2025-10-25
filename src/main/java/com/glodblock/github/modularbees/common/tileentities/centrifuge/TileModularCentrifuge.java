@@ -155,6 +155,13 @@ public class TileModularCentrifuge extends TileMBModularCore implements ItemHand
                     if (this.process >= WAITING_TICKS) {
                         this.process = 0;
                         int left = this.para;
+                        float boost = 1;
+                        for (var component : components) {
+                            if (component instanceof TileCentrifugeGearbox gearbox) {
+                                boost += gearbox.getBoostAndConsume();
+                            }
+                        }
+                        left = Math.round(left * boost);
                         for (int x = 0; x < this.getCombinedInputs().getSlots(); x ++) {
                             if (left >= 0) {
                                 var comb = this.getCombinedInputs().getStackInSlot(x);

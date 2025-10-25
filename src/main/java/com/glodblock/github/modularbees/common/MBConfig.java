@@ -21,6 +21,12 @@ public class MBConfig {
     public static final ModConfigSpec.IntValue DRAGON_BREATH_PRODUCE_BASE = BUILDER
             .comment("The base dragon breath output amount for draconic bee.")
             .defineInRange("hive.dragon_breath_base", 400, 0, 1000);
+    public static final ModConfigSpec.IntValue GEARBOX_WAX = BUILDER
+            .comment("The wax amount centrifuge gearbox needs to run.")
+            .defineInRange("centrifuge.gearbox_wax", 40, 0, 200);
+    public static final ModConfigSpec.DoubleValue GEARBOX_BOOST = BUILDER
+            .comment("The boost centrifuge gearbox gives.")
+            .defineInRange("centrifuge.gearbox_boost", 1.5, 1, 2);
     public static final ModConfigSpec SPEC = BUILDER.build();
 
 }

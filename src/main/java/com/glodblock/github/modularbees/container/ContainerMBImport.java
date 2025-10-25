@@ -11,7 +11,7 @@ public class ContainerMBImport extends ContainerMBBase<TileCentrifugeImport> {
 
     public final static MBGuiHandler.MenuHandler TYPE = MBGuiHandler.builder(TileCentrifugeImport.class)
             .factory(ContainerMBImport::new)
-            .build("modular_centrifuge_feeder");
+            .build("modular_centrifuge_import");
 
     protected ContainerMBImport(@Nullable MenuType<?> type, int id, Inventory inv, TileCentrifugeImport host) {
         super(type, id, inv, host);

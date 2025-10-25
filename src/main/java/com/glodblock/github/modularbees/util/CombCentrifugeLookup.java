@@ -42,7 +42,7 @@ public final class CombCentrifugeLookup {
     }
 
     public static boolean validInput(ItemStack stack, Level world) {
-        if (stack.isEmpty()) {
+        if (stack.isEmpty() || world == null) {
             return false;
         }
         if (stack.is(ModTags.Common.HONEYCOMBS) || stack.is(ModTags.Common.STORAGE_BLOCK_HONEYCOMBS)) {
