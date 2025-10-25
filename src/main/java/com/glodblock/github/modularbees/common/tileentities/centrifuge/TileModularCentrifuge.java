@@ -161,6 +161,7 @@ public class TileModularCentrifuge extends TileMBModularCore implements ItemHand
                                 boost += gearbox.getBoostAndConsume();
                             }
                         }
+                        boost = Math.max(1, boost);
                         left = Math.round(left * boost);
                         for (int x = 0; x < this.getCombinedInputs().getSlots(); x ++) {
                             if (left >= 0) {
