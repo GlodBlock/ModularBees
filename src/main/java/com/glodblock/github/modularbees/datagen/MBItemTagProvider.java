@@ -1,11 +1,9 @@
 package com.glodblock.github.modularbees.datagen;
 
 import com.glodblock.github.modularbees.ModularBees;
-import com.glodblock.github.modularbees.common.MBSingletons;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.data.PackOutput;
 import net.minecraft.data.tags.ItemTagsProvider;
-import net.minecraft.tags.ItemTags;
 import net.minecraft.world.level.block.Block;
 import net.neoforged.neoforge.common.data.ExistingFileHelper;
 import org.jetbrains.annotations.NotNull;
@@ -21,6 +19,6 @@ public class MBItemTagProvider extends ItemTagsProvider {
 
     @Override
     protected void addTags(HolderLookup.@NotNull Provider provider) {
-        tag(ItemTags.PLANKS).add(MBSingletons.SCENTED_PLANK.asItem());
+
     }
 }

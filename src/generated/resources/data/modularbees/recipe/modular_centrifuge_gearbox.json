@@ -1,0 +1,30 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "C": {
+      "tag": "c:chests"
+    },
+    "G": {
+      "item": "minecraft:grindstone"
+    },
+    "P": {
+      "item": "modularbees:modular_centrifuge_part"
+    },
+    "R": {
+      "item": "minecraft:comparator"
+    },
+    "X": {
+      "tag": "c:chains"
+    }
+  },
+  "pattern": [
+    "GRG",
+    "XPX",
+    "GCG"
+  ],
+  "result": {
+    "count": 1,
+    "id": "modularbees:modular_centrifuge_gearbox"
+  }
+}

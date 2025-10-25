@@ -1,0 +1,30 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "1": {
+      "item": "productivelib:upgrade_entity_filter"
+    },
+    "2": {
+      "item": "productivebees:inactive_dragon_egg"
+    },
+    "C": {
+      "item": "productivebees:centrifuge"
+    },
+    "N": {
+      "tag": "c:ingots/netherite"
+    },
+    "W": {
+      "tag": "c:storage_blocks/wax"
+    }
+  },
+  "pattern": [
+    "N1N",
+    "WCW",
+    "N2N"
+  ],
+  "result": {
+    "count": 1,
+    "id": "modularbees:modular_centrifuge_core"
+  }
+}

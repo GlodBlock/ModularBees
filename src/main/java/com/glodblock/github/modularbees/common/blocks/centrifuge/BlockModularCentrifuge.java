@@ -11,10 +11,13 @@ import com.glodblock.github.modularbees.util.RotorBlocks;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
+import net.minecraft.tags.BlockTags;
+import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.NotNull;
 
@@ -27,6 +30,11 @@ public class BlockModularCentrifuge extends BlockMBGuiBase<TileModularCentrifuge
     @Override
     protected void loadBlockModel(DyResourcePack pack) {
         // NO-OP
+    }
+
+    @Override
+    public TagKey<Block> harvestTool() {
+        return BlockTags.MINEABLE_WITH_PICKAXE;
     }
 
     @Override
