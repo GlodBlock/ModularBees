@@ -3,7 +3,7 @@
     {
       "name": "output",
       "role": "output",
-      "type": "item_stack",
+      "type": "optional_item_stack",
       "optional": {},
       "excluded": true,
       "allow_empty": true,
@@ -15,12 +15,12 @@
     {
       "name": "food",
       "role": "input",
-      "type": "non_empty_ingredient"
+      "type": "sized_ingredient"
     },
     {
       "name": "boost",
       "role": "other",
-      "type": "float<1.0,max>",
+      "type": "positive_float",
       "optional": 1.0,
       "always_write": true
     }

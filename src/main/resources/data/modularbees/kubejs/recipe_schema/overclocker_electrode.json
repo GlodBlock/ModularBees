@@ -3,12 +3,12 @@
     {
       "name": "electrode",
       "role": "input",
-      "type": "strict_item_stack"
+      "type": "item_stack"
     },
     {
       "name": "power",
       "role": "other",
-      "type": "float<1.0,max>",
+      "type": "positive_float",
       "optional": 1.0,
       "always_write": true
     }
