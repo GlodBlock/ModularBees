@@ -1,0 +1,41 @@
+{
+  "name": "模块化离心机核心",
+  "icon": "modularbees:modular_centrifuge_core",
+  "read_by_default": true,
+  "category": "modularbees:centrifuge",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "title": "模块化离心机核心",
+      "text": "模块化离心机多方块的控制器，3x3x3 结构，底层有 4 个角。$(br)您可以用功能部件替换任何离心机结构盒，以改进离心机。$(br)模块化离心机不允许共享方块。"
+    },
+    {
+      "type": "patchouli:multiblock",
+      "name": "模块化离心机",
+      "multiblock": {
+        "pattern": [
+          ["XXX", "XXX", "XXX"],
+          ["XXX", "X0X", "XCX"],
+          ["X X", "   ", "X X"]
+        ],
+        "mapping": {
+          "X": "modularbees:modular_centrifuge_part",
+          "0": "modularbees:modular_centrifuge_part",
+          "C": "modularbees:modular_centrifuge_core[facing=east]"
+        },
+        "symmetrical": true
+      },
+      "enable_visualize": false
+    },
+    {
+      "type": "patchouli:text",
+      "title": "特性",
+      "text": "模块化离心机支持所有离心机升级。速度升级可以缩短处理时间，而生产升级可以提高并行处理能力。$(br)基础处理时间与基础离心机相同（15秒）。"
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "modularbees:modular_centrifuge_core",
+      "recipe2": "modularbees:modular_centrifuge_part"
+    }
+  ]
+}
