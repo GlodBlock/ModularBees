@@ -1,0 +1,17 @@
+{
+  "name": "Escotilha de Exportação da Centrífuga",
+  "icon": "modularbees:modular_centrifuge_export",
+  "read_by_default": true,
+  "category": "modularbees:centrifuge",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "title": "Escotilha de Exportação da Centrífuga",
+      "text": "Um proxy do bloco central para logística, ele pode enviar automaticamente itens/fluidos para o baú/tanque para o qual está voltado."
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "modularbees:modular_centrifuge_export"
+    }
+  ]
+}

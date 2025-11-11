@@ -1,0 +1,36 @@
+{
+  "name": "Acelerador da Colmeia",
+  "icon": "modularbees:modular_beehive_overclocker",
+  "read_by_default": true,
+  "category": "modularbees:beehive",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "title": "Acelerador da Colmeia",
+      "text": "Você pode usar o Acelerador da Colmeia para fazer sua abelha produzir ainda mais rápido. Ele precisa de energia e um Eletrodo para funcionar, melhores Eletrodos têm maior bônus de velocidade.$(br)Quando você usa múltiplos aceleradores ao mesmo tempo, os bônus de velocidade são aditivos. Isso significa que dois Eletrodos de Netherita (x5) podem fazer as abelhas trabalharem x10 mais rápido."
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "modularbees:modular_overclocker",
+      "text": "$(o)Absolutamente Seguro"
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Electrode",
+      "text": "Existem quatro níveis de eletrodos, e você pode encontrar seus bônus no JEI/dica flutuante.$(br)Eletrodos sofrerão mais dano com mais abelhas na colmeia. A fórmula: floor[(x/15+1)*(1.03^x)], x é a quantidade de abelhas."
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "modularbees:electrode_copper",
+      "recipe2": "modularbees:electrode_iron"
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "modularbees:electrode_gold"
+    },
+    {
+      "type": "patchouli:smithing",
+      "recipe": "modularbees:electrode_netherite"
+    }
+  ]
+}

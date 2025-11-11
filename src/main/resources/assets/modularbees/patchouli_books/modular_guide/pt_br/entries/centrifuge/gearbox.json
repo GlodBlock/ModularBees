@@ -1,0 +1,17 @@
+{
+  "name": "Caixa de Engrenagens da Centrífuga",
+  "icon": "modularbees:modular_centrifuge_gearbox",
+  "read_by_default": true,
+  "category": "modularbees:centrifuge",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "title": "Caixa de Engrenagens da Centrífuga",
+      "text": "A Caixa de Engrenagens pode aumentar o paralelismo em 1.5 e precisa de cera para funcionar.$(br)Quando você usa múltiplas caixas de engrenagens ao mesmo tempo, os bônus de paralelismo são aditivos.$(br)Ela precisa de 40 de cera a cada ciclo de trabalho."
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "modularbees:modular_centrifuge_gearbox"
+    }
+  ]
+}
