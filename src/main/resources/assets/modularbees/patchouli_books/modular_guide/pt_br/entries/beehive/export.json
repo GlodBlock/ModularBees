@@ -1,0 +1,17 @@
+{
+  "name": "Escotilha de Exportação da Colmeia",
+  "icon": "modularbees:modular_export",
+  "read_by_default": true,
+  "category": "modularbees:beehive",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "title": "Escotilha de Exportação da Colmeia",
+      "text": "Um proxy do bloco central para logística, ele pode enviar automaticamente produtos e mel para o baú/tanque para o qual está voltado."
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "modularbees:modular_export"
+    }
+  ]
+}
