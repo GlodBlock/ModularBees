@@ -1,0 +1,17 @@
+{
+  "name": "离心机齿轮箱",
+  "icon": "modularbees:modular_centrifuge_gearbox",
+  "read_by_default": true,
+  "category": "modularbees:centrifuge",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "title": "离心机齿轮箱",
+      "text": "变速箱可将并行提高 1.5 倍，并且需要蜡才能工作。$(br)同时使用多个变速箱时，并行增强效果是叠加的。$(br)每个工作循环需要 40 蜡。"
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "modularbees:modular_centrifuge_gearbox"
+    }
+  ]
+}
