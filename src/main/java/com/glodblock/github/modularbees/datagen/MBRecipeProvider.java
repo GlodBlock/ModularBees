@@ -174,6 +174,15 @@ public class MBRecipeProvider extends RecipeProvider {
                 .requires(MBSingletons.MODULAR_BEEHIVE_PART)
                 .unlockedBy(C, has(ModBlocks.DRAGON_EGG_HIVE.get()))
                 .save(c, ModularBees.id("modular_dragon_hive"));
+        ShapedRecipeBuilder.shaped(RecipeCategory.DECORATIONS, MBSingletons.MODULAR_BEEHIVE_STACKER)
+                .pattern("CPC")
+                .pattern("LAL")
+                .define('C', Tags.Items.CHESTS)
+                .define('A', LibItems.UPGRADE_BLOCK.get())
+                .define('P', MBSingletons.MODULAR_BEEHIVE_PART)
+                .define('L', Tags.Items.LEATHERS)
+                .unlockedBy(C, has(MBSingletons.MODULAR_BEEHIVE_PART))
+                .save(c, ModularBees.id("modular_beehive_stacker"));
         ShapelessRecipeBuilder.shapeless(RecipeCategory.MISC, MBSingletons.LOYAL_TREAT)
                 .requires(ModItems.HONEY_TREAT.get())
                 .requires(MBSingletons.HONEY_JELLY)

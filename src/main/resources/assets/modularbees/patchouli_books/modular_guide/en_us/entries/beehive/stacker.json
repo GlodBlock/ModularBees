@@ -1,0 +1,17 @@
+{
+  "name": "Beehive Stacker",
+  "icon": "modularbees:modular_beehive_stacker",
+  "read_by_default": true,
+  "category": "modularbees:beehive",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "title": "Beehive Stacker",
+      "text": "Stacker can increase beehive output inventory's max stack size, and every stack can provides 3x stack size boost by default.$(br)When you use multiple stackers at the same time, the size boosts are additive."
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "modularbees:modular_beehive_stacker"
+    }
+  ]
+}
