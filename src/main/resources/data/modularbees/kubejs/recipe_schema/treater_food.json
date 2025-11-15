@@ -15,7 +15,7 @@
     {
       "name": "food",
       "role": "input",
-      "type": "sized_ingredient"
+      "type": "optional_ingredient"
     },
     {
       "name": "boost",
