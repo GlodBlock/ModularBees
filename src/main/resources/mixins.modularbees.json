@@ -9,6 +9,7 @@
     "ItemBlockCardboardBoxMixin"
   ],
   "client": [
+    "AbstractContainerScreenMixin",
     "ModelManagerMixin",
     "NeoForgeClientXplatImplMixin"
   ],

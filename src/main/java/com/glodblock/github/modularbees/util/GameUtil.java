@@ -154,4 +154,16 @@ public class GameUtil {
         }
     }
 
+    public static String readableCount(int count) {
+        if (count < 1000) {
+            return Integer.toString(count);
+        }
+        if (count < 10_000) {
+            float k = count / 1000f;
+            return String.format("%.1f", k) + "k";
+        }
+        int k = count / 1000;
+        return k + "k";
+    }
+
 }

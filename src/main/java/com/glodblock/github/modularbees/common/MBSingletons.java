@@ -13,6 +13,7 @@ import com.glodblock.github.modularbees.common.blocks.hive.BlockBeehiveExport;
 import com.glodblock.github.modularbees.common.blocks.hive.BlockBeehiveFeeder;
 import com.glodblock.github.modularbees.common.blocks.hive.BlockBeehiveOverclocker;
 import com.glodblock.github.modularbees.common.blocks.hive.BlockBeehivePart;
+import com.glodblock.github.modularbees.common.blocks.hive.BlockBeehiveStacker;
 import com.glodblock.github.modularbees.common.blocks.hive.BlockBeehiveTreater;
 import com.glodblock.github.modularbees.common.blocks.hive.BlockModularBeehive;
 import com.glodblock.github.modularbees.common.blocks.misc.BlockFluidDragonBreath;
@@ -33,6 +34,7 @@ import com.glodblock.github.modularbees.common.tileentities.hive.TileBeehiveExpo
 import com.glodblock.github.modularbees.common.tileentities.hive.TileBeehiveFeeder;
 import com.glodblock.github.modularbees.common.tileentities.hive.TileBeehiveOverclocker;
 import com.glodblock.github.modularbees.common.tileentities.hive.TileBeehivePart;
+import com.glodblock.github.modularbees.common.tileentities.hive.TileBeehiveStacker;
 import com.glodblock.github.modularbees.common.tileentities.hive.TileBeehiveTreater;
 import com.glodblock.github.modularbees.common.tileentities.hive.TileModularBeehive;
 import com.glodblock.github.modularbees.util.GameConstants;
@@ -52,6 +54,7 @@ public class MBSingletons {
     public static BlockBeehiveTreater MODULAR_TREATER;
     public static BlockBeehiveExport MODULAR_BEEHIVE_EXPORT;
     public static BlockBeehiveDragon MODULAR_DRAGON_HIVE;
+    public static BlockBeehiveStacker MODULAR_BEEHIVE_STACKER;
     public static BlockScentedPlank SCENTED_PLANK;
     public static BlockFluidDragonBreath DRAGON_BREATH;
     public static BlockModularCentrifuge MODULAR_CENTRIFUGE_CORE;
@@ -81,6 +84,7 @@ public class MBSingletons {
         MODULAR_TREATER = new BlockBeehiveTreater();
         MODULAR_BEEHIVE_EXPORT = new BlockBeehiveExport();
         MODULAR_DRAGON_HIVE = new BlockBeehiveDragon();
+        MODULAR_BEEHIVE_STACKER = new BlockBeehiveStacker();
         MODULAR_CENTRIFUGE_CORE = new BlockModularCentrifuge();
         MODULAR_CENTRIFUGE_PART = new BlockCentrifugePart();
         MODULAR_CENTRIFUGE_OVERCLOCKER = new BlockCentrifugeOverclocker();
@@ -107,6 +111,7 @@ public class MBSingletons {
         regHandler.block("modular_treater", MODULAR_TREATER, TileBeehiveTreater.class, TileBeehiveTreater::new);
         regHandler.block("modular_export", MODULAR_BEEHIVE_EXPORT, TileBeehiveExport.class, TileBeehiveExport::new);
         regHandler.block("modular_dragon_hive", MODULAR_DRAGON_HIVE, TileBeehiveDragon.class, TileBeehiveDragon::new);
+        regHandler.block("modular_beehive_stacker", MODULAR_BEEHIVE_STACKER, TileBeehiveStacker.class, TileBeehiveStacker::new);
         regHandler.block("modular_centrifuge_core", MODULAR_CENTRIFUGE_CORE, TileModularCentrifuge.class, TileModularCentrifuge::new);
         regHandler.block("modular_centrifuge_part", MODULAR_CENTRIFUGE_PART, TileCentrifugePart.class, TileCentrifugePart::new);
         regHandler.block("modular_centrifuge_overclocker", MODULAR_CENTRIFUGE_OVERCLOCKER, TileCentrifugeOverclocker.class, TileCentrifugeOverclocker::new);

@@ -7,8 +7,11 @@ public class MBConfig {
     private static final ModConfigSpec.Builder BUILDER = new ModConfigSpec.Builder();
 
     public static final ModConfigSpec.IntValue OVERCLOCKER_POWER_USAGE = BUILDER
-            .comment("Overclocker energy usage for every bee per tick.")
-            .defineInRange("hive.overclocker_energy_usage", 100, 0, 20000);
+            .comment("Overclocker energy usage per tick.")
+            .defineInRange("general.overclocker_energy_usage", 100, 0, 20000);
+    public static final ModConfigSpec.IntValue STACKER_MULTIPLIER = BUILDER
+            .comment("Stacker slot size multiplier.")
+            .defineInRange("general.stacker_multiplier", 3, 2, 10);
     public static final ModConfigSpec.IntValue AUTO_EXPORT_INTERVAL = BUILDER
             .comment("Tick interval for export hatch auto output.")
             .defineInRange("hive.auto_output_interval", 8, 1, 1000);

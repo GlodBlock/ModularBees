@@ -7,6 +7,7 @@ import com.glodblock.github.modularbees.common.blocks.hive.Hive;
 import com.glodblock.github.modularbees.common.caps.FluidHandlerHost;
 import com.glodblock.github.modularbees.common.caps.ItemHandlerHost;
 import com.glodblock.github.modularbees.common.inventory.IO;
+import com.glodblock.github.modularbees.common.inventory.MBBigItemInventory;
 import com.glodblock.github.modularbees.common.inventory.MBFluidInventory;
 import com.glodblock.github.modularbees.common.inventory.MBItemInventory;
 import com.glodblock.github.modularbees.common.inventory.SlotListener;
@@ -59,7 +60,7 @@ public class TileModularBeehive extends TileMBModularCore implements ItemHandler
             LibItems.UPGRADE_TIME.get(), LibItems.UPGRADE_BLOCK.get(), LibItems.UPGRADE_PRODUCTIVITY.get(),
             LibItems.UPGRADE_PRODUCTIVITY_2.get(), LibItems.UPGRADE_PRODUCTIVITY_3.get(), LibItems.UPGRADE_PRODUCTIVITY_4.get()
     );
-    protected final MBItemInventory outputs = new MBItemInventory(this, 18).outputOnly();
+    protected final MBBigItemInventory outputs = (MBBigItemInventory) new MBBigItemInventory(this, 18).outputOnly();
     protected final MBItemInventory upgrade = new MBItemInventory(this, 4, s -> ACCEPT_UPGRADES.contains(s.getItem())).setSlotLimit(1);
     protected final MBItemInventory bottle = new MBItemInventory(this, 2, MBItemInventory.ItemFilter.of(Items.GLASS_BOTTLE)).setIO(0, IO.IN).setIO(1, IO.OUT);
     protected final MBFluidInventory honey = new MBFluidInventory(this, 8 * GameConstants.BUCKET).outputOnly();
@@ -240,6 +241,7 @@ public class TileModularBeehive extends TileMBModularCore implements ItemHandler
         this.allChunk = null;
         this.allPos = null;
         this.table.clear();
+        this.outputs.setMultiplier(1);
         super.onStateChange();
     }
 
@@ -296,6 +298,8 @@ public class TileModularBeehive extends TileMBModularCore implements ItemHandler
         super.formStructure();
         if (this.isFormed()) {
             this.onBeeChange();
+            var stacker = this.getComponents(TileBeehiveStacker.class).size();
+            this.outputs.setMultiplier(stacker * MBConfig.STACKER_MULTIPLIER.get());
         }
     }
 

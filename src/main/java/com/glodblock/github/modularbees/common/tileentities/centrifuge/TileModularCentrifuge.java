@@ -371,7 +371,7 @@ public class TileModularCentrifuge extends TileMBModularCore implements ItemHand
                     if (this.heater == null) {
                         this.heater = h;
                     } else {
-                        // Multiplier Heaters
+                        // Multip Heaters
                         return false;
                     }
                 }
