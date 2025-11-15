@@ -7,7 +7,7 @@
     {
       "type": "patchouli:text",
       "title": "Centrifuge Overclocker",
-      "text": "You can use Centrifuge Overclocker to accelerate centrifuge. It needs energy and Electrode to work, better Electrode has higher speed boost.$(br)When you use multiple overclockers at the same time, the speed boosts are additive. That means two Netherite Electrodes(x5) can make centrifuge work x10 faster."
+      "text": "You can use Centrifuge Overclocker to accelerate centrifuge. It needs energy and Electrode to work, better Electrode has higher speed boost.$(br)When you use multiple overclockers at the same time, the speed boosts are additive. That means two Netherite Electrodes(+400%) can make bees work x9(+800%) faster."
     },
     {
       "type": "patchouli:crafting",
