@@ -82,7 +82,10 @@ public class TileBeehiveExport extends TileBeehivePart implements ServerTickTile
                 var itemTarget = this.itemCache.getCapability();
                 if (itemTarget != null) {
                     for (int x = 0; x < this.item.getSlots(); x ++) {
-                        var stack = this.item.getStackInSlot(x);
+                        var stack = this.item.extractItem(x, Integer.MAX_VALUE, true);
+                        if (stack.isEmpty()) {
+                            continue;
+                        }
                         var stored = stack.copy();
                         for (int y = 0; y < itemTarget.getSlots(); y ++) {
                             if (stack.isEmpty()) {
