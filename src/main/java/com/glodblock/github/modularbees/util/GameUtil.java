@@ -3,6 +3,7 @@ package com.glodblock.github.modularbees.util;
 import com.glodblock.github.modularbees.ModularBees;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import cy.jdkdigital.productivebees.init.ModItems;
 import it.unimi.dsi.fastutil.Hash;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
@@ -164,6 +165,14 @@ public class GameUtil {
         }
         int k = count / 1000;
         return k + "k";
+    }
+
+    public static ItemStack emptyCage(ItemStack cage) {
+        if (cage.getItem() == ModItems.STURDY_BEE_CAGE.get()) {
+            return new ItemStack(ModItems.STURDY_BEE_CAGE);
+        } else {
+            return ItemStack.EMPTY;
+        }
     }
 
 }

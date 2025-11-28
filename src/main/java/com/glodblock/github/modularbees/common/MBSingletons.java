@@ -16,6 +16,7 @@ import com.glodblock.github.modularbees.common.blocks.hive.BlockBeehivePart;
 import com.glodblock.github.modularbees.common.blocks.hive.BlockBeehiveStacker;
 import com.glodblock.github.modularbees.common.blocks.hive.BlockBeehiveTreater;
 import com.glodblock.github.modularbees.common.blocks.hive.BlockModularBeehive;
+import com.glodblock.github.modularbees.common.blocks.misc.BlockBeeExtractor;
 import com.glodblock.github.modularbees.common.blocks.misc.BlockFluidDragonBreath;
 import com.glodblock.github.modularbees.common.blocks.misc.BlockScentedPlank;
 import com.glodblock.github.modularbees.common.fluids.FluidDragonBreath;
@@ -37,6 +38,7 @@ import com.glodblock.github.modularbees.common.tileentities.hive.TileBeehivePart
 import com.glodblock.github.modularbees.common.tileentities.hive.TileBeehiveStacker;
 import com.glodblock.github.modularbees.common.tileentities.hive.TileBeehiveTreater;
 import com.glodblock.github.modularbees.common.tileentities.hive.TileModularBeehive;
+import com.glodblock.github.modularbees.common.tileentities.misc.TileBeeExtractor;
 import com.glodblock.github.modularbees.util.GameConstants;
 import net.minecraft.world.item.BucketItem;
 import net.minecraft.world.item.Item;
@@ -64,6 +66,7 @@ public class MBSingletons {
     public static BlockCentrifugeImport MODULAR_CENTRIFUGE_IMPORT;
     public static BlockCentrifugeHeater MODULAR_CENTRIFUGE_HEATER;
     public static BlockCentrifugeGearbox MODULAR_CENTRIFUGE_GEARBOX;
+    public static BlockBeeExtractor BEE_EXTRACTOR;
 
     public static ItemElectrode ELECTRODE_COPPER;
     public static ItemElectrode ELECTRODE_IRON;
@@ -92,6 +95,7 @@ public class MBSingletons {
         MODULAR_CENTRIFUGE_IMPORT = new BlockCentrifugeImport();
         MODULAR_CENTRIFUGE_HEATER = new BlockCentrifugeHeater();
         MODULAR_CENTRIFUGE_GEARBOX = new BlockCentrifugeGearbox();
+        BEE_EXTRACTOR = new BlockBeeExtractor();
         SCENTED_PLANK = new BlockScentedPlank();
         DRAGON_BREATH = new BlockFluidDragonBreath();
         ELECTRODE_COPPER = new ItemElectrode(5 * GameConstants.MINUTE, Ingredient.of(Tags.Items.INGOTS_COPPER));
@@ -119,6 +123,7 @@ public class MBSingletons {
         regHandler.block("modular_centrifuge_import", MODULAR_CENTRIFUGE_IMPORT, TileCentrifugeImport.class, TileCentrifugeImport::new);
         regHandler.block("modular_centrifuge_heater", MODULAR_CENTRIFUGE_HEATER, TileCentrifugeHeater.class, TileCentrifugeHeater::new);
         regHandler.block("modular_centrifuge_gearbox", MODULAR_CENTRIFUGE_GEARBOX, TileCentrifugeGearbox.class, TileCentrifugeGearbox::new);
+        regHandler.block("bee_extractor", BEE_EXTRACTOR, TileBeeExtractor.class, TileBeeExtractor::new);
         regHandler.block("scented_plank", SCENTED_PLANK);
         regHandler.item("electrode_copper", ELECTRODE_COPPER);
         regHandler.item("electrode_iron", ELECTRODE_IRON);

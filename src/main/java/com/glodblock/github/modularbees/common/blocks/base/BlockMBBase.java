@@ -28,11 +28,23 @@ import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.NoteBlockInstrument;
 import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.shapes.BooleanOp;
+import net.minecraft.world.phys.shapes.Shapes;
+import net.minecraft.world.phys.shapes.VoxelShape;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public class BlockMBBase extends Block implements RegisterTask, ResourceProvider, DataProvider {
 
+    public static final VoxelShape MACHINE_SHAPE = Shapes.join(
+            Shapes.block(),
+            Shapes.or(
+                    box(0.0F, 0.0F, 3.0F, 16.0F, 3.0F, 13.0F),
+                    box(3.0F, 0.0F, 0.0F, 13.0F, 3.0F, 16.0F),
+                    box(1.0F, 0.0F, 1.0F, 15.0F, 3.0F, 15.0F)
+            ),
+            BooleanOp.ONLY_FIRST
+    );
     private ResourceLocation registryName;
 
     public BlockMBBase(Properties properties) {
@@ -127,6 +139,13 @@ public class BlockMBBase extends Block implements RegisterTask, ResourceProvider
     public static BlockBehaviour.Properties centrifuge() {
         return BlockBehaviour.Properties.of()
                 .mapColor(MapColor.STONE)
+                .requiresCorrectToolForDrops()
+                .strength(2.5F);
+    }
+
+    public static BlockBehaviour.Properties machine() {
+        return BlockBehaviour.Properties.of()
+                .mapColor(MapColor.METAL)
                 .requiresCorrectToolForDrops()
                 .strength(2.5F);
     }

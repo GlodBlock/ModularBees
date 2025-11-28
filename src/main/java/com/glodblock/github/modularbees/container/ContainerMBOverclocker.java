@@ -17,7 +17,7 @@ public class ContainerMBOverclocker extends ContainerMBBase<TileMBOverclocker> {
         super(type, id, inv, host);
         this.addItemHandlerSlot(host.getHandlerByName("electrode"), 80, 35, 1);
         this.bindPlayerInventorySlots(inv);
-        this.getSync().addInt(1, this::getEnergy, energy -> this.getHost().getEnergyStorage().setStoredEnergy(energy));
+        this.getSync().addInt(1, this::getEnergy, this.getHost().getEnergyStorage()::setStoredEnergy);
     }
 
     public int getEnergy() {

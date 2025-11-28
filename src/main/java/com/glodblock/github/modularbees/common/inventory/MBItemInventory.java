@@ -15,30 +15,33 @@ public class MBItemInventory extends ItemStackHandler {
 
     protected final IO[] mode;
     protected final BlockEntity host;
-    protected ItemFilter filter = ItemFilter.PASS;
+    protected final ItemFilter[] filter;
     protected int slotLimit = Item.ABSOLUTE_MAX_STACK_SIZE;
 
     public MBItemInventory(BlockEntity host, int size) {
         super(size);
         this.host = host;
         this.mode = new IO[size];
+        this.filter = new ItemFilter[size];
         Arrays.fill(this.mode, IO.ALL);
+        Arrays.fill(this.filter, ItemFilter.PASS);
     }
 
     public MBItemInventory(BlockEntity host, int size, ItemFilter filter) {
         super(size);
         this.host = host;
-        this.filter = filter;
+        this.filter = new ItemFilter[size];
         this.mode = new IO[size];
         Arrays.fill(this.mode, IO.ALL);
+        Arrays.fill(this.filter, filter);
     }
 
     public IO getIO(int slot) {
         return this.mode[slot];
     }
 
-    public ItemFilter getFilter() {
-        return this.filter;
+    public ItemFilter getFilter(int slot) {
+        return this.filter[slot];
     }
 
     public MBItemInventory setSlotLimit(int limit) {
@@ -47,7 +50,12 @@ public class MBItemInventory extends ItemStackHandler {
     }
 
     public MBItemInventory setFilter(ItemFilter filter) {
-        this.filter = filter;
+        Arrays.fill(this.filter, filter);
+        return this;
+    }
+
+    public MBItemInventory setFilter(ItemFilter filter, int slot) {
+        this.filter[slot] = filter;
         return this;
     }
 
@@ -68,7 +76,7 @@ public class MBItemInventory extends ItemStackHandler {
 
     @Override
     public @NotNull ItemStack insertItem(int slot, @NotNull ItemStack stack, boolean simulate) {
-        if (this.mode[slot].canInsert() && this.filter.valid(stack)) {
+        if (this.mode[slot].canInsert() && this.filter[slot].valid(stack)) {
             return super.insertItem(slot, stack, simulate);
         } else {
             return stack;

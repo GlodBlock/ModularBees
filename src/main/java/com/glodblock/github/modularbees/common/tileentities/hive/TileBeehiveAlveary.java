@@ -5,11 +5,11 @@ import com.glodblock.github.modularbees.ModularBees;
 import com.glodblock.github.modularbees.common.MBSingletons;
 import com.glodblock.github.modularbees.common.caps.ItemHandlerHost;
 import com.glodblock.github.modularbees.common.inventory.MBItemInventory;
+import com.glodblock.github.modularbees.util.GameUtil;
 import com.glodblock.github.modularbees.util.ServerTickTile;
 import com.glodblock.github.modularbees.xmod.mek.CardboxWrap;
 import cy.jdkdigital.productivebees.common.entity.bee.SolitaryBee;
 import cy.jdkdigital.productivebees.common.item.BeeCage;
-import cy.jdkdigital.productivebees.init.ModItems;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
@@ -119,14 +119,6 @@ public class TileBeehiveAlveary extends TileBeehivePart implements ServerTickTil
         };
     }
 
-    public ItemStack emptyCage(ItemStack cage) {
-        if (cage.getItem() == ModItems.STURDY_BEE_CAGE.get()) {
-            return new ItemStack(ModItems.STURDY_BEE_CAGE);
-        } else {
-            return ItemStack.EMPTY;
-        }
-    }
-
     @Override
     public void tickServer(Level world, BlockState state) {
         var in = this.cageIn.getStackInSlot(0);
@@ -135,7 +127,7 @@ public class TileBeehiveAlveary extends TileBeehivePart implements ServerTickTil
                 var bee = BeeCage.getEntityFromStack(in, world, true);
                 if (bee != null && !(bee instanceof SolitaryBee) && bee.getAge() >= 0) {
                     this.addBee(world, bee);
-                    this.cageIn.setStackInSlot(0, this.emptyCage(in));
+                    this.cageIn.setStackInSlot(0, GameUtil.emptyCage(in));
                     this.notifyCore();
                 }
             }

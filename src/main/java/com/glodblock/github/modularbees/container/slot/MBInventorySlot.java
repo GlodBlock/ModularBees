@@ -21,7 +21,8 @@ public class MBInventorySlot extends SlotItemHandler {
     @Override
     public boolean mayPlace(@NotNull ItemStack stack) {
         IO mode = this.getItemHandler().getIO(this.index);
-        if (mode.canInsert() && this.getItemHandler().getFilter().valid(stack)) {
+        MBItemInventory.ItemFilter filter = this.getItemHandler().getFilter(this.index);
+        if (mode.canInsert() && filter.valid(stack)) {
             return super.mayPlace(stack);
         }
         return false;

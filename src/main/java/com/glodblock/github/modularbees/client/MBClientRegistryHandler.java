@@ -2,6 +2,7 @@ package com.glodblock.github.modularbees.client;
 
 import com.glodblock.github.modularbees.ModularBees;
 import com.glodblock.github.modularbees.client.gui.MBAlvearyGui;
+import com.glodblock.github.modularbees.client.gui.MBBeeExtractorGui;
 import com.glodblock.github.modularbees.client.gui.MBDragonGui;
 import com.glodblock.github.modularbees.client.gui.MBFeederGui;
 import com.glodblock.github.modularbees.client.gui.MBGearboxGui;
@@ -14,6 +15,7 @@ import com.glodblock.github.modularbees.client.gui.MBTreaterGui;
 import com.glodblock.github.modularbees.client.model.ModularConnectModelLoader;
 import com.glodblock.github.modularbees.common.fluids.FluidDragonBreath;
 import com.glodblock.github.modularbees.container.ContainerMBAlveary;
+import com.glodblock.github.modularbees.container.ContainerMBBeeExtractor;
 import com.glodblock.github.modularbees.container.ContainerMBDragon;
 import com.glodblock.github.modularbees.container.ContainerMBFeeder;
 import com.glodblock.github.modularbees.container.ContainerMBGearbox;
@@ -79,6 +81,7 @@ public class MBClientRegistryHandler {
         event.register(ContainerMBImport.TYPE.castType(), MBImportGui::new);
         event.register(ContainerMBHeater.TYPE.castType(), MBHeaterGui::new);
         event.register(ContainerMBGearbox.TYPE.castType(), MBGearboxGui::new);
+        event.register(ContainerMBBeeExtractor.TYPE.castType(), MBBeeExtractorGui::new);
     }
 
 }

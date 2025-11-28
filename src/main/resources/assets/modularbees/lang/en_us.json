@@ -18,6 +18,7 @@
   "block.modularbees.modular_centrifuge_import": "Centrifuge Import Hatch",
   "block.modularbees.modular_centrifuge_heater": "Centrifuge Heater",
   "block.modularbees.modular_centrifuge_gearbox": "Centrifuge Gearbox",
+  "block.modularbees.bee_extractor": "Bee Extractor",
   "item.modularbees.electrode_copper": "Copper Electrode",
   "item.modularbees.electrode_iron": "Iron Electrode",
   "item.modularbees.electrode_gold": "Gold Electrode",

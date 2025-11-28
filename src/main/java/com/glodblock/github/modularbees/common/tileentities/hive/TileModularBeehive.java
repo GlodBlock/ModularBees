@@ -341,6 +341,7 @@ public class TileModularBeehive extends TileMBModularCore implements ItemHandler
         };
     }
 
+    @Override
     public void onLoad() {
         super.onLoad();
         this.updateUpgrade();

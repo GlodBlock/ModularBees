@@ -51,7 +51,7 @@ public class BlockBeehiveAlveary extends BlockMBGuiBase<TileBeehiveAlveary> impl
                 }
                 tile.addBee(world, bee);
                 tile.notifyCore();
-                var empty = tile.emptyCage(one);
+                var empty = GameUtil.emptyCage(one);
                 stack.shrink(1);
                 if (!p.addItem(empty)) {
                     GameUtil.spawnDrops(world, p.getOnPos(), List.of(empty));

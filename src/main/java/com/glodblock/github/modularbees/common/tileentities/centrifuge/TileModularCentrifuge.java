@@ -383,6 +383,7 @@ public class TileModularCentrifuge extends TileMBModularCore implements ItemHand
         return true;
     }
 
+    @Override
     public void onLoad() {
         super.onLoad();
         this.updateUpgrade();
