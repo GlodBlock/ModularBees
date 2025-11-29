@@ -43,7 +43,7 @@ public class BlockBeeExtractor extends BlockMBGuiBase<TileBeeExtractor> {
 
     @Override
     public TagKey<Block> harvestTool() {
-        return BlockTags.MINEABLE_WITH_AXE;
+        return BlockTags.MINEABLE_WITH_PICKAXE;
     }
 
     @Override

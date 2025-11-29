@@ -1,0 +1,17 @@
+{
+  "name": "Bee Extractor",
+  "icon": "modularbees:bee_extractor",
+  "read_by_default": true,
+  "category": "modularbees:misc",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "title": "Bee Extractor",
+      "text": "Bee Extractor is a modified bottler, which can extract gene from the bee to the bottle."
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "modularbees:bee_extractor"
+    }
+  ]
+}

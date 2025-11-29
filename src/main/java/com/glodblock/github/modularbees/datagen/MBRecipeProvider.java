@@ -280,6 +280,16 @@ public class MBRecipeProvider extends RecipeProvider {
                 .define('C', Tags.Items.CHESTS)
                 .unlockedBy(C, has(MBSingletons.MODULAR_CENTRIFUGE_PART))
                 .save(c, ModularBees.id("modular_centrifuge_gearbox"));
+        ShapedRecipeBuilder.shaped(RecipeCategory.DECORATIONS, MBSingletons.BEE_EXTRACTOR)
+                .pattern("RPR")
+                .pattern("S S")
+                .pattern(" B ")
+                .define('R', Tags.Items.DUSTS_REDSTONE)
+                .define('P', Ingredient.of(Blocks.PISTON, Blocks.STICKY_PISTON))
+                .define('S', Tags.Items.STONES)
+                .define('B', ModBlocks.BOTTLER.get())
+                .unlockedBy(C, has(ModBlocks.BOTTLER.get()))
+                .save(c, ModularBees.id("bee_extractor"));
         this.electrode(MBSingletons.ELECTRODE_COPPER, Tags.Items.INGOTS_COPPER, Tags.Items.STORAGE_BLOCKS_COPPER, "copper", c);
         this.electrode(MBSingletons.ELECTRODE_IRON, Tags.Items.INGOTS_IRON, Tags.Items.STORAGE_BLOCKS_IRON, "iron", c);
         this.electrode(MBSingletons.ELECTRODE_GOLD, Tags.Items.INGOTS_GOLD, Tags.Items.STORAGE_BLOCKS_GOLD, "gold", c);
