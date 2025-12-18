@@ -15,10 +15,10 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 
-@Mixin(value = ModelManager.class)
+@Mixin(ModelManager.class)
 public abstract class ModelManagerMixin {
 
-    @Inject(method = "reload", at = @At(value = "HEAD"))
+    @Inject(method = "reload", at = @At("HEAD"))
     private void loadDynamicModels(PreparableReloadListener.PreparationBarrier preparationBarrier, ResourceManager resourceManager, ProfilerFiller preparationsProfiler, ProfilerFiller reloadProfiler, Executor backgroundExecutor, Executor gameExecutor, CallbackInfoReturnable<CompletableFuture<Void>> cir) {
         for (var item : MBRegistryHandler.INSTANCE.getItems()) {
             if (item instanceof ResourceProvider provider) {

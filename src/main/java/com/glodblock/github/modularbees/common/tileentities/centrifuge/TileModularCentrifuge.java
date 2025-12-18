@@ -511,13 +511,13 @@ public class TileModularCentrifuge extends TileMBModularCore implements ItemHand
         public @NotNull FluidStack drain(@NotNull FluidStack resource, @NotNull FluidAction action) {
             var fluid = resource.copy();
             for (var tank : this.tanks) {
-                if (resource.isEmpty()) {
-                    return fluid;
+                if (fluid.isEmpty()) {
+                    return resource.copy();
                 }
-                var drained = tank.drain(resource, action);
-                resource.shrink(drained.getAmount());
+                var drained = tank.drain(fluid, action);
+                fluid.shrink(drained.getAmount());
             }
-            fluid.shrink(resource.getAmount());
+            fluid.setAmount(resource.getAmount() - fluid.getAmount());
             return fluid;
         }
 
