@@ -62,7 +62,7 @@ public final class CombCentrifugeLookup {
         return VALID_INPUT.contains(stack.getItem());
     }
 
-    public static boolean query(Consumer<ItemStack> itemAccepter, Consumer<FluidStack> fluidAccepter, ItemStack comb, @NotNull Level world, int para, boolean heated) {
+    public static boolean query(Consumer<ItemStack> itemAcceptor, Consumer<FluidStack> fluidAcceptor, ItemStack comb, @NotNull Level world, int para, boolean heated) {
         if (comb.isEmpty()) {
             return false;
         }
@@ -87,11 +87,11 @@ public final class CombCentrifugeLookup {
             cache = lookupRecipe(comb, world);
         }
         if (cache != null) {
-            cache.output(fluidAccepter, para);
+            cache.output(fluidAcceptor, para);
             if (heated) {
-                cache.output(PREPROCESS.andThen(itemAccepter), para, world.getRandom());
+                cache.output(PREPROCESS.andThen(itemAcceptor), para, world.getRandom());
             } else {
-                cache.output(itemAccepter, para, world.getRandom());
+                cache.output(itemAcceptor, para, world.getRandom());
             }
             return true;
         }
@@ -127,7 +127,7 @@ public final class CombCentrifugeLookup {
                         .stream()
                         .map(e -> ChanceStack.of(e.getKey(), mul4(e.getValue(), isBlock)))
                         .toList(),
-                recipe.value().getFluidOutputs()
+                mul4(recipe.value().getFluidOutputs(), isBlock)
         );
         var item = key.getItem();
         if (item instanceof Honeycomb) {
@@ -157,6 +157,14 @@ public final class CombCentrifugeLookup {
         } else {
             return new TagOutputRecipe.ChancedOutput(origin.ingredient(), origin.min() * 4, origin.max() * 4, chance);
         }
+    }
+
+    private static FluidStack mul4(FluidStack origin, boolean enable) {
+        if (!enable || origin.isEmpty()) {
+            return origin;
+        }
+        var amt = origin.getAmount();
+        return origin.copyWithAmount(amt * 4);
     }
 
     private static void clear() {
