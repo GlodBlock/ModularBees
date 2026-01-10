@@ -10,6 +10,8 @@ import cy.jdkdigital.productivebees.common.block.Amber;
 import cy.jdkdigital.productivebees.common.block.entity.AmberBlockEntity;
 import cy.jdkdigital.productivebees.common.entity.bee.ConfigurableBee;
 import cy.jdkdigital.productivebees.common.entity.bee.ProductiveBee;
+import cy.jdkdigital.productivebees.common.entity.bee.hive.RancherBee;
+import cy.jdkdigital.productivebees.init.ModTags;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
 import net.minecraft.core.BlockPos;
@@ -56,6 +58,15 @@ public class TileBeehiveFeeder extends TileBeehivePart implements ItemHandlerHos
                 }
                 if (productiveBee.isFlowerBlock(block) || productiveBee.isFlowerItem(item)) {
                     return new FeedSlot(FeedResult.NON_CONSUME, this.feeder, x);
+                }
+                if (bee instanceof RancherBee) {
+                    var flowerTag = item.get(DataComponents.ENTITY_DATA);
+                    if (block.getBlock() instanceof Amber && flowerTag != null) {
+                        var entity = AmberBlockEntity.createEntity(this.level, flowerTag.copyTag());
+                        if (entity != null && entity.getType().is(ModTags.RANCHABLES)) {
+                            return new FeedSlot(FeedResult.NON_CONSUME, this.feeder, x);
+                        }
+                    }
                 }
             } else {
                 if (block.is(BlockTags.FLOWERS)) {

@@ -87,7 +87,6 @@ public final class CombCentrifugeLookup {
             cache = lookupRecipe(comb, world);
         }
         if (cache != null) {
-            //cache.info();
             cache.output(fluidAcceptor, para);
             if (heated) {
                 cache.output(PREPROCESS.andThen(itemAcceptor), para, world.getRandom());
