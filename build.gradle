@@ -72,6 +72,10 @@ repositories {
         name = "Modmaven"
         url = uri("https://modmaven.dev/")
     }
+    maven {
+        name = "cc"
+        url = "https://maven.squiddev.cc"
+    }
     mavenCentral()
 }
 
@@ -81,10 +85,12 @@ dependencies {
     implementation files("libs/productivelib.jar")
     implementation "mezz.jei:jei-1.21.1-neoforge:19.21.0.247"
     implementation "vazkii.patchouli:Patchouli:1.21-87-NEOFORGE"
+    compileOnly "cc.tweaked:cc-tweaked-1.21.1-forge:1.113.1"
     compileOnly "mekanism:Mekanism:1.21.1-10.7.9.72"
     // runtime test
     runtimeOnly "curse.maven:jade-324717:5427817"
     runtimeOnly "mekanism:Mekanism:1.21.1-10.7.0.55"
+    runtimeOnly "cc.tweaked:cc-tweaked-1.21.1-forge:1.113.1"
 }
 
 tasks.withType(ProcessResources).configureEach {

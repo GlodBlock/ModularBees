@@ -77,6 +77,10 @@ public class TileModularBeehive extends TileMBModularCore implements ItemHandler
         super(GlodUtil.getTileType(TileModularBeehive.class, TileModularBeehive::new, MBSingletons.MODULAR_BEEHIVE_CORE), pos, state);
     }
 
+    public BeeTable getBeeTable() {
+        return table;
+    }
+
     @Override
     protected void logicTick(@NotNull Level world, BlockState state, List<TileMBModularComponent> components) {
         if (!this.notLoaded()) {

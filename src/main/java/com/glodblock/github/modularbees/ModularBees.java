@@ -1,5 +1,6 @@
 package com.glodblock.github.modularbees;
 
+import com.glodblock.github.glodium.util.GlodUtil;
 import com.glodblock.github.modularbees.client.MBClientRegistryHandler;
 import com.glodblock.github.modularbees.common.MBConfig;
 import com.glodblock.github.modularbees.common.MBRegistryHandler;
@@ -13,6 +14,8 @@ import com.glodblock.github.modularbees.dynamic.MBPackSource;
 import com.glodblock.github.modularbees.network.MBNetworkHandler;
 import com.glodblock.github.modularbees.util.CombCentrifugeLookup;
 import com.glodblock.github.modularbees.util.DataProvider;
+import com.glodblock.github.modularbees.xmod.ModIDs;
+import com.glodblock.github.modularbees.xmod.cc.PeripheralInit;
 import com.mojang.logging.LogUtils;
 import net.minecraft.client.renderer.ItemBlockRenderTypes;
 import net.minecraft.client.renderer.RenderType;
@@ -83,6 +86,9 @@ public class ModularBees {
 
     public void commonSetup(FMLCommonSetupEvent event) {
         MBRegistryHandler.INSTANCE.init();
+        if (GlodUtil.checkMod(ModIDs.CC)) {
+            PeripheralInit.init();
+        }
     }
 
     public void clientSetup(FMLClientSetupEvent event) {

@@ -71,19 +71,27 @@ public final class BeeTable {
         this.add(null, -1, cache);
     }
 
+    public List<BeeCache> getData() {
+        return this.data;
+    }
+
+    public void link(BeeCache cache) {
+        var result = this.linker.apply(cache.key);
+        if (result.isSuccess()) {
+            this.remove(cache);
+            this.add(result.inv(), result.slot(), cache);
+            cache.setIndex(result.inv(), result.slot());
+        } else {
+            this.remove(cache);
+            this.add(null, -1, cache);
+            cache.setIndex(null, -1);
+        }
+    }
+
     public void collectOutput(Level world, Consumer<ItemStack> collector) {
         for (var cache : this.data) {
             if (cache.needLookup()) {
-                var result = this.linker.apply(cache.key);
-                if (result.isSuccess()) {
-                    this.remove(cache);
-                    this.add(result.inv(), result.slot(), cache);
-                    cache.setIndex(result.inv(), result.slot());
-                } else {
-                    this.remove(cache);
-                    this.add(null, -1, cache);
-                    cache.setIndex(null, -1);
-                }
+                this.link(cache);
             }
             var output = cache.getOutput();
             output.output(collector, world.getRandom());
@@ -151,7 +159,7 @@ public final class BeeTable {
 
     }
 
-    private static class BeeCache {
+    public static class BeeCache {
 
         private static final Set<String> SPECIAL_BEES = Set.of("productivebees:lumber_bee", "productivebees:quarry_bee", "productivebees:dye_bee", "productivebees:wanna");
         private final BeehiveBlockEntity.BeeData key;
@@ -232,6 +240,10 @@ public final class BeeTable {
             return null;
         }
 
+        public String getID() {
+            return this.beeId;
+        }
+
         @NotNull
         Output lookupSpecialOutput(Level world, BlockPos pos) {
             if (!this.isBind()) {
@@ -303,7 +315,7 @@ public final class BeeTable {
             this.needLookup = true;
         }
 
-        boolean needLookup() {
+        public boolean needLookup() {
             return this.needLookup;
         }
 
@@ -318,7 +330,7 @@ public final class BeeTable {
             return Output.EMPTY;
         }
 
-        boolean isBind() {
+        public boolean isBind() {
             return this.inv != null && this.slot >= 0;
         }
 
