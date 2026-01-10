@@ -30,7 +30,7 @@ import java.util.function.Consumer;
 
 public final class CombCentrifugeLookup {
 
-    private static final Object2ReferenceMap<ResourceLocation, Output> RL_MAP = new Object2ReferenceOpenHashMap<>();
+    private static final Object2ReferenceMap<RK, Output> RL_MAP = new Object2ReferenceOpenHashMap<>();
     private static final IdentityHashMap<Item, Output> ITEM_MAP = new IdentityHashMap<>();
     private static final Object2ReferenceMap<ItemStack, Output> NBT_MAP = new Object2ReferenceOpenCustomHashMap<>(GameUtil.ITEM_HASH);
     private static final Set<Item> VALID_INPUT = Collections.newSetFromMap(new IdentityHashMap<>());
@@ -63,7 +63,7 @@ public final class CombCentrifugeLookup {
     }
 
     public static boolean query(Consumer<ItemStack> itemAcceptor, Consumer<FluidStack> fluidAcceptor, ItemStack comb, @NotNull Level world, int para, boolean heated) {
-        if (comb.isEmpty()) {
+        if (comb.isEmpty() || para <= 0) {
             return false;
         }
         var item = comb.getItem();
@@ -74,7 +74,7 @@ public final class CombCentrifugeLookup {
         if (item instanceof Honeycomb || item instanceof CombBlockItem) {
             var type = comb.get(ModDataComponents.BEE_TYPE);
             if (type != null) {
-                cache = RL_MAP.get(type);
+                cache = RL_MAP.get(new RK(type, comb.is(ModTags.Common.STORAGE_BLOCK_HONEYCOMBS)));
             } else {
                 cache = NBT_MAP.get(comb);
             }
@@ -87,6 +87,7 @@ public final class CombCentrifugeLookup {
             cache = lookupRecipe(comb, world);
         }
         if (cache != null) {
+            //cache.info();
             cache.output(fluidAcceptor, para);
             if (heated) {
                 cache.output(PREPROCESS.andThen(itemAcceptor), para, world.getRandom());
@@ -133,7 +134,7 @@ public final class CombCentrifugeLookup {
         if (item instanceof Honeycomb) {
             var type = key.get(ModDataComponents.BEE_TYPE);
             if (type != null) {
-                RL_MAP.put(type, output);
+                RL_MAP.put(new RK(type, isBlock), output);
             } else {
                 NBT_MAP.put(comb, output);
             }
@@ -150,9 +151,9 @@ public final class CombCentrifugeLookup {
             return origin;
         }
         float chance = origin.chance();
-        if (chance * 4 < 1) {
+        if (chance * 4 <= 1) {
             return new TagOutputRecipe.ChancedOutput(origin.ingredient(), origin.min(), origin.max(), chance * 4);
-        } else if (chance * 2 < 1) {
+        } else if (chance * 2 <= 1) {
             return new TagOutputRecipe.ChancedOutput(origin.ingredient(), origin.min() * 2, origin.max() * 2, chance * 2);
         } else {
             return new TagOutputRecipe.ChancedOutput(origin.ingredient(), origin.min() * 4, origin.max() * 4, chance);
@@ -177,11 +178,21 @@ public final class CombCentrifugeLookup {
 
     private record Output(List<ChanceStack> outputs, FluidStack fluid) {
 
+        @Override
+        public @NotNull String toString() {
+            var sb = new StringBuilder();
+            for (var stack : this.outputs) {
+                sb.append("Type: ").append(stack.getClass().getSimpleName()).append(" ");
+                sb.append("Stack: %s, Avg: %s, P: %s".formatted(stack.getBaseStack().getItem(), stack.getAverageAmount(), stack.getChance()));
+            }
+            return sb.toString();
+        }
+
         void output(Consumer<ItemStack> collector, int multiplier, RandomSource random) {
             // If N is small, use brute simulation
             if (multiplier <= 8) {
                 this.outputs.forEach(c -> {
-                    for (int i = 0; i <= multiplier; i ++) {
+                    for (int i = 0; i < multiplier; i ++) {
                         c.get(collector, random);
                     }
                 });
@@ -214,6 +225,10 @@ public final class CombCentrifugeLookup {
     @SubscribeEvent
     public static void onReload(OnDatapackSyncEvent event) {
         clear();
+    }
+
+    record RK(ResourceLocation rl, boolean block) {
+
     }
 
 }
