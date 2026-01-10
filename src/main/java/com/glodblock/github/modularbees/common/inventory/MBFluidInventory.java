@@ -66,6 +66,9 @@ public class MBFluidInventory extends FluidTank {
     @Override
     protected void onContentsChanged() {
         if (this.host != null) {
+            if (this.host instanceof TankListener listener) {
+                listener.onChange(this);
+            }
             this.host.setChanged();
         }
     }

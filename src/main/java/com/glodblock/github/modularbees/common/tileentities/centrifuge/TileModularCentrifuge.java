@@ -9,6 +9,7 @@ import com.glodblock.github.modularbees.common.inventory.MBFluidInventory;
 import com.glodblock.github.modularbees.common.inventory.MBItemInventory;
 import com.glodblock.github.modularbees.common.inventory.RandomAccessTank;
 import com.glodblock.github.modularbees.common.inventory.SlotListener;
+import com.glodblock.github.modularbees.common.inventory.TankListener;
 import com.glodblock.github.modularbees.common.tileentities.base.TileMBModularComponent;
 import com.glodblock.github.modularbees.common.tileentities.base.TileMBModularCore;
 import com.glodblock.github.modularbees.util.CombCentrifugeLookup;
@@ -45,7 +46,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.function.Consumer;
 
-public class TileModularCentrifuge extends TileMBModularCore implements ItemHandlerHost, FluidHandlerHost, SlotListener {
+public class TileModularCentrifuge extends TileMBModularCore implements ItemHandlerHost, FluidHandlerHost, SlotListener, TankListener {
 
     public static final int FLUID_TANKS = 3;
     public static final int WAITING_TICKS = ProductiveBeesConfig.GENERAL.centrifugeProcessingTime.getAsInt();
@@ -413,6 +414,11 @@ public class TileModularCentrifuge extends TileMBModularCore implements ItemHand
         } else if (inv == this.outputs ||  inv == this.inputs) {
             this.stuck = false;
         }
+    }
+
+    @Override
+    public void onChange(IFluidHandler tank) {
+        this.stuck = false;
     }
 
     public void unblock() {
