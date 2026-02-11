@@ -40,6 +40,9 @@ public class BeeDisplay extends RelativeRect2i implements Renderable, TooltipEle
             type = tag.getString("id");
         }
         var bee = BeeIngredientFactory.getIngredient(type).get();
+        if (bee == null) {
+            return null;
+        }
         return new BeeInfo(bee, tag);
     }
 
