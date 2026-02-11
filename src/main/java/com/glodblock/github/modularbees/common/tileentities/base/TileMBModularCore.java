@@ -2,13 +2,15 @@ package com.glodblock.github.modularbees.common.tileentities.base;
 
 import com.glodblock.github.modularbees.util.ServerTickTile;
 import com.glodblock.github.modularbees.util.StructureListener;
-import com.google.common.collect.ImmutableList;
+import com.glodblock.github.modularbees.util.TryResult;
 import net.minecraft.core.BlockPos;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,7 +21,7 @@ public abstract class TileMBModularCore extends TileMBBase implements ServerTick
     private final List<TileMBModularComponent> components = new ArrayList<>();
     private final StructureListener listener;
     private boolean refresh = true;
-    private boolean formed = false;
+    private TryResult formed = TryResult.FAILURE;
 
     public TileMBModularCore(BlockEntityType<?> type, BlockPos pos, BlockState state) {
         super(type, pos, state);
@@ -36,12 +38,12 @@ public abstract class TileMBModularCore extends TileMBBase implements ServerTick
 
     public abstract boolean isStructurePos(ChunkPos pos);
 
-    protected abstract boolean buildStructure(Consumer<TileMBModularComponent> collector, Level world);
+    protected abstract TryResult buildStructure(Consumer<TileMBModularComponent> collector, Level world);
 
     protected abstract void logicTick(@NotNull Level world, BlockState state, List<TileMBModularComponent> components);
 
     public void onStateChange() {
-        this.formed = false;
+        this.formed = TryResult.FAILURE;
         this.refresh = true;
         this.unlink();
     }
@@ -54,12 +56,27 @@ public abstract class TileMBModularCore extends TileMBBase implements ServerTick
     }
 
     public boolean isFormed() {
-        return this.formed;
+        return this.formed.ok();
+    }
+
+    @Nullable
+    public Component getUnformedMessage() {
+        if (!this.formed.ok()) {
+            return this.formed.message();
+        }
+        return null;
+    }
+
+    @Nullable
+    public Object getErrorInfo() {
+        if (!this.formed.ok()) {
+            return this.formed.info();
+        }
+        return null;
     }
 
     public void formStructure() {
         this.unlink();
-        this.formed = false;
         this.formed = this.buildStructure(c -> {
             this.components.add(c);
             c.linkCore(this);
@@ -77,13 +94,13 @@ public abstract class TileMBModularCore extends TileMBBase implements ServerTick
         if (this.refresh) {
             this.formStructure();
         }
-        if (this.formed) {
+        if (this.formed.ok()) {
             this.logicTick(world, state, this.components);
         }
     }
 
     protected <T extends TileMBModularComponent> List<T> getComponents(Class<T> type) {
-        if (!this.formed) {
+        if (!this.formed.ok()) {
             return List.of();
         }
         return this.components.stream()

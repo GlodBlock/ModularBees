@@ -6,11 +6,14 @@ import com.glodblock.github.modularbees.common.tileentities.centrifuge.TileModul
 import com.glodblock.github.modularbees.container.ContainerMBModularCentrifuge;
 import com.glodblock.github.modularbees.container.base.MBGuiHandler;
 import com.glodblock.github.modularbees.dynamic.DyResourcePack;
+import com.glodblock.github.modularbees.network.MBNetworkHandler;
+import com.glodblock.github.modularbees.network.SMBHighlighter;
 import com.glodblock.github.modularbees.util.ContainerResolver;
 import com.glodblock.github.modularbees.util.RotorBlocks;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.player.Player;
@@ -20,6 +23,8 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.Objects;
 
 public class BlockModularCentrifuge extends BlockMBGuiBase<TileModularCentrifuge> implements ConnectBlock, Centrifuge {
 
@@ -48,7 +53,10 @@ public class BlockModularCentrifuge extends BlockMBGuiBase<TileModularCentrifuge
         if (tile.isFormed()) {
             MBGuiHandler.open(ContainerMBModularCentrifuge.TYPE.type(), p, ContainerResolver.of(tile));
         } else {
-            p.displayClientMessage(Component.translatable("modularbees.chat.centrifuge_unformed"), true);
+            p.displayClientMessage(Objects.requireNonNullElse(tile.getUnformedMessage(), Component.translatable("modularbees.chat.centrifuge_unformed")), true);
+            if (tile.getErrorInfo() instanceof BlockPos pos && p instanceof ServerPlayer sp) {
+                MBNetworkHandler.INSTANCE.sendTo(new SMBHighlighter(pos, p.level().dimension()), sp);
+            }
         }
     }
 

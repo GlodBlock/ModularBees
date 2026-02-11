@@ -17,6 +17,7 @@ import com.glodblock.github.modularbees.util.BeeTable;
 import com.glodblock.github.modularbees.util.GameConstants;
 import com.glodblock.github.modularbees.util.GameUtil;
 import com.glodblock.github.modularbees.util.StackCacheMap;
+import com.glodblock.github.modularbees.util.TryResult;
 import cy.jdkdigital.productivebees.ProductiveBeesConfig;
 import cy.jdkdigital.productivebees.init.ModFluids;
 import cy.jdkdigital.productivelib.registry.LibItems;
@@ -269,14 +270,14 @@ public class TileModularBeehive extends TileMBModularCore implements ItemHandler
     }
 
     @Override
-    protected boolean buildStructure(Consumer<TileMBModularComponent> collector, Level world) {
+    protected TryResult buildStructure(Consumer<TileMBModularComponent> collector, Level world) {
         var face = MBSingletons.MODULAR_BEEHIVE_CORE.getFacing(this.getBlockState());
         if (face == null) {
-            return false;
+            return TryResult.fail("modularbees.chat.data_corrupted");
         }
         var poses = this.getPoses();
         if (poses.isEmpty()) {
-            return false;
+            return TryResult.fail("modularbees.chat.data_corrupted");
         }
         for (var pos : poses) {
             if (pos.equals(this.getBlockPos())) {
@@ -287,14 +288,14 @@ public class TileModularBeehive extends TileMBModularCore implements ItemHandler
             if (te instanceof TileMBModularComponent hivePart && !hivePart.isActive()) {
                 var block = te.getBlockState().getBlock();
                 if (!(block instanceof Hive)) {
-                    return false;
+                    return TryResult.fail("modularbees.chat.block_invalid", pos, pos.getX(), pos.getY(), pos.getZ());
                 }
                 collector.accept(hivePart);
             } else {
-                return false;
+                return TryResult.fail("modularbees.chat.block_invalid", pos, pos.getX(), pos.getY(), pos.getZ());
             }
         }
-        return true;
+        return TryResult.SUCCESS;
     }
 
     @Override

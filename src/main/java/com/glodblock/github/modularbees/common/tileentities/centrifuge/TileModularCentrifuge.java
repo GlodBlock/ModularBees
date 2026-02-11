@@ -15,6 +15,7 @@ import com.glodblock.github.modularbees.common.tileentities.base.TileMBModularCo
 import com.glodblock.github.modularbees.util.CombCentrifugeLookup;
 import com.glodblock.github.modularbees.util.GameConstants;
 import com.glodblock.github.modularbees.util.GameUtil;
+import com.glodblock.github.modularbees.util.TryResult;
 import cy.jdkdigital.productivebees.ProductiveBeesConfig;
 import cy.jdkdigital.productivebees.init.ModTags;
 import cy.jdkdigital.productivelib.registry.LibItems;
@@ -348,15 +349,15 @@ public class TileModularCentrifuge extends TileMBModularCore implements ItemHand
     }
 
     @Override
-    protected boolean buildStructure(Consumer<TileMBModularComponent> collector, Level world) {
+    protected TryResult buildStructure(Consumer<TileMBModularComponent> collector, Level world) {
         var face = MBSingletons.MODULAR_CENTRIFUGE_CORE.getFacing(this.getBlockState());
         this.heater = null;
         if (face == null) {
-            return false;
+            return TryResult.fail("modularbees.chat.data_corrupted");
         }
         var poses = this.getPoses();
         if (poses.isEmpty()) {
-            return false;
+            return TryResult.fail("modularbees.chat.data_corrupted");
         }
         for (var pos : poses) {
             if (pos.equals(this.getBlockPos())) {
@@ -366,22 +367,22 @@ public class TileModularCentrifuge extends TileMBModularCore implements ItemHand
             if (te instanceof TileMBModularComponent centrifugePart && !centrifugePart.isActive()) {
                 var block = te.getBlockState().getBlock();
                 if (!(block instanceof Centrifuge)) {
-                    return false;
+                    return TryResult.fail("modularbees.chat.block_invalid", pos, pos.getX(), pos.getY(), pos.getZ());
                 }
                 if (te instanceof TileCentrifugeHeater h) {
                     if (this.heater == null) {
                         this.heater = h;
                     } else {
                         // Multip Heaters
-                        return false;
+                        return TryResult.fail("modularbees.chat.multiple_heater");
                     }
                 }
                 collector.accept(centrifugePart);
             } else {
-                return false;
+                return TryResult.fail("modularbees.chat.block_invalid", pos, pos.getX(), pos.getY(), pos.getZ());
             }
         }
-        return true;
+        return TryResult.SUCCESS;
     }
 
     @Override

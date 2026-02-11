@@ -12,6 +12,7 @@ public class MBNetworkHandler extends NetworkHandler {
         registerPacket(SMBGenericPacket::new);
         registerPacket(CMBGenericPacket::new);
         registerPacket(SMBFieldAutoUpdate::new);
+        registerPacket(SMBHighlighter::new);
     }
 
 }

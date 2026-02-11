@@ -44,6 +44,13 @@ public class TileMBBase extends BlockEntity {
         return GlobalPos.of(this.level.dimension(), getBlockPos());
     }
 
+    public boolean isClient() {
+        if (this.level == null) {
+            return false;
+        }
+        return this.level.isClientSide;
+    }
+
     @Override
     public Packet<ClientGamePacketListener> getUpdatePacket() {
         return ClientboundBlockEntityDataPacket.create(this);

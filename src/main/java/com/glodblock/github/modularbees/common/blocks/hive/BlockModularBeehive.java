@@ -6,6 +6,8 @@ import com.glodblock.github.modularbees.common.tileentities.hive.TileModularBeeh
 import com.glodblock.github.modularbees.container.ContainerMBModularBeehive;
 import com.glodblock.github.modularbees.container.base.MBGuiHandler;
 import com.glodblock.github.modularbees.dynamic.DyResourcePack;
+import com.glodblock.github.modularbees.network.MBNetworkHandler;
+import com.glodblock.github.modularbees.network.SMBHighlighter;
 import com.glodblock.github.modularbees.util.ContainerResolver;
 import com.glodblock.github.modularbees.util.GameConstants;
 import com.glodblock.github.modularbees.util.GameUtil;
@@ -14,6 +16,7 @@ import cy.jdkdigital.productivebees.init.ModItems;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.ItemInteractionResult;
@@ -30,6 +33,7 @@ import net.neoforged.neoforge.fluids.capability.IFluidHandler;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
+import java.util.Objects;
 
 public class BlockModularBeehive extends BlockMBGuiBase<TileModularBeehive> implements ConnectBlock, Hive {
 
@@ -72,7 +76,10 @@ public class BlockModularBeehive extends BlockMBGuiBase<TileModularBeehive> impl
         if (tile.isFormed()) {
             MBGuiHandler.open(ContainerMBModularBeehive.TYPE.type(), p, ContainerResolver.of(tile));
         } else {
-            p.displayClientMessage(Component.translatable("modularbees.chat.beehive_unformed"), true);
+            p.displayClientMessage(Objects.requireNonNullElse(tile.getUnformedMessage(), Component.translatable("modularbees.chat.beehive_unformed")), true);
+            if (tile.getErrorInfo() instanceof BlockPos pos && p instanceof ServerPlayer sp) {
+                MBNetworkHandler.INSTANCE.sendTo(new SMBHighlighter(pos, p.level().dimension()), sp);
+            }
         }
     }
 
