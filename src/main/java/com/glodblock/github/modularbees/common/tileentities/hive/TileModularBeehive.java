@@ -84,7 +84,7 @@ public class TileModularBeehive extends TileMBModularCore implements ItemHandler
 
     @Override
     protected void logicTick(@NotNull Level world, BlockState state, List<TileMBModularComponent> components) {
-        if (!this.notLoaded()) {
+        if (this.isLoaded()) {
             this.fillBottle();
             // No Bees
             if (this.table.getBeeCount() <= 0) {

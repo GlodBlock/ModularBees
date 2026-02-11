@@ -86,7 +86,7 @@ public abstract class TileMBMachine extends TileMBBase implements ItemHandlerHos
 
     @Override
     public void tickServer(Level world, BlockState state) {
-        if (!this.notLoaded()) {
+        if (this.isLoaded()) {
             if (this.needCheck) {
                 this.needCheck = false;
                 this.statues = this.checkStatus();

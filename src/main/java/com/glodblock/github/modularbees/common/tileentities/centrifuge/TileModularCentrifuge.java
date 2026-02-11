@@ -97,7 +97,7 @@ public class TileModularCentrifuge extends TileMBModularCore implements ItemHand
 
     @Override
     protected void logicTick(@NotNull Level world, BlockState state, List<TileMBModularComponent> components) {
-        if (!this.notLoaded() && !this.stuck) {
+        if (this.isLoaded() && !this.stuck) {
             if (!this.sending.isEmpty() || !this.filling.isEmpty()) {
                 for (int i = 0; i < this.sending.size(); ++i) {
                     var stack = this.sending.get(i).copy();
