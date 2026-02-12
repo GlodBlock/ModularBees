@@ -136,7 +136,7 @@ public class MBItemInventory extends ItemStackHandler {
         int cnt = 0;
         for (var stack : this.stacks) {
             if (filter.test(stack)) {
-                cnt ++;
+                cnt += stack.getCount();
             }
         }
         return cnt;
@@ -146,7 +146,7 @@ public class MBItemInventory extends ItemStackHandler {
         int cnt = 0;
         for (var stack : this.stacks) {
             if (filter == stack.getItem()) {
-                cnt ++;
+                cnt += stack.getCount();
             }
         }
         return cnt;

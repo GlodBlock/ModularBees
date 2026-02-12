@@ -1,6 +1,8 @@
 <img alt="logo" height="128" src="https://github.com/GlodBlock/ModularBees/blob/master/src/main/resources/logo.png?raw=true" width="128"/>
 
-[![Downloads](https://cf.way2muchnoise.eu/full_1350380_downloads.svg)](https://www.curseforge.com/minecraft/mc-mods/modular-bees) ![MCVsrsion](https://cf.way2muchnoise.eu/versions/1350380.svg)
+[![Downloads](https://cf.way2muchnoise.eu/full_1350380_downloads.svg)](https://www.curseforge.com/minecraft/mc-mods/modular-bees) 
+![MCVsrsion](https://cf.way2muchnoise.eu/versions/1350380.svg)
+[![Discord](https://img.shields.io/discord/1470360983674294398?color=5865F2&label=Discord&style=flat)](https://discord.gg/8ppgAfY3yF)
 
 [KubeJS Support](https://github.com/GlodBlock/ModularBees/wiki/KubeJS-Support)
 
@@ -14,3 +16,4 @@ The Modular Beehive is 3x3x3 structure. You can build it with any beehive parts 
 
 You can get more details from the in-game guide book.
 
+<iframe src="https://discord.com/widget?id=1470360983674294398&theme=dark" width="350" height="500" allowtransparency="true" frameborder="0" sandbox="allow-popups allow-popups-to-escape-sandbox allow-same-origin allow-scripts"></iframe>
