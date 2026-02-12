@@ -15,5 +15,3 @@ The Modular Beehive is 3x3x3 structure. You can build it with any beehive parts 
 <img alt="blocks" src="https://media.forgecdn.net/attachments/1336/12/blocks.png" width="769" height="718"/>
 
 You can get more details from the in-game guide book.
-
-<iframe src="https://discord.com/widget?id=1470360983674294398&theme=dark" width="350" height="500" allowtransparency="true" frameborder="0" sandbox="allow-popups allow-popups-to-escape-sandbox allow-same-origin allow-scripts"></iframe>
