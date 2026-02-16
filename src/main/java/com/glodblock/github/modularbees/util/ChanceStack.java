@@ -26,7 +26,7 @@ public interface ChanceStack {
             }
         } else {
             if (chancedOutput.max() == chancedOutput.min()) {
-                return new ChanceStackImpl(stack, chancedOutput.chance());
+                return new ChanceStackImpl(stack.copyWithCount(chancedOutput.max()), chancedOutput.chance());
             } else {
                 return new MutableAmountChanceStack(stack, chancedOutput.max(), chancedOutput.min(), chancedOutput.chance());
             }
