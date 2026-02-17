@@ -12,7 +12,6 @@ import cy.jdkdigital.productivebees.init.ModRecipeTypes;
 import cy.jdkdigital.productivebees.init.ModTags;
 import cy.jdkdigital.productivebees.util.BeeHelper;
 import cy.jdkdigital.productivebees.util.GeneAttribute;
-import cy.jdkdigital.productivelib.common.recipe.TagOutputRecipe;
 import it.unimi.dsi.fastutil.ints.Int2ReferenceMap;
 import it.unimi.dsi.fastutil.ints.Int2ReferenceOpenHashMap;
 import net.minecraft.core.BlockPos;
@@ -147,12 +146,24 @@ public final class BeeTable {
         this.dragonCount = 0;
     }
 
-    private record Output(List<ChanceStack> outputs) {
+    private record Output(List<ChanceStack> outputs, int geneBoost) {
 
-        static Output EMPTY = new Output(List.of());
+        static Output EMPTY = new Output(List.of(), 0);
 
         void output(Consumer<ItemStack> collector, RandomSource random) {
-            this.outputs.forEach(c -> c.get(collector, random));
+            final Consumer<ItemStack> booster = this::applyBoost;
+            this.outputs.forEach(c -> c.get(booster.andThen(collector), random));
+        }
+
+        void applyBoost(ItemStack stack) {
+            if (this.geneBoost > 0 && !stack.isEmpty()) {
+                if (stack.getCount() == 1) {
+                    stack.grow(this.geneBoost);
+                } else {
+                    var multi = (1.0F / (this.geneBoost + 2.0F) + (this.geneBoost + 1.0F) / 2.0F) * stack.getCount();
+                    stack.grow(Math.round(multi));
+                }
+            }
         }
 
     }
@@ -167,7 +178,7 @@ public final class BeeTable {
         IItemHandler inv = null;
         int slot = -1;
         boolean needLookup = true;
-        float geneBoost = 0;
+        int geneBoost = 0;
 
         BeeCache(BeehiveBlockEntity.BeeData key, BlockEntity host) {
             this.key = key;
@@ -187,21 +198,8 @@ public final class BeeTable {
                                 .getRecipeOutputs()
                                 .entrySet()
                                 .stream()
-                                .map(e -> {
-                                    if (this.geneBoost > 0) {
-                                        var origin = e.getValue();
-                                        if (origin.min() == origin.max() && origin.max() == 1) {
-                                            return ChanceStack.of(e.getKey(), new TagOutputRecipe.ChancedOutput(origin.ingredient(), (int) (origin.min() + this.geneBoost), (int) (origin.max() + this.geneBoost), origin.chance()));
-                                        } else {
-                                            var min = Math.round(origin.min() * (1 + (1.0F / (this.geneBoost + 2.0F) + (this.geneBoost + 1.0F) / 2.0F)));
-                                            var max = Math.round(origin.max() * (1 + (1.0F / (this.geneBoost + 2.0F) + (this.geneBoost + 1.0F) / 2.0F)));
-                                            return ChanceStack.of(e.getKey(), new TagOutputRecipe.ChancedOutput(origin.ingredient(), min, max, origin.chance()));
-                                        }
-                                    } else {
-                                        return ChanceStack.of(e.getKey(), e.getValue());
-                                    }
-                                });
-                        this.output = new Output(main.toList());
+                                .map(e -> ChanceStack.of(e.getKey(), e.getValue()));
+                        this.output = new Output(main.toList(), this.geneBoost);
                     } else if (bee instanceof ProductiveBee) {
                         if (SPECIAL_BEES.contains(this.beeId)) {
                             this.special = () -> this.lookupSpecialOutput(world, host.getBlockPos());
@@ -240,33 +238,22 @@ public final class BeeTable {
                 return Output.EMPTY;
             }
             final var inputBlock = GameUtil.getBlockFromItem(input);
-            float partial = this.geneBoost % 1;
             switch (this.beeId) {
                 case "productivebees:lumber_bee" -> {
                     if (inputBlock.is(ModTags.LUMBER) && !inputBlock.is(ModTags.DUPE_BLACKLIST)) {
-                        return new Output(List.of(
-                                new ChanceStack.CommonStack(input.copyWithCount(1 + (int) this.geneBoost)),
-                                new ChanceStack.ChanceStackImpl(input.copyWithCount(1), partial)
-                        ));
+                        return new Output(List.of(new ChanceStack.CommonStack(input.copyWithCount(1))), this.geneBoost);
                     }
                 }
                 case "productivebees:quarry_bee" -> {
                     if (inputBlock.is(ModTags.QUARRY) && !inputBlock.is(ModTags.DUPE_BLACKLIST)) {
-                        return new Output(List.of(
-                                new ChanceStack.CommonStack(input.copyWithCount(1 + (int) this.geneBoost)),
-                                new ChanceStack.ChanceStackImpl(input.copyWithCount(1), partial)
-                        ));
+                        return new Output(List.of(new ChanceStack.CommonStack(input.copyWithCount(1))), this.geneBoost);
                     }
                 }
                 case "productivebees:dye_bee" -> {
                     if (inputBlock.is(BlockTags.FLOWERS)) {
                         var dye = BeeHelper.getRecipeOutputFromInput(world, input.getItem());
                         if (!dye.isEmpty()) {
-                            dye.setCount((int) (dye.getCount() + this.geneBoost));
-                            return new Output(List.of(
-                                    new ChanceStack.CommonStack(dye),
-                                    new ChanceStack.ChanceStackImpl(dye.copyWithCount(1), partial)
-                            ));
+                            return new Output(List.of(new ChanceStack.CommonStack(dye.copy())), this.geneBoost);
                         }
                     }
                 }
@@ -277,10 +264,7 @@ public final class BeeTable {
                             var entity = AmberBlockEntity.createEntity(world, tag.copyTag());
                             if (entity instanceof Mob mob && world instanceof ServerLevel serverWorld) {
                                 var loot = serverWorld.getServer().reloadableRegistries().getLootTable(mob.getLootTable());
-                                return new Output(List.of(
-                                        new MobOutput(mob, loot, serverWorld, pos, (int) this.geneBoost),
-                                        ChanceStack.partial(new MobOutput(mob, loot, serverWorld, pos, 1), partial)
-                                ));
+                                return new Output(List.of(new MobOutput(mob, loot, serverWorld, pos, 1)), this.geneBoost);
                             }
                         }
                     }

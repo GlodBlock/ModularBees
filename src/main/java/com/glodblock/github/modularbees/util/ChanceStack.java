@@ -33,34 +33,6 @@ public interface ChanceStack {
         }
     }
 
-    static ChanceStack partial(ChanceStack stack, float chance) {
-        return new ChanceStack() {
-
-            @Override
-            public void get(Consumer<ItemStack> adder, RandomSource random) {
-                if (random.nextFloat() < chance) {
-                    stack.get(adder, random);
-                }
-            }
-
-            @Override
-            public ItemStack getBaseStack() {
-                return stack.getBaseStack();
-            }
-
-            @Override
-            public float getChance() {
-                return stack.getChance() * chance;
-            }
-
-            @Override
-            public float getAverageAmount() {
-                return stack.getAverageAmount();
-            }
-
-        };
-    }
-
     record ChanceStackImpl(ItemStack output, float chance) implements ChanceStack {
 
         @Override
