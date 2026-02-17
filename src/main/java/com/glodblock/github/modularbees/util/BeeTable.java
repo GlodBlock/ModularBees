@@ -19,7 +19,6 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.tags.BlockTags;
-import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.animal.Bee;
@@ -45,7 +44,6 @@ import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
-import java.util.stream.Stream;
 
 public final class BeeTable {
 
@@ -178,14 +176,9 @@ public final class BeeTable {
                 var entity = key.toOccupant().createEntity(world, host.getBlockPos());
                 if (entity instanceof Bee bee) {
                     if (entity.hasData(ProductiveBees.ATTRIBUTE_HANDLER)) {
-                        var gene = entity.getData(ProductiveBees.ATTRIBUTE_HANDLER).getAttributeValue(GeneAttribute.PRODUCTIVITY).getValue();
-                        if (gene == 0) {
-                            this.geneBoost = 0;
-                        } else if (gene == 1) {
-                            this.geneBoost = 1;
-                        } else {
-                            this.geneBoost = 1F / (gene + 2F) + (gene + 1F) / 2F;
-                        }
+                        this.geneBoost = entity.getData(ProductiveBees.ATTRIBUTE_HANDLER).getAttributeValue(GeneAttribute.PRODUCTIVITY).getValue();
+                    } else {
+                        this.geneBoost = 0;
                     }
                     this.beeId = (bee instanceof ProductiveBee cBee) ? Objects.requireNonNull(cBee.getBeeType()).toString() : bee.getEncodeId();
                     var hiveRecipe = this.lookupRecipe(world);
@@ -194,17 +187,21 @@ public final class BeeTable {
                                 .getRecipeOutputs()
                                 .entrySet()
                                 .stream()
-                                .map(e -> ChanceStack.of(e.getKey(), this.add(e.getValue())));
-                        var partial = this.geneBoost % 1;
-                        Stream<ChanceStack> left = Stream.empty();
-                        if (!Mth.equal(partial, 0)) {
-                            left = hiveRecipe.value()
-                                    .getRecipeOutputs()
-                                    .entrySet()
-                                    .stream()
-                                    .map(e -> ChanceStack.of(e.getKey(), this.partial(e.getValue(), partial)));
-                        }
-                        this.output = new Output(Stream.concat(main, left).toList());
+                                .map(e -> {
+                                    if (this.geneBoost > 0) {
+                                        var origin = e.getValue();
+                                        if (origin.min() == origin.max() && origin.max() == 1) {
+                                            return ChanceStack.of(e.getKey(), new TagOutputRecipe.ChancedOutput(origin.ingredient(), (int) (origin.min() + this.geneBoost), (int) (origin.max() + this.geneBoost), origin.chance()));
+                                        } else {
+                                            var min = Math.round(origin.min() * (1 + (1.0F / (this.geneBoost + 2.0F) + (this.geneBoost + 1.0F) / 2.0F)));
+                                            var max = Math.round(origin.max() * (1 + (1.0F / (this.geneBoost + 2.0F) + (this.geneBoost + 1.0F) / 2.0F)));
+                                            return ChanceStack.of(e.getKey(), new TagOutputRecipe.ChancedOutput(origin.ingredient(), min, max, origin.chance()));
+                                        }
+                                    } else {
+                                        return ChanceStack.of(e.getKey(), e.getValue());
+                                    }
+                                });
+                        this.output = new Output(main.toList());
                     } else if (bee instanceof ProductiveBee) {
                         if (SPECIAL_BEES.contains(this.beeId)) {
                             this.special = () -> this.lookupSpecialOutput(world, host.getBlockPos());
@@ -216,17 +213,6 @@ public final class BeeTable {
             } else {
                 this.beeId = "";
             }
-        }
-
-        private TagOutputRecipe.ChancedOutput add(TagOutputRecipe.ChancedOutput origin) {
-            if (this.geneBoost > 0) {
-                return new TagOutputRecipe.ChancedOutput(origin.ingredient(), (int) (origin.min() + this.geneBoost), (int) (origin.max() + this.geneBoost), origin.chance());
-            }
-            return origin;
-        }
-
-        private TagOutputRecipe.ChancedOutput partial(TagOutputRecipe.ChancedOutput origin, float partial) {
-            return new TagOutputRecipe.ChancedOutput(origin.ingredient(), 1, 1, partial * origin.chance());
         }
 
         RecipeHolder<AdvancedBeehiveRecipe> lookupRecipe(Level world) {
