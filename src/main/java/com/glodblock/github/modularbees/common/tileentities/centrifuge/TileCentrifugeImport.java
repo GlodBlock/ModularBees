@@ -92,13 +92,13 @@ public class TileCentrifugeImport extends TileCentrifugePart implements ServerTi
                 var itemTarget = this.itemCache.getCapability();
                 if (itemTarget != null) {
                     for (int x = 0; x < itemTarget.getSlots(); ++x) {
-                        var stack = itemTarget.getStackInSlot(x);
+                        var stack = itemTarget.getStackInSlot(x).copy();
                         var stored = stack.copy();
                         for (int y = 0; y < this.inputs.getSlots(); ++y) {
                             if (stack.isEmpty()) {
                                 break;
                             }
-                            stack = this.inputs.insertItem(y, stack, false);
+                            stack = this.inputs.insertItem(y, stack.copy(), false);
                         }
                         itemTarget.extractItem(x, stored.getCount() - stack.getCount(), false);
                     }

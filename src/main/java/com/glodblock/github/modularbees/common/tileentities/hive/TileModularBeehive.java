@@ -107,7 +107,7 @@ public class TileModularBeehive extends TileMBModularCore implements ItemHandler
                         if (stack.isEmpty()) {
                             break;
                         }
-                        stack = this.outputs.forceInsertItem(x, stack, false);
+                        stack = this.outputs.forceInsertItem(x, stack.copy(), false);
                     }
                     this.sending.set(i, stack);
                 }

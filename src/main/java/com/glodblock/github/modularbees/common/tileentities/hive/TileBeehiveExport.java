@@ -91,7 +91,7 @@ public class TileBeehiveExport extends TileBeehivePart implements ServerTickTile
                             if (stack.isEmpty()) {
                                 break;
                             }
-                            stack = itemTarget.insertItem(y, stack, false);
+                            stack = itemTarget.insertItem(y, stack.copy(), false);
                         }
                         this.item.extractItem(x, stored.getCount() - stack.getCount(), false);
                     }
@@ -99,7 +99,7 @@ public class TileBeehiveExport extends TileBeehivePart implements ServerTickTile
                 var fluidTarget = this.fluidCache.getCapability();
                 if (fluidTarget != null) {
                     var stack = this.fluid.getFluidInTank(0);
-                    var filled = fluidTarget.fill(stack, IFluidHandler.FluidAction.EXECUTE);
+                    var filled = fluidTarget.fill(stack.copy(), IFluidHandler.FluidAction.EXECUTE);
                     this.fluid.drain(filled, IFluidHandler.FluidAction.EXECUTE);
                 }
             }

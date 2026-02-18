@@ -111,19 +111,19 @@ public class TileCentrifugeExport extends TileCentrifugePart implements ServerTi
                             if (stack.isEmpty()) {
                                 break;
                             }
-                            stack = itemTarget.insertItem(y, stack, false);
+                            stack = itemTarget.insertItem(y, stack.copy(), false);
                         }
                         sending.set(i, stack);
                     }
                     sending.removeIf(ItemStack::isEmpty);
                     for (int x = 0; x < this.item.getSlots(); x ++) {
-                        var stack = this.item.getStackInSlot(x);
+                        var stack = this.item.getStackInSlot(x).copy();
                         var stored = stack.copy();
                         for (int y = 0; y < itemTarget.getSlots(); y ++) {
                             if (stack.isEmpty()) {
                                 break;
                             }
-                            stack = itemTarget.insertItem(y, stack, false);
+                            stack = itemTarget.insertItem(y, stack.copy(), false);
                         }
                         this.item.extractItem(x, stored.getCount() - stack.getCount(), false);
                     }
@@ -136,7 +136,7 @@ public class TileCentrifugeExport extends TileCentrifugePart implements ServerTi
                         if (stack.isEmpty()) {
                             continue;
                         }
-                        var filled = fluidTarget.fill(stack, IFluidHandler.FluidAction.EXECUTE);
+                        var filled = fluidTarget.fill(stack.copy(), IFluidHandler.FluidAction.EXECUTE);
                         stack.shrink(filled);
                         filling.set(i, stack);
                     }
@@ -148,11 +148,11 @@ public class TileCentrifugeExport extends TileCentrifugePart implements ServerTi
                             if (stack.isEmpty()) {
                                 continue;
                             }
-                            var filled = fluidTarget.fill(stack, IFluidHandler.FluidAction.EXECUTE);
+                            var filled = fluidTarget.fill(stack.copy(), IFluidHandler.FluidAction.EXECUTE);
                             racTank.getTank(x).drain(filled, IFluidHandler.FluidAction.EXECUTE);
                         }
                         var stack = this.fluid.getFluidInTank(0);
-                        var filled = fluidTarget.fill(stack, IFluidHandler.FluidAction.EXECUTE);
+                        var filled = fluidTarget.fill(stack.copy(), IFluidHandler.FluidAction.EXECUTE);
                         this.fluid.drain(filled, IFluidHandler.FluidAction.EXECUTE);
                     }
                 }
