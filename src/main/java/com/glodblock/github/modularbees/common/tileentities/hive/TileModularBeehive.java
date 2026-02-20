@@ -34,7 +34,6 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.entity.BeehiveBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler;
@@ -179,7 +178,7 @@ public class TileModularBeehive extends TileMBModularCore implements ItemHandler
         }
     }
 
-    private TileBeehiveFeeder.FeedSlot lookup(BeehiveBlockEntity.BeeData data) {
+    private TileBeehiveFeeder.FeedSlot lookup(TileBeehiveAlveary.AlvearyBee data) {
         if (this.getLevel() != null) {
             var entity = data.toOccupant().createEntity(this.getLevel(), this.getBlockPos());
             if (entity instanceof Bee bee) {
@@ -188,11 +187,13 @@ public class TileModularBeehive extends TileMBModularCore implements ItemHandler
                 for (var feeder : feeders) {
                     var result = feeder.checkFlower(bee);
                     if (result.isSuccess()) {
+                        data.updateLink(true);
                         return result;
                     }
                 }
             }
         }
+        data.updateLink(false);
         return TileBeehiveFeeder.FeedSlot.FAIL;
     }
 

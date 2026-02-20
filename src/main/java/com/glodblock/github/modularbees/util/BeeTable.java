@@ -1,5 +1,6 @@
 package com.glodblock.github.modularbees.util;
 
+import com.glodblock.github.modularbees.common.tileentities.hive.TileBeehiveAlveary;
 import com.glodblock.github.modularbees.common.tileentities.hive.TileBeehiveFeeder;
 import com.mojang.authlib.GameProfile;
 import cy.jdkdigital.productivebees.ProductiveBees;
@@ -25,7 +26,6 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.entity.BeehiveBlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.storage.loot.LootParams;
 import net.minecraft.world.level.storage.loot.LootTable;
@@ -48,17 +48,17 @@ public final class BeeTable {
 
     private final IdentityHashMap<IItemHandler, Int2ReferenceMap<List<BeeCache>>> index = new IdentityHashMap<>();
     private final List<BeeCache> data = new ArrayList<>();
-    private final Function<BeehiveBlockEntity.BeeData, TileBeehiveFeeder.FeedSlot> linker;
+    private final Function<TileBeehiveAlveary.AlvearyBee, TileBeehiveFeeder.FeedSlot> linker;
     private final BlockEntity host;
     private int dragonCount = 0;
 
-    public BeeTable(BlockEntity host, Function<BeehiveBlockEntity.BeeData, TileBeehiveFeeder.FeedSlot> linker) {
+    public BeeTable(BlockEntity host, Function<TileBeehiveAlveary.AlvearyBee, TileBeehiveFeeder.FeedSlot> linker) {
         this.host = host;
         this.linker = linker;
     }
 
     @SuppressWarnings("deprecation")
-    public void loadBee(BeehiveBlockEntity.BeeData beeData) {
+    public void loadBee(TileBeehiveAlveary.AlvearyBee beeData) {
         var tag = beeData.toOccupant().entityData().getUnsafe();
         if (tag.getString("type").equals("productivebees:draconic")) {
             this.dragonCount ++;
@@ -171,7 +171,7 @@ public final class BeeTable {
     public static class BeeCache {
 
         private static final Set<String> SPECIAL_BEES = Set.of("productivebees:lumber_bee", "productivebees:quarry_bee", "productivebees:dye_bee", "productivebees:wanna");
-        private final BeehiveBlockEntity.BeeData key;
+        private final TileBeehiveAlveary.AlvearyBee key;
         private final String beeId;
         private Output output = null;
         private Supplier<Output> special = () -> Output.EMPTY;
@@ -180,7 +180,7 @@ public final class BeeTable {
         boolean needLookup = true;
         int geneBoost = 0;
 
-        BeeCache(BeehiveBlockEntity.BeeData key, BlockEntity host) {
+        BeeCache(TileBeehiveAlveary.AlvearyBee key, BlockEntity host) {
             this.key = key;
             var world = host.getLevel();
             if (world != null) {
@@ -306,6 +306,12 @@ public final class BeeTable {
 
         @Override
         public boolean equals(Object obj) {
+            if (obj == this) {
+                return true;
+            }
+            if (obj == null) {
+                return false;
+            }
             if (obj.getClass() == BeeCache.class) {
                 return ((BeeCache) obj).key.equals(this.key);
             }

@@ -7,14 +7,17 @@ import com.glodblock.github.modularbees.common.caps.ItemHandlerHost;
 import com.glodblock.github.modularbees.common.inventory.MBItemInventory;
 import com.glodblock.github.modularbees.util.GameUtil;
 import com.glodblock.github.modularbees.util.ServerTickTile;
+import com.glodblock.github.modularbees.util.TryResult;
 import com.glodblock.github.modularbees.xmod.mek.CardboxWrap;
 import cy.jdkdigital.productivebees.common.entity.bee.SolitaryBee;
 import cy.jdkdigital.productivebees.common.item.BeeCage;
+import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtOps;
+import net.minecraft.network.chat.Component;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.animal.Bee;
@@ -29,12 +32,13 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.function.Consumer;
 
 public class TileBeehiveAlveary extends TileBeehivePart implements ServerTickTile, ItemHandlerHost, CardboxWrap {
 
     public static int MAX_BEES = 5;
-    protected final List<BeehiveBlockEntity.BeeData> bees = new ArrayList<>();
+    protected final List<AlvearyBee> bees = new ArrayList<>();
     protected final MBItemInventory cageIn = new MBItemInventory(this, 1, BeeCage::isFilled).setSlotLimit(1);
     protected final MBItemInventory cageOut = new MBItemInventory(this, 1, this::isEmptyCage).setSlotLimit(1);
     private final IItemHandler exposed = new CombinedInvWrapper(this.cageIn, this.cageOut);
@@ -48,23 +52,23 @@ public class TileBeehiveAlveary extends TileBeehivePart implements ServerTickTil
         return stack.getItem() instanceof BeeCage && !BeeCage.isFilled(stack);
     }
 
-    public void collectBees(Consumer<BeehiveBlockEntity.BeeData> collector) {
+    public void collectBees(Consumer<AlvearyBee> collector) {
         this.bees.forEach(collector);
     }
 
-    public List<BeehiveBlockEntity.BeeData> getBees() {
+    public List<AlvearyBee> getBees() {
         return this.bees;
     }
 
     @Nullable
-    public BeehiveBlockEntity.BeeData getBee(int x) {
+    public AlvearyBee getBee(int x) {
         if (x >= this.bees.size()) {
             return null;
         }
         return this.bees.get(x);
     }
 
-    public void setBees(List<BeehiveBlockEntity.BeeData> bees) {
+    public void setBees(List<AlvearyBee> bees) {
         this.bees.clear();
         this.bees.addAll(bees);
         this.setChanged();
@@ -72,7 +76,7 @@ public class TileBeehiveAlveary extends TileBeehivePart implements ServerTickTil
 
     public void loadBees(List<BeehiveBlockEntity.Occupant> occupants) {
         this.bees.clear();
-        occupants.stream().map(BeehiveBlockEntity.BeeData::new).forEach(this.bees::add);
+        occupants.stream().map(AlvearyBee::new).forEach(this.bees::add);
         this.notifyCore();
     }
 
@@ -84,7 +88,7 @@ public class TileBeehiveAlveary extends TileBeehivePart implements ServerTickTil
         bee.stopRiding();
         bee.ejectPassengers();
         world.playSound(null, this.getBlockPos(), SoundEvents.BEEHIVE_ENTER, SoundSource.BLOCKS, 1.0F, 1.0F);
-        this.bees.add(new BeehiveBlockEntity.BeeData(BeehiveBlockEntity.Occupant.of(bee)));
+        this.bees.add(new AlvearyBee(BeehiveBlockEntity.Occupant.of(bee)));
         bee.discard();
         this.setChanged();
     }
@@ -93,7 +97,7 @@ public class TileBeehiveAlveary extends TileBeehivePart implements ServerTickTil
     public void saveTag(CompoundTag data, HolderLookup.@NotNull Provider provider) {
         super.saveTag(data, provider);
         data.put("bees", BeehiveBlockEntity.Occupant.LIST_CODEC
-                .encodeStart(NbtOps.INSTANCE, this.bees.stream().map(BeehiveBlockEntity.BeeData::toOccupant).toList())
+                .encodeStart(NbtOps.INSTANCE, this.bees.stream().map(AlvearyBee::toOccupant).toList())
                 .getOrThrow());
         data.put("cageIn", this.cageIn.serializeNBT(provider));
         data.put("cageOut", this.cageOut.serializeNBT(provider));
@@ -154,6 +158,17 @@ public class TileBeehiveAlveary extends TileBeehivePart implements ServerTickTil
         }
     }
 
+    public void relink() {
+        if (this.isActive() && this.core instanceof TileModularBeehive hive) {
+            var table = hive.getBeeTable();
+            for (var bee : table.getData()) {
+                if (bee.needLookup()) {
+                    table.link(bee);
+                }
+            }
+        }
+    }
+
     @Override
     public IItemHandler getItemInventory() {
         return this.exposed;
@@ -186,6 +201,76 @@ public class TileBeehiveAlveary extends TileBeehivePart implements ServerTickTil
     @Override
     public void onWrap() {
         this.wrap = true;
+    }
+
+    public static class AlvearyBee {
+
+        private static final TryResult FAIL = TryResult.fail(Component.translatable("modularbees.gui.modular_beehive_alveary.no_food").withStyle(ChatFormatting.RED));
+        private final BeehiveBlockEntity.BeeData bee;
+        private TryResult linkStatus = FAIL;
+
+        public AlvearyBee(BeehiveBlockEntity.Occupant occupant) {
+            this(new BeehiveBlockEntity.BeeData(occupant));
+        }
+
+        public AlvearyBee(BeehiveBlockEntity.Occupant occupant, boolean link) {
+            this(new BeehiveBlockEntity.BeeData(occupant));
+            if (link) {
+                this.linkStatus = TryResult.SUCCESS;
+            } else {
+                this.linkStatus = FAIL;
+            }
+        }
+
+        public AlvearyBee(BeehiveBlockEntity.BeeData bee) {
+            this.bee = bee;
+        }
+
+        public BeehiveBlockEntity.Occupant toOccupant() {
+            return this.bee.toOccupant();
+        }
+
+        public void updateLink(boolean success) {
+            if (success) {
+                this.linkStatus = TryResult.SUCCESS;
+            } else {
+                this.linkStatus = FAIL;
+            }
+        }
+
+        public TryResult getLinkStatus() {
+            return this.linkStatus;
+        }
+
+        public boolean getLink() {
+            return this.linkStatus.ok();
+        }
+
+        @Override
+        public boolean equals(@Nullable Object obj) {
+            if (obj == this) {
+                return true;
+            }
+            if (obj == null) {
+                return false;
+            }
+            if (obj.getClass() ==  AlvearyBee.class) {
+                AlvearyBee other = (AlvearyBee) obj;
+                return Objects.equals(this.bee, other.bee);
+            }
+            return false;
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hashCode(this.bee);
+        }
+
+        @Override
+        public String toString() {
+            return "AlvearyBee[" + "bee=" + this.bee + ",status=" + this.linkStatus + ']';
+        }
+
     }
 
 }

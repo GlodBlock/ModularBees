@@ -9,7 +9,6 @@ import net.minecraft.world.entity.animal.Bee;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.inventory.Slot;
-import net.minecraft.world.level.block.entity.BeehiveBlockEntity;
 import org.jetbrains.annotations.Nullable;
 
 public class ContainerMBAlveary extends ContainerMBBase<TileBeehiveAlveary> {
@@ -52,7 +51,7 @@ public class ContainerMBAlveary extends ContainerMBBase<TileBeehiveAlveary> {
         return null;
     }
 
-    public BeehiveBlockEntity.BeeData getBee(int x) {
+    public TileBeehiveAlveary.AlvearyBee getBee(int x) {
         return this.getHost().getBee(x);
     }
 

@@ -1,6 +1,7 @@
 package com.glodblock.github.modularbees.util;
 
 import com.glodblock.github.modularbees.ModularBees;
+import com.glodblock.github.modularbees.common.tileentities.hive.TileBeehiveAlveary;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import cy.jdkdigital.productivebees.init.ModItems;
@@ -11,6 +12,7 @@ import net.minecraft.core.component.DataComponentPatch;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.Containers;
 import net.minecraft.world.item.BlockItem;
@@ -32,15 +34,17 @@ import java.util.List;
 public class GameUtil {
 
     public static final DecimalFormat NUMBER_F = new DecimalFormat("#,###.##");
-    public static final StreamCodec<RegistryFriendlyByteBuf, BeehiveBlockEntity.BeeData> BEE_CODEC = StreamCodec.composite(
-            BeehiveBlockEntity.Occupant.STREAM_CODEC, BeehiveBlockEntity.BeeData::toOccupant, BeehiveBlockEntity.BeeData::new
+    public static final StreamCodec<RegistryFriendlyByteBuf, TileBeehiveAlveary.AlvearyBee> BEE_CODEC = StreamCodec.composite(
+            BeehiveBlockEntity.Occupant.STREAM_CODEC, TileBeehiveAlveary.AlvearyBee::toOccupant,
+            ByteBufCodecs.BOOL, TileBeehiveAlveary.AlvearyBee::getLink,
+            TileBeehiveAlveary.AlvearyBee::new
     );
-    public static final StreamCodec<RegistryFriendlyByteBuf, List<BeehiveBlockEntity.BeeData>> BEES_CODEC = StreamCodec.of(
+    public static final StreamCodec<RegistryFriendlyByteBuf, List<TileBeehiveAlveary.AlvearyBee>> BEES_CODEC = StreamCodec.of(
             (buf, list) -> {
                 buf.writeInt(list.size());
                 list.forEach(bee -> BEE_CODEC.encode(buf, bee));
             }, buf -> {
-                List<BeehiveBlockEntity.BeeData> list = new ArrayList<>();
+                List<TileBeehiveAlveary.AlvearyBee> list = new ArrayList<>();
                 int size = buf.readInt();
                 for (int i = 0; i < size; i ++) {
                     list.add(BEE_CODEC.decode(buf));

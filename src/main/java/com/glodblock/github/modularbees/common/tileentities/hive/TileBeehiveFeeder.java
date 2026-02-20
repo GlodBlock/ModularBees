@@ -52,8 +52,6 @@ public class TileBeehiveFeeder extends TileBeehivePart implements ItemHandlerHos
                 if (bee instanceof ConfigurableBee cb && "entity_types".equals(cb.getFlowerType())) {
                     if (this.checkEntity(cb, item, block)) {
                         return new FeedSlot(FeedResult.NON_CONSUME, this.feeder, x);
-                    } else {
-                        return FeedSlot.FAIL;
                     }
                 }
                 if (productiveBee.isFlowerBlock(block) || productiveBee.isFlowerItem(item)) {

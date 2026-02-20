@@ -2,6 +2,7 @@ package com.glodblock.github.modularbees.client.gui.elements;
 
 import com.glodblock.github.modularbees.client.util.RelativeRect2i;
 import com.glodblock.github.modularbees.client.util.TooltipElement;
+import com.glodblock.github.modularbees.common.tileentities.hive.TileBeehiveAlveary;
 import cy.jdkdigital.productivebees.client.render.ingredient.BeeRenderer;
 import cy.jdkdigital.productivebees.common.crafting.ingredient.BeeIngredient;
 import cy.jdkdigital.productivebees.common.crafting.ingredient.BeeIngredientFactory;
@@ -12,7 +13,6 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Renderable;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.world.level.block.entity.BeehiveBlockEntity;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -22,9 +22,9 @@ import java.util.function.Supplier;
 
 public class BeeDisplay extends RelativeRect2i implements Renderable, TooltipElement {
 
-    protected final Supplier<BeehiveBlockEntity.BeeData> supplier;
+    protected final Supplier<TileBeehiveAlveary.AlvearyBee> supplier;
 
-    public BeeDisplay(Supplier<BeehiveBlockEntity.BeeData> supplier) {
+    public BeeDisplay(Supplier<TileBeehiveAlveary.AlvearyBee> supplier) {
         this.supplier = supplier;
     }
 
@@ -43,7 +43,7 @@ public class BeeDisplay extends RelativeRect2i implements Renderable, TooltipEle
         if (bee == null) {
             return null;
         }
-        return new BeeInfo(bee, tag);
+        return new BeeInfo(bee, tag, data.getLinkStatus().message());
     }
 
     @Override
@@ -57,6 +57,9 @@ public class BeeDisplay extends RelativeRect2i implements Renderable, TooltipEle
                     ((ConfigurableBee) bee).setBeeType(info.tag.getString("type"));
                 }
                 tooltip.add(bee.getName());
+                if (info.status != null) {
+                    tooltip.add(info.status);
+                }
                 if (isShift) {
                     BeeHelper.populateBeeInfoFromTag(info.tag, tooltip);
                 } else {
@@ -81,7 +84,7 @@ public class BeeDisplay extends RelativeRect2i implements Renderable, TooltipEle
         }
     }
 
-    record BeeInfo(BeeIngredient bee, CompoundTag tag) {
+    record BeeInfo(BeeIngredient bee, CompoundTag tag, Component status) {
 
     }
 

@@ -8,6 +8,10 @@ public record TryResult(boolean ok, @Nullable Component message, Object info) {
     public static final TryResult SUCCESS = new TryResult(true, null, null);
     public static final TryResult FAILURE = new TryResult(false, null, null);
 
+    public static TryResult fail(Component text) {
+        return new TryResult(false, text, null);
+    }
+
     public static TryResult fail(String translate) {
         return new TryResult(false, Component.translatable(translate), null);
     }

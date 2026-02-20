@@ -78,6 +78,9 @@ public class BlockBeehiveAlveary extends BlockMBGuiBase<TileBeehiveAlveary> impl
 
     @Override
     public void openGui(TileBeehiveAlveary tile, Player p) {
+        if (tile.isActive()) {
+            tile.relink();
+        }
         MBGuiHandler.open(ContainerMBAlveary.TYPE.type(), p, ContainerResolver.of(tile));
     }
 
