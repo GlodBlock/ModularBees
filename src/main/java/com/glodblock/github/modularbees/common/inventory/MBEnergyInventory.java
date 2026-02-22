@@ -1,5 +1,6 @@
 package com.glodblock.github.modularbees.common.inventory;
 
+import com.glodblock.github.modularbees.common.tileentities.base.TileMBBase;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
@@ -34,7 +35,7 @@ public class MBEnergyInventory extends EnergyStorage {
         }
         int accepted = super.receiveEnergy(toReceive, simulate);
         if (this.host != null && accepted > 0 && !simulate) {
-            this.host.setChanged();
+            this.markDirty();
         }
         return accepted;
     }
@@ -46,7 +47,7 @@ public class MBEnergyInventory extends EnergyStorage {
         }
         int extracted = super.extractEnergy(toExtract, simulate);
         if (this.host != null && extracted > 0 && !simulate) {
-            this.host.setChanged();
+            this.markDirty();
         }
         return extracted;
     }
@@ -55,7 +56,7 @@ public class MBEnergyInventory extends EnergyStorage {
         if (energy != this.getEnergyStored()) {
             this.energy = energy;
             if (this.host != null) {
-                this.host.setChanged();
+                this.markDirty();
             }
         }
     }
@@ -79,6 +80,14 @@ public class MBEnergyInventory extends EnergyStorage {
     public void deserializeNBT(HolderLookup.@NotNull Provider provider, @NotNull Tag nbt) {
         if (nbt instanceof CompoundTag tag) {
             this.energy = tag.getInt("energy");
+        }
+    }
+
+    private void markDirty() {
+        if (this.host instanceof TileMBBase base) {
+            base.markDirty();
+        } else {
+            this.host.setChanged();
         }
     }
 

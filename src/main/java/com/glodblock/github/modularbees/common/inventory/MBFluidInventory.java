@@ -1,5 +1,6 @@
 package com.glodblock.github.modularbees.common.inventory;
 
+import com.glodblock.github.modularbees.common.tileentities.base.TileMBBase;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.capability.templates.FluidTank;
@@ -69,14 +70,22 @@ public class MBFluidInventory extends FluidTank {
             if (this.host instanceof TankListener listener) {
                 listener.onChange(this);
             }
-            this.host.setChanged();
+            this.markDirty();
         }
     }
 
     @Override
     public void setFluid(@NotNull FluidStack stack) {
         super.setFluid(stack);
-        this.host.setChanged();
+        this.onContentsChanged();
+    }
+
+    private void markDirty() {
+        if (this.host instanceof TileMBBase base) {
+            base.markDirty();
+        } else {
+            this.host.setChanged();
+        }
     }
 
 }

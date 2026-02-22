@@ -1,5 +1,6 @@
 package com.glodblock.github.modularbees.common.inventory;
 
+import com.glodblock.github.modularbees.common.tileentities.base.TileMBBase;
 import net.minecraft.core.NonNullList;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -106,7 +107,7 @@ public class MBItemInventory extends ItemStackHandler {
             if (this.host instanceof SlotListener listener) {
                 listener.onChange(this, slot);
             }
-            this.host.setChanged();
+            this.markDirty();
         }
     }
 
@@ -150,6 +151,14 @@ public class MBItemInventory extends ItemStackHandler {
             }
         }
         return cnt;
+    }
+
+    private void markDirty() {
+        if (this.host instanceof TileMBBase base) {
+            base.markDirty();
+        } else {
+            this.host.setChanged();
+        }
     }
 
     public interface ItemFilter {

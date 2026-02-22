@@ -114,7 +114,7 @@ public class TileModularBeehive extends TileMBModularCore implements ItemHandler
                 if (!this.sending.isEmpty()) {
                     this.stuck = true;
                 }
-                this.setChanged();
+                this.markDirty();
             }
             if (this.sending.isEmpty()) {
                 if (this.process >= WAITING_TICKS) {
@@ -140,7 +140,7 @@ public class TileModularBeehive extends TileMBModularCore implements ItemHandler
                     if (dragonHive != null && this.table.getDragonBee() > 0) {
                         dragonHive.addDragonBreath(this.table.getDragonBee(), world);
                     }
-                    this.setChanged();
+                    this.markDirty();
                 }
             }
         }
@@ -149,7 +149,7 @@ public class TileModularBeehive extends TileMBModularCore implements ItemHandler
     public void addOutput(ItemStack stack) {
         if (!stack.isEmpty()) {
             this.sending.add(stack);
-            this.setChanged();
+            this.markDirty();
         }
     }
 

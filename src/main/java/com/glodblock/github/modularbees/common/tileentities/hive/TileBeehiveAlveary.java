@@ -71,7 +71,7 @@ public class TileBeehiveAlveary extends TileBeehivePart implements ServerTickTil
     public void setBees(List<AlvearyBee> bees) {
         this.bees.clear();
         this.bees.addAll(bees);
-        this.setChanged();
+        this.markDirty();
     }
 
     public void loadBees(List<BeehiveBlockEntity.Occupant> occupants) {
@@ -90,7 +90,7 @@ public class TileBeehiveAlveary extends TileBeehivePart implements ServerTickTil
         world.playSound(null, this.getBlockPos(), SoundEvents.BEEHIVE_ENTER, SoundSource.BLOCKS, 1.0F, 1.0F);
         this.bees.add(new AlvearyBee(BeehiveBlockEntity.Occupant.of(bee)));
         bee.discard();
-        this.setChanged();
+        this.markDirty();
     }
 
     @Override
@@ -145,7 +145,7 @@ public class TileBeehiveAlveary extends TileBeehivePart implements ServerTickTil
                     BeeCage.captureEntity(bee, out);
                     this.bees.removeLast();
                     this.cageOut.setStackInSlot(0, out);
-                    this.setChanged();
+                    this.markDirty();
                     this.notifyCore();
                 }
             }

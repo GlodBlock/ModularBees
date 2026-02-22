@@ -34,7 +34,7 @@ public class TileCentrifugeGearbox extends TileCentrifugePart implements ServerT
     public float getBoostAndConsume() {
         if (this.wax >= WAX_USAGE) {
             this.wax -= WAX_USAGE;
-            this.setChanged();
+            this.markDirty();
             return BOOST;
         }
         return 0;

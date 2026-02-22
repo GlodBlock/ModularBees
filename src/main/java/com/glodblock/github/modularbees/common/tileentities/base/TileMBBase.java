@@ -110,4 +110,10 @@ public class TileMBBase extends BlockEntity {
         return null;
     }
 
+    public final void markDirty() {
+        if (this.level != null) {
+            this.level.blockEntityChanged(this.worldPosition);
+        }
+    }
+
 }

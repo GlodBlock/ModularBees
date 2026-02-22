@@ -128,7 +128,7 @@ public class TileModularCentrifuge extends TileMBModularCore implements ItemHand
                     this.stuck = true;
                     this.process = 0;
                 }
-                this.setChanged();
+                this.markDirty();
             }
             if (this.emptyInput()) {
                 if (this.sending.isEmpty() && this.filling.isEmpty()) {
@@ -173,7 +173,7 @@ public class TileModularCentrifuge extends TileMBModularCore implements ItemHand
                                     left -= used;
                                     comb.shrink(used);
                                     this.getCombinedInputs().setStackInSlot(x, comb);
-                                    this.setChanged();
+                                    this.markDirty();
                                 }
                             }
                         }
