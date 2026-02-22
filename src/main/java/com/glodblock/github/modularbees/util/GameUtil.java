@@ -179,4 +179,16 @@ public class GameUtil {
         }
     }
 
+    public static boolean fastDamage(ItemStack stack, int damage) {
+        if (stack.isDamageableItem()) {
+            var dmg = stack.getDamageValue() + damage;
+            if (dmg >= stack.getMaxDamage()) {
+                return true;
+            } else {
+                stack.setDamageValue(dmg);
+            }
+        }
+        return false;
+    }
+
 }

@@ -126,6 +126,9 @@ public class TileBeehiveAlveary extends TileBeehivePart implements ServerTickTil
     @Override
     public void tickServer(Level world, BlockState state) {
         var in = this.cageIn.getStackInSlot(0);
+        if (in.isEmpty()) {
+            return;
+        }
         if (BeeCage.isFilled(in)) {
             if (this.hasRoom()) {
                 var bee = BeeCage.getEntityFromStack(in, world, true);

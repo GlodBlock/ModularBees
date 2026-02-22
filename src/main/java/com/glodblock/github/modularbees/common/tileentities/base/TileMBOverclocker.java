@@ -8,12 +8,12 @@ import com.glodblock.github.modularbees.common.inventory.MBItemInventory;
 import com.glodblock.github.modularbees.common.inventory.SlotListener;
 import com.glodblock.github.modularbees.common.recipe.ElectrodeRecipe;
 import com.glodblock.github.modularbees.util.GameConstants;
+import com.glodblock.github.modularbees.util.GameUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntityType;
@@ -37,7 +37,7 @@ public abstract class TileMBOverclocker extends TileMBModularComponent implement
     }
 
     public float getBoostAndConsume(int bees) {
-        if (this.level instanceof ServerLevel server && this.isActive() && bees > 0) {
+        if (this.isActive() && bees > 0) {
             var stack = this.electrode.getStackInSlot(0);
             if (!stack.isEmpty()) {
                 if (this.running == null) {
@@ -48,7 +48,9 @@ public abstract class TileMBOverclocker extends TileMBModularComponent implement
                     if (boost > 0 && this.energy.getEnergyStored() >= bees * POWER_USE) {
                         int power = this.energy.forceExtractEnergy(bees * POWER_USE, false);
                         if (power >= bees * POWER_USE) {
-                            stack.hurtAndBreak(this.damage(bees), server, null, item -> this.electrode.setStackInSlot(0, ItemStack.EMPTY));
+                            if (GameUtil.fastDamage(stack, this.damage(bees))) {
+                                this.electrode.setStackInSlot(0, ItemStack.EMPTY);
+                            }
                             return boost;
                         }
                     }
