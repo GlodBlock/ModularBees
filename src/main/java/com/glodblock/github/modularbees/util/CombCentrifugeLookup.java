@@ -62,7 +62,7 @@ public final class CombCentrifugeLookup {
         return VALID_INPUT.contains(stack.getItem());
     }
 
-    public static boolean query(Consumer<ItemStack> itemAcceptor, Consumer<FluidStack> fluidAcceptor, ItemStack comb, @NotNull Level world, int para, boolean heated) {
+    public static boolean query(Consumer<ItemStack> itemAcceptor, Consumer<FluidStack> fluidAcceptor, ItemStack comb, @NotNull Level world, int para, float chanceBoost, boolean heated) {
         if (comb.isEmpty() || para <= 0) {
             return false;
         }
@@ -89,9 +89,9 @@ public final class CombCentrifugeLookup {
         if (cache != null) {
             cache.output(fluidAcceptor, para);
             if (heated) {
-                cache.output(PREPROCESS.andThen(itemAcceptor), para, world.getRandom());
+                cache.output(PREPROCESS.andThen(itemAcceptor), para, chanceBoost, world.getRandom());
             } else {
-                cache.output(itemAcceptor, para, world.getRandom());
+                cache.output(itemAcceptor, para, chanceBoost, world.getRandom());
             }
             return true;
         }
@@ -125,7 +125,7 @@ public final class CombCentrifugeLookup {
                         .getRecipeOutputs()
                         .entrySet()
                         .stream()
-                        .map(e -> ChanceStack.of(e.getKey(), mul4(e.getValue(), isBlock)))
+                        .map(e -> BoostChanceStack.of(e.getKey(), mul4(e.getValue(), isBlock)))
                         .toList(),
                 mul4(recipe.value().getFluidOutputs(), isBlock)
         );
@@ -149,14 +149,7 @@ public final class CombCentrifugeLookup {
         if (!enable) {
             return origin;
         }
-        float chance = origin.chance();
-        if (chance * 4 <= 1) {
-            return new TagOutputRecipe.ChancedOutput(origin.ingredient(), origin.min(), origin.max(), chance * 4);
-        } else if (chance * 2 <= 1) {
-            return new TagOutputRecipe.ChancedOutput(origin.ingredient(), origin.min() * 2, origin.max() * 2, chance * 2);
-        } else {
-            return new TagOutputRecipe.ChancedOutput(origin.ingredient(), origin.min() * 4, origin.max() * 4, chance);
-        }
+        return new TagOutputRecipe.ChancedOutput(origin.ingredient(), origin.min() * 4, origin.max() * 4, origin.chance());
     }
 
     private static FluidStack mul4(FluidStack origin, boolean enable) {
@@ -175,7 +168,7 @@ public final class CombCentrifugeLookup {
         needInit = true;
     }
 
-    private record Output(List<ChanceStack> outputs, FluidStack fluid) {
+    private record Output(List<BoostChanceStack> outputs, FluidStack fluid) {
 
         @Override
         public @NotNull String toString() {
@@ -187,17 +180,17 @@ public final class CombCentrifugeLookup {
             return sb.toString();
         }
 
-        void output(Consumer<ItemStack> collector, int multiplier, RandomSource random) {
+        void output(Consumer<ItemStack> collector, int multiplier, float boost, RandomSource random) {
             // If N is small, use brute simulation
             if (multiplier <= 8) {
                 this.outputs.forEach(c -> {
                     for (int i = 0; i < multiplier; i ++) {
-                        c.get(collector, random);
+                        c.get(collector, boost, random);
                     }
                 });
             } else {
                 // If N is large, use normal distribution simulation
-                this.outputs.forEach(c -> this.roll(collector, c, multiplier, random));
+                this.outputs.forEach(c -> this.roll(collector, c, multiplier, boost, random));
             }
         }
 
@@ -207,10 +200,10 @@ public final class CombCentrifugeLookup {
             }
         }
 
-        void roll(Consumer<ItemStack> collector, ChanceStack chance, int n, RandomSource random) {
+        void roll(Consumer<ItemStack> collector, BoostChanceStack chance, int n, float boost, RandomSource random) {
             var stack = chance.getBaseStack();
             float w = chance.getAverageAmount();
-            float p = chance.getChance();
+            float p = Math.min(chance.getChance() + boost, 1);
             double u = w * n * p;
             double o = Math.sqrt(w * w * n * p * (1 - p));
             int x = (int) Math.round(u + o * random.nextGaussian());

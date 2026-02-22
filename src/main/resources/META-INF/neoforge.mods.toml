@@ -35,7 +35,7 @@ license="${mod_license}"
 [[dependencies.modularbees]]
     modId="productivebees"
     type="REQUIRED"
-    versionRange="*"
+    versionRange="[1.21.1-13.13.0,)"
     ordering="AFTER"
     side="BOTH"
 [[dependencies.modularbees]]

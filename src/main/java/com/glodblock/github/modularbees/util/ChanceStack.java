@@ -11,12 +11,6 @@ public interface ChanceStack {
 
     void get(Consumer<ItemStack> adder, RandomSource random);
 
-    ItemStack getBaseStack();
-
-    float getChance();
-
-    float getAverageAmount();
-
     static ChanceStack of(ItemStack stack, TagOutputRecipe.ChancedOutput chancedOutput) {
         if (Mth.equal(chancedOutput.chance(), 1)) {
             if (chancedOutput.max() == chancedOutput.min()) {
@@ -42,21 +36,6 @@ public interface ChanceStack {
             }
         }
 
-        @Override
-        public ItemStack getBaseStack() {
-            return this.output;
-        }
-
-        @Override
-        public float getChance() {
-            return this.chance;
-        }
-
-        @Override
-        public float getAverageAmount() {
-            return this.output.getCount();
-        }
-
     }
 
     record MutableAmountChanceStack(ItemStack output, int max, int min, float chance) implements ChanceStack {
@@ -69,21 +48,6 @@ public interface ChanceStack {
             }
         }
 
-        @Override
-        public ItemStack getBaseStack() {
-            return this.output;
-        }
-
-        @Override
-        public float getChance() {
-            return this.chance;
-        }
-
-        @Override
-        public float getAverageAmount() {
-            return (this.max + this.min) / 2.0F;
-        }
-
     }
 
     record MutableAmountStack(ItemStack output, int max, int min) implements ChanceStack {
@@ -94,21 +58,6 @@ public interface ChanceStack {
             adder.accept(this.output.copyWithCount(amt));
         }
 
-        @Override
-        public ItemStack getBaseStack() {
-            return this.output;
-        }
-
-        @Override
-        public float getChance() {
-            return 1;
-        }
-
-        @Override
-        public float getAverageAmount() {
-            return (this.max + this.min) / 2.0F;
-        }
-
     }
 
     record CommonStack(ItemStack output) implements ChanceStack {
@@ -116,21 +65,6 @@ public interface ChanceStack {
         @Override
         public void get(Consumer<ItemStack> adder, RandomSource random) {
             adder.accept(this.output.copy());
-        }
-
-        @Override
-        public ItemStack getBaseStack() {
-            return this.output;
-        }
-
-        @Override
-        public float getChance() {
-            return 1;
-        }
-
-        @Override
-        public float getAverageAmount() {
-            return this.output.getCount();
         }
 
     }

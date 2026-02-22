@@ -57,7 +57,8 @@ public class TileModularCentrifuge extends TileMBModularCore implements ItemHand
     private ObjectSet<ChunkPos> allChunk;
     public static final Set<Item> ACCEPT_UPGRADES = Set.of(
             LibItems.UPGRADE_TIME.get(), LibItems.UPGRADE_TIME_2.get(), LibItems.UPGRADE_PRODUCTIVITY.get(),
-            LibItems.UPGRADE_PRODUCTIVITY_2.get(), LibItems.UPGRADE_PRODUCTIVITY_3.get(), LibItems.UPGRADE_PRODUCTIVITY_4.get()
+            LibItems.UPGRADE_PRODUCTIVITY_2.get(), LibItems.UPGRADE_PRODUCTIVITY_3.get(), LibItems.UPGRADE_PRODUCTIVITY_4.get(),
+            LibItems.UPGRADE_STABILITY.get()
     );
     protected final MBItemInventory upgrade = new MBItemInventory(this, 4, s -> ACCEPT_UPGRADES.contains(s.getItem())).setSlotLimit(1);
     protected final MBItemInventory inputs = new MBItemInventory(this, 3, this::validInput).inputOnly();
@@ -70,6 +71,7 @@ public class TileModularCentrifuge extends TileMBModularCore implements ItemHand
     private final List<FluidStack> filling = new ArrayList<>();
     private boolean stuck = false;
     private int para = 1;
+    private float chanceBoost = 0;
     private IItemHandlerModifiable combinedInputs;
     private TileCentrifugeHeater heater;
 
@@ -169,7 +171,7 @@ public class TileModularCentrifuge extends TileMBModularCore implements ItemHand
                             if (left >= 0) {
                                 var comb = this.getCombinedInputs().getStackInSlot(x);
                                 int used = Math.min(left, comb.getCount());
-                                if (CombCentrifugeLookup.query(this.sending::add, this.filling::add, comb, world, used, this.heater != null)) {
+                                if (CombCentrifugeLookup.query(this.sending::add, this.filling::add, comb, world, used, this.chanceBoost, this.heater != null)) {
                                     left -= used;
                                     comb.shrink(used);
                                     this.getCombinedInputs().setStackInSlot(x, comb);
@@ -458,6 +460,8 @@ public class TileModularCentrifuge extends TileMBModularCore implements ItemHand
         if (this.para <= 0) {
             this.para = 1;
         }
+        this.chanceBoost = 0;
+        this.chanceBoost += (float) (this.upgrade.countStack(LibItems.UPGRADE_STABILITY.get()) * ProductiveBeesConfig.UPGRADES.stabilityChanceIncrease.get());
     }
 
     private record MultiTank(MBFluidInventory[] tanks) implements RandomAccessTank, INBTSerializable<CompoundTag> {
