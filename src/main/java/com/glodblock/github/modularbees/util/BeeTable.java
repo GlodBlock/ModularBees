@@ -4,9 +4,11 @@ import com.glodblock.github.modularbees.common.tileentities.hive.TileBeehiveAlve
 import com.glodblock.github.modularbees.common.tileentities.hive.TileBeehiveFeeder;
 import com.mojang.authlib.GameProfile;
 import cy.jdkdigital.productivebees.ProductiveBees;
+import cy.jdkdigital.productivebees.capabilities.attributes.BeeAttributesHandler;
 import cy.jdkdigital.productivebees.common.block.Amber;
 import cy.jdkdigital.productivebees.common.block.entity.AmberBlockEntity;
 import cy.jdkdigital.productivebees.common.entity.bee.ProductiveBee;
+import cy.jdkdigital.productivebees.common.item.Gene;
 import cy.jdkdigital.productivebees.common.recipe.AdvancedBeehiveRecipe;
 import cy.jdkdigital.productivebees.init.ModEntities;
 import cy.jdkdigital.productivebees.init.ModRecipeTypes;
@@ -95,6 +97,19 @@ public final class BeeTable {
         }
     }
 
+    public void collectGene(Level world, float dropChance, Consumer<ItemStack> collector) {
+        for (var cache : this.data) {
+            if (cache.needLookup()) {
+                this.link(cache);
+            }
+            if (cache.isBind()) {
+                if (world.random.nextFloat() <= dropChance) {
+                    cache.beeGene.get(collector, world.getRandom());
+                }
+            }
+        }
+    }
+
     public void feederUpdate(IItemHandler inv, int slot) {
         if (inv != null && slot != -1) {
             this.feederUpdate(null, -1);
@@ -173,6 +188,7 @@ public final class BeeTable {
         private static final Set<String> SPECIAL_BEES = Set.of("productivebees:lumber_bee", "productivebees:quarry_bee", "productivebees:dye_bee", "productivebees:wanna");
         private final TileBeehiveAlveary.AlvearyBee key;
         private final String beeId;
+        private final ChanceStack beeGene;
         private Output output = null;
         private Supplier<Output> special = () -> Output.EMPTY;
         IItemHandler inv = null;
@@ -205,11 +221,14 @@ public final class BeeTable {
                             this.special = () -> this.lookupSpecialOutput(world, host.getBlockPos());
                         }
                     }
+                    this.beeGene = this.geneDrop(entity.getData(ProductiveBees.ATTRIBUTE_HANDLER));
                 } else {
                     this.beeId = "";
+                    this.beeGene = ChanceStack.IMPOSSIBLE;
                 }
             } else {
                 this.beeId = "";
+                this.beeGene = ChanceStack.IMPOSSIBLE;
             }
         }
 
@@ -271,6 +290,22 @@ public final class BeeTable {
                 }
             }
             return Output.EMPTY;
+        }
+
+        ChanceStack geneDrop(final BeeAttributesHandler handler) {
+            if (handler != null) {
+                final var attrs = GeneAttribute.values();
+                return (adder, random) -> {
+                    var attr = attrs[random.nextInt(attrs.length)];
+                    if (attr == GeneAttribute.TYPE && !this.beeId.isBlank()) {
+                        adder.accept(Gene.getStack(this.beeId, random.nextInt(4) + 1));
+                    } else {
+                        var value = handler.getAttributeValue(attr);
+                        adder.accept(Gene.getStack(attr, value.getSerializedName(), 1, random.nextInt(4) + 1));
+                    }
+                };
+            }
+            return ChanceStack.IMPOSSIBLE;
         }
 
         void setIndex(IItemHandler inv, int slot) {

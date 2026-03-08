@@ -9,6 +9,8 @@ import java.util.function.Consumer;
 
 public interface ChanceStack {
 
+    ChanceStack IMPOSSIBLE = (adder, random) -> {};
+
     void get(Consumer<ItemStack> adder, RandomSource random);
 
     static ChanceStack of(ItemStack stack, TagOutputRecipe.ChancedOutput chancedOutput) {

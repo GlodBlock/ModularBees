@@ -58,7 +58,8 @@ public class TileModularBeehive extends TileMBModularCore implements ItemHandler
     private ObjectSet<ChunkPos> allChunk;
     public static final Set<Item> ACCEPT_UPGRADES = Set.of(
             LibItems.UPGRADE_TIME.get(), LibItems.UPGRADE_BLOCK.get(), LibItems.UPGRADE_PRODUCTIVITY.get(),
-            LibItems.UPGRADE_PRODUCTIVITY_2.get(), LibItems.UPGRADE_PRODUCTIVITY_3.get(), LibItems.UPGRADE_PRODUCTIVITY_4.get()
+            LibItems.UPGRADE_PRODUCTIVITY_2.get(), LibItems.UPGRADE_PRODUCTIVITY_3.get(), LibItems.UPGRADE_PRODUCTIVITY_4.get(),
+            LibItems.UPGRADE_GENE_SAMPLER.get()
     );
     protected final MBBigItemInventory outputs = (MBBigItemInventory) new MBBigItemInventory(this, 18).outputOnly();
     protected final MBItemInventory upgrade = new MBItemInventory(this, 4, s -> ACCEPT_UPGRADES.contains(s.getItem())).setSlotLimit(1);
@@ -72,6 +73,7 @@ public class TileModularBeehive extends TileMBModularCore implements ItemHandler
     private boolean stuck = false;
     private boolean blockMode = false;
     private float upgradeMultiplier = 1;
+    private float geneDropChance = 0;
 
     public TileModularBeehive(BlockPos pos, BlockState state) {
         super(GlodUtil.getTileType(TileModularBeehive.class, TileModularBeehive::new, MBSingletons.MODULAR_BEEHIVE_CORE), pos, state);
@@ -121,6 +123,9 @@ public class TileModularBeehive extends TileMBModularCore implements ItemHandler
                     this.process = 0;
                     var outputs = new StackCacheMap(world.getRandom());
                     this.table.collectOutput(world, outputs::add);
+                    if (this.geneDropChance > 0) {
+                        this.table.collectGene(world, this.geneDropChance, this.sending::add);
+                    }
                     float treaterMultiplier = 1;
                     int working = this.table.getWorkingBee();
                     TileBeehiveDragon dragonHive = null;
@@ -390,6 +395,7 @@ public class TileModularBeehive extends TileMBModularCore implements ItemHandler
         this.upgradeMultiplier += (float) (this.upgrade.countStack(LibItems.UPGRADE_PRODUCTIVITY_2.get()) * ProductiveBeesConfig.UPGRADES.productivityMultiplier2.get());
         this.upgradeMultiplier += (float) (this.upgrade.countStack(LibItems.UPGRADE_PRODUCTIVITY_3.get()) * ProductiveBeesConfig.UPGRADES.productivityMultiplier3.get());
         this.upgradeMultiplier += (float) (this.upgrade.countStack(LibItems.UPGRADE_PRODUCTIVITY_4.get()) * ProductiveBeesConfig.UPGRADES.productivityMultiplier4.get());
+        this.geneDropChance = (float) (this.upgrade.countStack(LibItems.UPGRADE_GENE_SAMPLER.get()) * ProductiveBeesConfig.UPGRADES.samplerChance.get());
     }
 
 }
