@@ -1,0 +1,17 @@
+{
+  "name": "蜂箱堆叠器",
+  "icon": "modularbees:modular_beehive_stacker",
+  "read_by_default": true,
+  "category": "modularbees:beehive",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "title": "蜂箱堆叠器",
+      "text": "堆叠器可以增加蜂箱输出库存的最大堆叠尺寸，默认情况下每个堆叠器可以提供 3 倍堆叠尺寸提升。$(br)当您同时使用多个堆叠器时，尺寸提升是累加的。"
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "modularbees:modular_beehive_stacker"
+    }
+  ]
+}

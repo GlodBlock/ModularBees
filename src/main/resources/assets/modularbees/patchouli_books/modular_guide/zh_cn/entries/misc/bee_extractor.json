@@ -1,0 +1,17 @@
+{
+  "name": "蜜蜂提取器",
+  "icon": "modularbees:bee_extractor",
+  "read_by_default": true,
+  "category": "modularbees:misc",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "title": "蜜蜂提取器",
+      "text": "蜜蜂提取器是一种改良的装瓶机，可以将蜜蜂的基因提取到瓶子中。"
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "modularbees:bee_extractor"
+    }
+  ]
+}
