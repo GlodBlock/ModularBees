@@ -126,7 +126,8 @@ public class TileBeehiveAlveary extends TileBeehivePart implements ServerTickTil
     @Override
     public void tickServer(Level world, BlockState state) {
         var in = this.cageIn.getStackInSlot(0);
-        if (in.isEmpty()) {
+        var out = this.cageOut.getStackInSlot(0);
+        if (in.isEmpty() && out.isEmpty()) {
             return;
         }
         if (BeeCage.isFilled(in)) {
@@ -139,7 +140,6 @@ public class TileBeehiveAlveary extends TileBeehivePart implements ServerTickTil
                 }
             }
         }
-        var out = this.cageOut.getStackInSlot(0);
         if (this.isEmptyCage(out)) {
             if (!this.bees.isEmpty()) {
                 var entity = this.bees.getLast().toOccupant().createEntity(world, this.getBlockPos());
