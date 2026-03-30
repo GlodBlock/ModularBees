@@ -23,6 +23,7 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.PackType;
 import net.neoforged.bus.api.IEventBus;
+import net.neoforged.fml.InterModComms;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.config.ModConfig;
@@ -71,6 +72,7 @@ public class ModularBees {
         NeoForge.EVENT_BUS.register(TooltipHook.INSTANCE);
         NeoForge.EVENT_BUS.register(ElectrodeRecipe.class);
         NeoForge.EVENT_BUS.register(CombCentrifugeLookup.class);
+        InterModComms.sendTo("invtweaks", "blacklist-screen", () -> "com.glodblock.github.modularbees.client.gui.*");
     }
 
     public void addPackFinders(AddPackFindersEvent event) {
