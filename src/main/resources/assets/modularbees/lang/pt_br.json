@@ -32,6 +32,9 @@
   "modularbees.tooltip.electrode_power": "Concede x%s de bônus de velocidade",
   "modularbees.chat.beehive_unformed": "A Colmeia Modular ainda não está formada",
   "modularbees.chat.centrifuge_unformed": "A Centrífuga Modular ainda não está formada",
+  "modularbees.chat.data_corrupted": "O bloco controlador está corrompido, tente quebrar e colocá-lo novamente",
+  "modularbees.chat.block_invalid": "Bloco inválido em X: %s, Y: %s, Z: %s",
+  "modularbees.chat.multiple_heater": "Foram encontrados múltiplos aquecedores na mesma centrífuga",
   "modularbees.gui.modular_beehive_overclocker.boost": "Bônus de Velocidade:",
   "modularbees.gui.modular_beehive_overclocker.empty": "Sem Eletrodo",
   "modularbees.gui.fluid_tank.amount": "%s/%s mB",
@@ -41,6 +44,7 @@
   "modularbees.gui.modular_beehive_alveary.invalid": "Os dados da abelha estão corrompidos.",
   "modularbees.gui.modular_beehive_alveary.solitary": "Abelha solitária não pode viver na colmeia.",
   "modularbees.gui.modular_beehive_alveary.child": "Abelha filhote não pode viver no apiário.",
+  "modularbees.gui.modular_beehive_alveary.no_food": "Faltando flor",
   "modularbees.jei.treater_boost": "Produtividade +%s",
   "modularbees.jei.overclocker_boost": "Velocidade x%s"
 }
