@@ -11,6 +11,7 @@ import cy.jdkdigital.productivelib.common.recipe.TagOutputRecipe;
 import it.unimi.dsi.fastutil.objects.Object2ReferenceMap;
 import it.unimi.dsi.fastutil.objects.Object2ReferenceOpenCustomHashMap;
 import it.unimi.dsi.fastutil.objects.Object2ReferenceOpenHashMap;
+import it.unimi.dsi.fastutil.objects.ObjectOpenCustomHashSet;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.item.Item;
@@ -22,7 +23,6 @@ import net.neoforged.neoforge.fluids.FluidStack;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Collections;
 import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Set;
@@ -33,7 +33,7 @@ public final class CombCentrifugeLookup {
     private static final Object2ReferenceMap<RK, Output> RL_MAP = new Object2ReferenceOpenHashMap<>();
     private static final IdentityHashMap<Item, Output> ITEM_MAP = new IdentityHashMap<>();
     private static final Object2ReferenceMap<ItemStack, Output> NBT_MAP = new Object2ReferenceOpenCustomHashMap<>(GameUtil.ITEM_HASH);
-    private static final Set<Item> VALID_INPUT = Collections.newSetFromMap(new IdentityHashMap<>());
+    private static final Set<ItemStack> VALID_INPUT = new ObjectOpenCustomHashSet<>(GameUtil.ITEM_HASH);
     private static boolean needInit = true;
     private static final Consumer<ItemStack> PREPROCESS = CombCentrifugeLookup::filterWax;
 
@@ -45,21 +45,20 @@ public final class CombCentrifugeLookup {
         if (stack.isEmpty() || world == null) {
             return false;
         }
-        if (stack.is(ModTags.Common.HONEYCOMBS) || stack.is(ModTags.Common.STORAGE_BLOCK_HONEYCOMBS)) {
-            return true;
+        var singleComb = ItemStack.EMPTY;
+        if (stack.is(ModTags.Common.STORAGE_BLOCK_HONEYCOMBS)) {
+            singleComb = BeeHelper.getSingleComb(stack);
         }
         if (needInit) {
             needInit = false;
             for (var holder : world.getRecipeManager().byType(ModRecipeTypes.CENTRIFUGE_TYPE.get())) {
                 var input = holder.value().ingredient;
                 for (var item : input.getItems()) {
-                    if (!stack.is(ModTags.Common.HONEYCOMBS) && !stack.is(ModTags.Common.STORAGE_BLOCK_HONEYCOMBS)) {
-                        VALID_INPUT.add(item.getItem());
-                    }
+                    VALID_INPUT.add(item.copy());
                 }
             }
         }
-        return VALID_INPUT.contains(stack.getItem());
+        return VALID_INPUT.contains(stack) || VALID_INPUT.contains(singleComb);
     }
 
     public static boolean query(Consumer<ItemStack> itemAcceptor, Consumer<FluidStack> fluidAcceptor, ItemStack comb, @NotNull Level world, int para, float chanceBoost, boolean heated) {
@@ -107,27 +106,38 @@ public final class CombCentrifugeLookup {
     @Nullable
     private static Output lookupRecipe(@NotNull ItemStack comb, @NotNull Level world) {
         ItemStack key = comb.copy();
-        boolean isBlock = comb.is(ModTags.Common.STORAGE_BLOCK_HONEYCOMBS);
-        if (isBlock) {
-            key = BeeHelper.getSingleComb(comb);
+        ItemStack altKey = ItemStack.EMPTY;
+        boolean isBlock = false;
+        if (comb.is(ModTags.Common.STORAGE_BLOCK_HONEYCOMBS)) {
+            altKey = BeeHelper.getSingleComb(comb);
         }
-        if (key.isEmpty()) {
+        if (key.isEmpty() && altKey.isEmpty()) {
             return null;
         }
+        // Lookup direct recipe first
         var inv = new InventoryHandlerHelper.BlockEntityItemStackHandler(2);
         inv.setStackInSlot(1, key);
         var recipe = BeeHelper.getCentrifugeRecipe(world, inv);
         if (recipe == null) {
-            return null;
+            // Lookup possible comb recipe
+            if (!altKey.isEmpty()) {
+                inv.setStackInSlot(1, altKey);
+                recipe = BeeHelper.getCentrifugeRecipe(world, inv);
+                isBlock = true;
+            }
+            if (recipe == null) {
+                return null;
+            }
         }
+        final boolean fBlock = isBlock;
         var output = new Output(
                 recipe.value()
                         .getRecipeOutputs()
                         .entrySet()
                         .stream()
-                        .map(e -> BoostChanceStack.of(e.getKey(), mul4(e.getValue(), isBlock)))
+                        .map(e -> BoostChanceStack.of(e.getKey(), mul4(e.getValue(), fBlock)))
                         .toList(),
-                mul4(recipe.value().getFluidOutputs(), isBlock)
+                mul4(recipe.value().getFluidOutputs(), fBlock)
         );
         var item = key.getItem();
         if (item instanceof Honeycomb) {
