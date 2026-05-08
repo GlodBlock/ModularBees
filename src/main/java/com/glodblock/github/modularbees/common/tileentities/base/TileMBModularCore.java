@@ -99,7 +99,7 @@ public abstract class TileMBModularCore extends TileMBBase implements ServerTick
         }
     }
 
-    protected <T extends TileMBModularComponent> List<T> getComponents(Class<T> type) {
+    protected <T> List<T> getComponents(Class<T> type) {
         if (!this.formed.ok()) {
             return List.of();
         }

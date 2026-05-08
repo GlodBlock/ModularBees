@@ -36,6 +36,9 @@ public class MBConfig {
     public static final ModConfigSpec.IntValue BEE_EXTRACTOR_POWER_USAGE = BUILDER
             .comment("Bee extractor energy usage. (FE/t)")
             .defineInRange("machine.bee_extractor_energy_usage", 500, 1, 10000);
+    public static final ModConfigSpec.IntValue ME_EXPORT_INTERVAL = BUILDER
+            .comment("Tick interval for ME export hatch check network status")
+            .defineInRange("ae2.me_output_interval", 20, 1, 1000);
     public static final ModConfigSpec SPEC = BUILDER.build();
 
 }

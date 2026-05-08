@@ -191,4 +191,14 @@ public class GameUtil {
         return false;
     }
 
+    @SafeVarargs
+    public static <T> T coalesce(T... values) {
+        for (var value : values) {
+            if (value != null) {
+                return value;
+            }
+        }
+        return null;
+    }
+
 }

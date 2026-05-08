@@ -40,6 +40,7 @@ public abstract class ContainerMBBase<T extends TileMBBase> extends AbstractCont
         super(type, id);
         this.host = host;
         this.playerInventory = inv;
+        this.getActionMap().put("display_slot_click", o -> handleDisplaySlotClick(o.get(0)));
     }
 
     public void setResolver(ContainerResolver resolver) {
@@ -197,8 +198,7 @@ public abstract class ContainerMBBase<T extends TileMBBase> extends AbstractCont
     /**
      * Check if a given candidate slot is a valid destination for {@link #quickMoveStack}.
      */
-    protected boolean isValidQuickMoveDestination(Slot candidateSlot, ItemStack stackToMove,
-                                                  boolean fromPlayerSide) {
+    protected boolean isValidQuickMoveDestination(Slot candidateSlot, ItemStack stackToMove, boolean fromPlayerSide) {
         return isPlayerSideSlot(candidateSlot) != fromPlayerSide
                 && !(candidateSlot instanceof DisplaySlot)
                 && candidateSlot.mayPlace(stackToMove);
@@ -227,6 +227,16 @@ public abstract class ContainerMBBase<T extends TileMBBase> extends AbstractCont
             }
         }
         super.broadcastChanges();
+    }
+
+    protected void handleDisplaySlotClick(int slotIndex) {
+        if (slotIndex < 0 || slotIndex >= this.slots.size()) {
+            return;
+        }
+        var slot = this.getSlot(slotIndex);
+        if (slot instanceof DisplaySlot displaySlot) {
+            displaySlot.set(this.getCarried());
+        }
     }
 
     public boolean isClientSide() {

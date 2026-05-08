@@ -99,7 +99,7 @@ public class TileBeehiveTreater extends TileBeehivePart implements ItemHandlerHo
         }
         this.cache = null;
         for (var recipe : this.level.getRecipeManager().byType(TreaterRecipe.TYPE)) {
-            if (this.foods.countStack(recipe.value()::isValidInput) > 0) {
+            if (this.foods.contains(recipe.value()::isValidInput)) {
                 this.cache = recipe.value();
                 break;
             }
@@ -111,7 +111,7 @@ public class TileBeehiveTreater extends TileBeehivePart implements ItemHandlerHo
     }
 
     private boolean testRecipe(@NotNull TreaterRecipe recipe) {
-        return this.foods.countStack(recipe::isValidInput) > 0;
+        return this.foods.contains(recipe::isValidInput);
     }
 
     @Override

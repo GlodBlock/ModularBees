@@ -18,6 +18,7 @@ import com.glodblock.github.modularbees.util.GameConstants;
 import com.glodblock.github.modularbees.util.GameUtil;
 import com.glodblock.github.modularbees.util.StackCacheMap;
 import com.glodblock.github.modularbees.util.TryResult;
+import com.glodblock.github.modularbees.xmod.ae.expose.MEExportAction;
 import cy.jdkdigital.productivebees.ProductiveBeesConfig;
 import cy.jdkdigital.productivebees.init.ModFluids;
 import cy.jdkdigital.productivelib.registry.LibItems;
@@ -92,6 +93,7 @@ public class TileModularBeehive extends TileMBModularCore implements ItemHandler
                 return;
             }
             float overclock = 1;
+            var meExports = this.getComponents(MEExportAction.class);
             if (!this.stuck) {
                 for (var component : components) {
                     if (component instanceof TileBeehiveOverclocker overclocker) {
@@ -102,6 +104,10 @@ public class TileModularBeehive extends TileMBModularCore implements ItemHandler
                 this.addTick(overclock);
             }
             if (!this.sending.isEmpty() && !this.stuck) {
+                for (var component : meExports) {
+                    component.sendToMENetwork(this.sending);
+                    this.sending.removeIf(ItemStack::isEmpty);
+                }
                 for (int i = 0; i < this.sending.size(); ++i) {
                     var stack = this.sending.get(i).copy();
                     for (int x = 0; x < this.outputs.getSlots(); ++x) {
@@ -385,9 +391,9 @@ public class TileModularBeehive extends TileMBModularCore implements ItemHandler
     }
 
     private void updateUpgrade() {
-        this.blockMode = this.upgrade.countStack(stack ->
+        this.blockMode = this.upgrade.contains(stack ->
                 stack.getItem() == LibItems.UPGRADE_BLOCK.get() ||
-                stack.getItem() == LibItems.UPGRADE_PRODUCTIVITY_4.get()) > 0;
+                stack.getItem() == LibItems.UPGRADE_PRODUCTIVITY_4.get());
         int amt = this.upgrade.countStack(LibItems.UPGRADE_TIME.get());
         this.tickSpeed = (float) (1 / (1 - ProductiveBeesConfig.UPGRADES.timeBonus.get() * amt));
         this.upgradeMultiplier = 1;

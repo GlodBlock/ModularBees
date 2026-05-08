@@ -133,14 +133,13 @@ public class MBItemInventory extends ItemStackHandler {
         return List.copyOf(this.stacks);
     }
 
-    public int countStack(Predicate<ItemStack> filter) {
-        int cnt = 0;
+    public boolean contains(Predicate<ItemStack> filter) {
         for (var stack : this.stacks) {
             if (filter.test(stack)) {
-                cnt += stack.getCount();
+                return true;
             }
         }
-        return cnt;
+        return false;
     }
 
     public int countStack(Item filter) {

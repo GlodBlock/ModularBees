@@ -15,6 +15,7 @@ import com.glodblock.github.modularbees.network.MBNetworkHandler;
 import com.glodblock.github.modularbees.util.CombCentrifugeLookup;
 import com.glodblock.github.modularbees.util.DataProvider;
 import com.glodblock.github.modularbees.xmod.ModIDs;
+import com.glodblock.github.modularbees.xmod.ae.AEXSingletons;
 import com.glodblock.github.modularbees.xmod.cc.PeripheralInit;
 import com.mojang.logging.LogUtils;
 import net.minecraft.client.renderer.ItemBlockRenderTypes;
@@ -58,6 +59,9 @@ public class ModularBees {
             }
             if (e.getRegistryKey().equals(Registries.BLOCK)) {
                 MBSingletons.init(MBRegistryHandler.INSTANCE);
+                if (GlodUtil.checkMod(ModIDs.AE2)) {
+                    AEXSingletons.init(MBRegistryHandler.INSTANCE);
+                }
                 MBRegistryHandler.INSTANCE.runRegister();
             }
         });

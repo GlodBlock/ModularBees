@@ -37,6 +37,10 @@ public class MBFluidInventory extends FluidTank {
         return super.fill(resource, action);
     }
 
+    public FluidStack forceDrain(int maxDrain, @NotNull FluidAction action) {
+        return super.drain(maxDrain, action);
+    }
+
     @Override
     public int fill(@NotNull FluidStack resource, @NotNull FluidAction action) {
         if (this.mode.canInsert()) {

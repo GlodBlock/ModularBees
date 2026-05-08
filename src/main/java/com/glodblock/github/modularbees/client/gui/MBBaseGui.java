@@ -7,6 +7,7 @@ import com.glodblock.github.modularbees.client.util.PicData;
 import com.glodblock.github.modularbees.client.util.TooltipElement;
 import com.glodblock.github.modularbees.common.tileentities.base.TileMBBase;
 import com.glodblock.github.modularbees.container.base.ContainerMBBase;
+import com.glodblock.github.modularbees.container.slot.DisplaySlot;
 import com.glodblock.github.modularbees.network.CMBGenericPacket;
 import com.glodblock.github.modularbees.network.MBNetworkHandler;
 import net.minecraft.client.gui.GuiGraphics;
@@ -15,6 +16,8 @@ import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.inventory.ClickType;
+import net.minecraft.world.inventory.Slot;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -107,6 +110,15 @@ public abstract class MBBaseGui<C extends ContainerMBBase<? extends TileMBBase>>
                 centerX - length / 2, y,
                 DEFAULT_TEXT_COLOR, false
         );
+    }
+
+    @Override
+    protected void slotClicked(@NotNull Slot slot, int slotIdx, int mouseButton, @NotNull ClickType clickType) {
+        if (slot instanceof DisplaySlot) {
+            this.sendAction("display_slot_click", slot.index);
+        } else {
+            super.slotClicked(slot, slotIdx, mouseButton, clickType);
+        }
     }
 
     @NotNull

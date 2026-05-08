@@ -1,5 +1,6 @@
 package com.glodblock.github.modularbees.client;
 
+import com.glodblock.github.glodium.util.GlodUtil;
 import com.glodblock.github.modularbees.ModularBees;
 import com.glodblock.github.modularbees.client.gui.MBAlvearyGui;
 import com.glodblock.github.modularbees.client.gui.MBBeeExtractorGui;
@@ -25,6 +26,8 @@ import com.glodblock.github.modularbees.container.ContainerMBModularBeehive;
 import com.glodblock.github.modularbees.container.ContainerMBModularCentrifuge;
 import com.glodblock.github.modularbees.container.ContainerMBOverclocker;
 import com.glodblock.github.modularbees.container.ContainerMBTreater;
+import com.glodblock.github.modularbees.xmod.ModIDs;
+import com.glodblock.github.modularbees.xmod.ae.AEXClientLoader;
 import net.minecraft.client.Minecraft;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -82,6 +85,9 @@ public class MBClientRegistryHandler {
         event.register(ContainerMBHeater.TYPE.castType(), MBHeaterGui::new);
         event.register(ContainerMBGearbox.TYPE.castType(), MBGearboxGui::new);
         event.register(ContainerMBBeeExtractor.TYPE.castType(), MBBeeExtractorGui::new);
+        if (GlodUtil.checkMod(ModIDs.AE2)) {
+            AEXClientLoader.initGui(event);
+        }
     }
 
 }

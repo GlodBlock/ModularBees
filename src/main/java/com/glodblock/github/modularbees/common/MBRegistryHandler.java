@@ -24,6 +24,8 @@ import com.glodblock.github.modularbees.container.ContainerMBOverclocker;
 import com.glodblock.github.modularbees.container.ContainerMBTreater;
 import com.glodblock.github.modularbees.container.base.MBGuiHandler;
 import com.glodblock.github.modularbees.util.RegisterTask;
+import com.glodblock.github.modularbees.xmod.ModIDs;
+import com.glodblock.github.modularbees.xmod.ae.AEXCommonLoader;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
@@ -99,6 +101,9 @@ public class MBRegistryHandler extends RegistryHandler {
         ContainerMBHeater.TYPE.register();
         ContainerMBGearbox.TYPE.register();
         ContainerMBBeeExtractor.TYPE.register();
+        if (GlodUtil.checkMod(ModIDs.AE2)) {
+            AEXCommonLoader.init();
+        }
     }
 
     private void registerRecipe() {

@@ -87,10 +87,13 @@ dependencies {
     implementation "vazkii.patchouli:Patchouli:1.21-87-NEOFORGE"
     compileOnly "cc.tweaked:cc-tweaked-1.21.1-forge:1.113.1"
     compileOnly "mekanism:Mekanism:1.21.1-10.7.9.72"
+    compileOnly "org.appliedenergistics:appliedenergistics2:19.2.17"
     // runtime test
     runtimeOnly "curse.maven:jade-324717:5427817"
     runtimeOnly "mekanism:Mekanism:1.21.1-10.7.0.55"
     runtimeOnly "cc.tweaked:cc-tweaked-1.21.1-forge:1.113.1"
+    runtimeOnly "org.appliedenergistics:appliedenergistics2:19.2.17"
+    runtimeOnly "org.appliedenergistics:guideme:21.1.1"
 }
 
 tasks.withType(ProcessResources).configureEach {
