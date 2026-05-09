@@ -7,6 +7,7 @@
     "modularbees:modular_centrifuge_import",
     "modularbees:modular_centrifuge_heater",
     "modularbees:modular_centrifuge_gearbox",
-    "modularbees:bee_extractor"
+    "modularbees:bee_extractor",
+    "modularbees:me_centrifuge_export"
   ]
 }

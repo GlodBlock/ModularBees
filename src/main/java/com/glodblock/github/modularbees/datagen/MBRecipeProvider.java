@@ -1,11 +1,14 @@
 package com.glodblock.github.modularbees.datagen;
 
+import appeng.datagen.providers.tags.ConventionTags;
 import com.glodblock.github.modularbees.ModularBees;
 import com.glodblock.github.modularbees.common.MBSingletons;
 import com.glodblock.github.modularbees.common.recipe.ElectrodeRecipe;
 import com.glodblock.github.modularbees.common.recipe.TreaterRecipe;
 import com.glodblock.github.modularbees.util.GameConstants;
 import com.glodblock.github.modularbees.util.MBTags;
+import com.glodblock.github.modularbees.xmod.ModIDs;
+import com.glodblock.github.modularbees.xmod.ae.AEXSingletons;
 import cy.jdkdigital.productivebees.common.recipe.BottlerRecipe;
 import cy.jdkdigital.productivebees.datagen.recipe.builder.CentrifugeRecipeBuilder;
 import cy.jdkdigital.productivebees.init.ModBlocks;
@@ -34,6 +37,8 @@ import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.material.Fluids;
 import net.neoforged.neoforge.common.Tags;
+import net.neoforged.neoforge.common.conditions.ICondition;
+import net.neoforged.neoforge.common.conditions.ModLoadedCondition;
 import net.neoforged.neoforge.common.crafting.DataComponentIngredient;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.crafting.SizedFluidIngredient;
@@ -320,6 +325,24 @@ public class MBRecipeProvider extends RecipeProvider {
                 .setFluidOutput(new FluidStack(Fluids.WATER, 20))
                 .addOutput(new TagOutputRecipe.ChancedOutput(Ingredient.of(MBSingletons.HONEY_JELLY), 1, 1, 0.1F))
                 .save(c, ModularBees.id("centrifuge/honey_jelly"));
+        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, AEXSingletons.ME_BEEHIVE_EXPORT)
+                .pattern("FIF")
+                .pattern("PSP")
+                .define('F', ConventionTags.FLUIX_CRYSTAL)
+                .define('I', ConventionTags.INTERFACE)
+                .define('P', Items.IRON_BARS)
+                .define('S', MBSingletons.MODULAR_BEEHIVE_EXPORT)
+                .unlockedBy(C, has(MBSingletons.MODULAR_BEEHIVE_EXPORT))
+                .save(c.withConditions(mod(ModIDs.AE2)), ModularBees.id("me_beehive_export"));
+        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, AEXSingletons.ME_CENTRIFUGE_EXPORT)
+                .pattern("FIF")
+                .pattern("PSP")
+                .define('F', ConventionTags.FLUIX_CRYSTAL)
+                .define('I', ConventionTags.INTERFACE)
+                .define('P', Items.IRON_BARS)
+                .define('S', MBSingletons.MODULAR_CENTRIFUGE_EXPORT)
+                .unlockedBy(C, has(MBSingletons.MODULAR_CENTRIFUGE_EXPORT))
+                .save(c.withConditions(mod(ModIDs.AE2)), ModularBees.id("me_centrifuge_export"));
     }
 
     private void electrode(Item electrode, TagKey<Item> material, TagKey<Item> material2, String name, @NotNull RecipeOutput c) {
@@ -337,6 +360,10 @@ public class MBRecipeProvider extends RecipeProvider {
 
     private void bottle(@NotNull RecipeOutput c, BottlerRecipe recipe, ResourceLocation id) {
         c.accept(id, recipe, null);
+    }
+
+    private ICondition mod(String modid) {
+        return new ModLoadedCondition(modid);
     }
 
 }

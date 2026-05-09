@@ -124,7 +124,7 @@ public abstract class TileAENetworkHost extends TileMBModularComponent implement
     @Override
     public void clearRemoved() {
         super.clearRemoved();
-        scheduleInit();
+        this.scheduleInit();
     }
 
     public final void onGridConnectableSidesChanged() {

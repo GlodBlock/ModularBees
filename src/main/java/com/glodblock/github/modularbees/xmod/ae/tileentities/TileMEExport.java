@@ -1,6 +1,7 @@
 package com.glodblock.github.modularbees.xmod.ae.tileentities;
 
 import appeng.api.config.Actionable;
+import appeng.api.stacks.AEFluidKey;
 import appeng.api.stacks.AEItemKey;
 import com.glodblock.github.modularbees.common.MBConfig;
 import com.glodblock.github.modularbees.common.inventory.MBItemInventory;
@@ -14,6 +15,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
+import net.neoforged.neoforge.fluids.FluidStack;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
@@ -43,6 +45,19 @@ public abstract class TileMEExport extends TileAENetworkHost implements ServerTi
                         var inserted = storage.insert(AEItemKey.of(stack), stack.getCount(), Actionable.MODULATE, this.getSource());
                         stack.shrink((int) inserted);
                     }
+                }
+            }
+        }
+    }
+
+    @Override
+    public void sendToMENetworkFluid(List<FluidStack> filling) {
+        var storage = this.getMEStorage();
+        if (storage != null) {
+            for (var stack : filling) {
+                if (!stack.isEmpty()) {
+                    var inserted = storage.insert(AEFluidKey.of(stack), stack.getAmount(), Actionable.MODULATE, this.getSource());
+                    stack.shrink((int) inserted);
                 }
             }
         }

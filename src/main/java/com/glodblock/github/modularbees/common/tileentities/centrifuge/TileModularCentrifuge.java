@@ -16,6 +16,7 @@ import com.glodblock.github.modularbees.util.CombCentrifugeLookup;
 import com.glodblock.github.modularbees.util.GameConstants;
 import com.glodblock.github.modularbees.util.GameUtil;
 import com.glodblock.github.modularbees.util.TryResult;
+import com.glodblock.github.modularbees.xmod.ae.expose.MEExportAction;
 import cy.jdkdigital.productivebees.ProductiveBeesConfig;
 import cy.jdkdigital.productivebees.init.ModTags;
 import cy.jdkdigital.productivelib.registry.LibItems;
@@ -101,6 +102,17 @@ public class TileModularCentrifuge extends TileMBModularCore implements ItemHand
     protected void logicTick(@NotNull Level world, BlockState state, List<TileMBModularComponent> components) {
         if (this.isLoaded() && !this.stuck) {
             if (!this.sending.isEmpty() || !this.filling.isEmpty()) {
+                var meExports = this.getComponents(MEExportAction.class);
+                for (var component : meExports) {
+                    if (!this.sending.isEmpty()) {
+                        component.sendToMENetwork(this.sending);
+                        this.sending.removeIf(ItemStack::isEmpty);
+                    }
+                    if (!this.filling.isEmpty()) {
+                        component.sendToMENetworkFluid(this.filling);
+                        this.filling.removeIf(FluidStack::isEmpty);
+                    }
+                }
                 for (int i = 0; i < this.sending.size(); ++i) {
                     var stack = this.sending.get(i).copy();
                     for (int x = 0; x < this.outputs.getSlots(); ++x) {
