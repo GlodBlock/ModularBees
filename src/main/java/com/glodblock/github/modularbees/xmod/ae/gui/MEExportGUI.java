@@ -4,7 +4,6 @@ import com.glodblock.github.modularbees.ModularBees;
 import com.glodblock.github.modularbees.client.gui.MBBaseGui;
 import com.glodblock.github.modularbees.client.gui.elements.IconButton;
 import com.glodblock.github.modularbees.client.util.PicData;
-import com.glodblock.github.modularbees.xmod.ae.AEXSingletons;
 import com.glodblock.github.modularbees.xmod.ae.container.ContainerMEExport;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Inventory;
@@ -67,7 +66,7 @@ public class MEExportGUI extends MBBaseGui<ContainerMEExport> {
 
     @Override
     protected Component getGuiName() {
-        return AEXSingletons.ME_BEEHIVE_EXPORT.getName();
+        return this.menu.getHost().getDisplayName();
     }
 
 }

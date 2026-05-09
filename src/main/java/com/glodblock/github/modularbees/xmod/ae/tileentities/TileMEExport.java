@@ -9,6 +9,7 @@ import com.glodblock.github.modularbees.xmod.ae.expose.MEExportAction;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntityType;
@@ -105,5 +106,7 @@ public abstract class TileMEExport extends TileAENetworkHost implements ServerTi
     }
 
     protected abstract void extractOutputs();
+
+    public abstract Component getDisplayName();
 
 }

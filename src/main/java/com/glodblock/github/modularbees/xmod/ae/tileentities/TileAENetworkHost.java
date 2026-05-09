@@ -106,6 +106,7 @@ public abstract class TileAENetworkHost extends TileMBModularComponent implement
 
     public void onReady() {
         this.getMainNode().create(getLevel(), this.getBlockPos());
+        this.getMainNode().setExposedOnSides(Set.of(this.getFacing()));
     }
 
     @Override
