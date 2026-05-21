@@ -41,6 +41,7 @@ public abstract class ContainerMBBase<T extends TileMBBase> extends AbstractCont
         this.host = host;
         this.playerInventory = inv;
         this.getActionMap().put("display_slot_click", o -> handleDisplaySlotClick(o.get(0)));
+        this.getActionMap().put("jei_slot", o -> handleJeiClick(o.get(0), o.get(1)));
     }
 
     public void setResolver(ContainerResolver resolver) {
@@ -236,6 +237,16 @@ public abstract class ContainerMBBase<T extends TileMBBase> extends AbstractCont
         var slot = this.getSlot(slotIndex);
         if (slot instanceof DisplaySlot displaySlot) {
             displaySlot.set(this.getCarried());
+        }
+    }
+
+    protected void handleJeiClick(int slotIndex, ItemStack stack) {
+        if (slotIndex < 0 || slotIndex >= this.slots.size() || stack == null) {
+            return;
+        }
+        var slot = this.getSlot(slotIndex);
+        if (slot instanceof DisplaySlot displaySlot) {
+            displaySlot.set(stack);
         }
     }
 

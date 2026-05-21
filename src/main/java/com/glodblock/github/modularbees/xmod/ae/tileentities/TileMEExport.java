@@ -102,11 +102,17 @@ public abstract class TileMEExport extends TileAENetworkHost implements ServerTi
     }
 
     public void setEnableFilter(boolean enableFilter) {
-        this.enableFilter = enableFilter;
+        if (this.enableFilter != enableFilter) {
+            this.enableFilter = enableFilter;
+            this.markDirty();
+        }
     }
 
     public void setWhitelist(boolean whitelist) {
-        this.whitelist = whitelist;
+        if (this.whitelist != whitelist) {
+            this.whitelist = whitelist;
+            this.markDirty();
+        }
     }
 
     protected boolean checkFilter(ItemStack stack) {

@@ -40,4 +40,8 @@ public class DisplaySlot extends SlotItemHandler {
         return false;
     }
 
+    public int index() {
+        return this.index;
+    }
+
 }

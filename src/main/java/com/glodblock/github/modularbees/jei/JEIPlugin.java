@@ -1,11 +1,13 @@
 package com.glodblock.github.modularbees.jei;
 
 import com.glodblock.github.modularbees.ModularBees;
+import com.glodblock.github.modularbees.client.gui.MBBaseGui;
 import com.glodblock.github.modularbees.common.MBSingletons;
 import com.glodblock.github.modularbees.common.recipe.ElectrodeRecipe;
 import com.glodblock.github.modularbees.common.recipe.TreaterRecipe;
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.JeiPlugin;
+import mezz.jei.api.registration.IGuiHandlerRegistration;
 import mezz.jei.api.registration.IRecipeCatalystRegistration;
 import mezz.jei.api.registration.IRecipeCategoryRegistration;
 import mezz.jei.api.registration.IRecipeRegistration;
@@ -47,6 +49,11 @@ public class JEIPlugin implements IModPlugin {
     public void registerRecipeCatalysts(@NotNull IRecipeCatalystRegistration registry) {
         registry.addRecipeCatalyst(MBSingletons.MODULAR_TREATER, MBTreaterCategory.RECIPE_TYPE);
         registry.addRecipeCatalyst(MBSingletons.MODULAR_BEEHIVE_OVERCLOCKER, MBElectrodeCategory.RECIPE_TYPE);
+    }
+
+    @Override
+    public void registerGuiHandlers(IGuiHandlerRegistration registration) {
+        registration.addGhostIngredientHandler(MBBaseGui.class, new GhostSlotHandler<>());
     }
 
     private <I extends RecipeInput, T extends Recipe<I>> List<RecipeHolder<T>> getRecipes(RecipeType<T> type, RecipeManager manager) {
