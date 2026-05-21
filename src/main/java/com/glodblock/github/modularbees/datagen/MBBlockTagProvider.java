@@ -25,7 +25,11 @@ public class MBBlockTagProvider extends BlockTagsProvider {
             if (block instanceof BlockMBBase base) {
                 var tool = base.harvestTool();
                 if (tool != null) {
-                    tag(tool).add(block);
+                    if (base.isOptionalBlock()) {
+                        tag(tool).addOptional(base.getRegistryName());
+                    } else {
+                        tag(tool).add(block);
+                    }
                 }
             }
         }

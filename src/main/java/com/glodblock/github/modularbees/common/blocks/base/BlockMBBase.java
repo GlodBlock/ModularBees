@@ -86,6 +86,10 @@ public class BlockMBBase extends Block implements RegisterTask, ResourceProvider
         return null;
     }
 
+    public boolean isOptionalBlock() {
+        return false;
+    }
+
     @Override
     public @NotNull ItemInteractionResult useItemOn(@NotNull ItemStack heldItem, @NotNull BlockState state, @NotNull Level level, @NotNull BlockPos pos, @NotNull Player p, @NotNull InteractionHand hand, @NotNull BlockHitResult hit) {
         if (heldItem.is(MBTags.WRENCH) && !this.getRotorStrategy().isNone()) {

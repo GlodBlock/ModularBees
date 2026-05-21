@@ -21,4 +21,9 @@ public abstract class BlockAENetworkHost<T extends TileAENetworkHost> extends Bl
         }
     }
 
+    @Override
+    public boolean isOptionalBlock() {
+        return true;
+    }
+
 }

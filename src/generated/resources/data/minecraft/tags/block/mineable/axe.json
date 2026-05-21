@@ -10,6 +10,9 @@
     "modularbees:modular_dragon_hive",
     "modularbees:modular_beehive_stacker",
     "modularbees:scented_plank",
-    "modularbees:me_beehive_export"
+    {
+      "id": "modularbees:me_beehive_export",
+      "required": false
+    }
   ]
 }
