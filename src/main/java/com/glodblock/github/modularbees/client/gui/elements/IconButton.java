@@ -66,7 +66,7 @@ public class IconButton extends Button implements RelativePosition, Resizable, T
         }
         PicData bg = this.isHovered() ? GameUtil.coalesce(this.backgroundHighlight, this.background) : GameUtil.coalesce(this.background, this.backgroundHighlight);
         if (bg != null) {
-            this.background.render(graphics, this.getX(), this.getY());
+            bg.render(graphics, this.getX(), this.getY());
         }
         var icon = this.actions.get(this.index).icon();
         icon.render(graphics, this.getX(), this.getY());

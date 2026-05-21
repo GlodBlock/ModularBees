@@ -21,7 +21,6 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.neoforge.event.OnDatapackSyncEvent;
 import net.neoforged.neoforge.fluids.FluidStack;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.IdentityHashMap;
 import java.util.List;
@@ -84,8 +83,20 @@ public final class CombCentrifugeLookup {
         }
         if (cache == null) {
             cache = lookupRecipe(comb, world);
+            if (item instanceof Honeycomb || item instanceof CombBlockItem) {
+                var type = comb.get(ModDataComponents.BEE_TYPE);
+                if (type != null) {
+                    RL_MAP.put(new RK(type, comb.is(ModTags.Common.STORAGE_BLOCK_HONEYCOMBS)), cache);
+                } else {
+                    NBT_MAP.put(comb, cache);
+                }
+            } else if (comb.isComponentsPatchEmpty()) {
+                ITEM_MAP.put(item, cache);
+            } else {
+                NBT_MAP.put(comb, cache);
+            }
         }
-        if (cache != null) {
+        if (cache != Output.EMPTY) {
             cache.output(fluidAcceptor, para);
             if (heated) {
                 cache.output(PREPROCESS.andThen(itemAcceptor), para, chanceBoost, world.getRandom());
@@ -103,7 +114,7 @@ public final class CombCentrifugeLookup {
         }
     }
 
-    @Nullable
+    @NotNull
     private static Output lookupRecipe(@NotNull ItemStack comb, @NotNull Level world) {
         ItemStack key = comb.copy();
         ItemStack altKey = ItemStack.EMPTY;
@@ -112,7 +123,7 @@ public final class CombCentrifugeLookup {
             altKey = BeeHelper.getSingleComb(comb);
         }
         if (key.isEmpty() && altKey.isEmpty()) {
-            return null;
+            return Output.EMPTY;
         }
         // Lookup direct recipe first
         var inv = new InventoryHandlerHelper.BlockEntityItemStackHandler(2);
@@ -126,11 +137,11 @@ public final class CombCentrifugeLookup {
                 isBlock = true;
             }
             if (recipe == null) {
-                return null;
+                return Output.EMPTY;
             }
         }
         final boolean fBlock = isBlock;
-        var output = new Output(
+        return new Output(
                 recipe.value()
                         .getRecipeOutputs()
                         .entrySet()
@@ -139,20 +150,6 @@ public final class CombCentrifugeLookup {
                         .toList(),
                 mul4(recipe.value().getFluidOutputs(), fBlock)
         );
-        var item = key.getItem();
-        if (item instanceof Honeycomb) {
-            var type = key.get(ModDataComponents.BEE_TYPE);
-            if (type != null) {
-                RL_MAP.put(new RK(type, isBlock), output);
-            } else {
-                NBT_MAP.put(comb, output);
-            }
-        } else if (comb.isComponentsPatchEmpty()) {
-            ITEM_MAP.put(comb.getItem(), output);
-        } else {
-            NBT_MAP.put(comb, output);
-        }
-        return output;
     }
 
     private static TagOutputRecipe.ChancedOutput mul4(TagOutputRecipe.ChancedOutput origin, boolean enable) {
@@ -179,6 +176,8 @@ public final class CombCentrifugeLookup {
     }
 
     private record Output(List<BoostChanceStack> outputs, FluidStack fluid) {
+
+        static final Output EMPTY = new Output(List.of(), FluidStack.EMPTY);
 
         @Override
         public @NotNull String toString() {
