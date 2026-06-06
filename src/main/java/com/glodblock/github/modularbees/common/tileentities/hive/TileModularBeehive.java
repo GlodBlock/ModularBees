@@ -52,7 +52,9 @@ import java.util.function.Consumer;
 
 public class TileModularBeehive extends TileMBModularCore implements ItemHandlerHost, FluidHandlerHost, SlotListener {
 
-    private static final int WAITING_TICKS = ProductiveBeesConfig.GENERAL.timeInHive.getAsInt();
+    // Follow villain hive behavior
+    private static final int WAITING_TICKS_FULL = ProductiveBeesConfig.GENERAL.timeInHive.getAsInt() + 450;
+    private static final int WAITING_TICKS_HALF = ProductiveBeesConfig.GENERAL.timeInHive.getAsInt() / 2 + 450;
     @Nullable
     private ObjectSet<BlockPos> allPos;
     @Nullable
@@ -75,6 +77,7 @@ public class TileModularBeehive extends TileMBModularCore implements ItemHandler
     private boolean blockMode = false;
     private float upgradeMultiplier = 1;
     private float geneDropChance = 0;
+    private int waitingTicks = WAITING_TICKS_FULL;
 
     public TileModularBeehive(BlockPos pos, BlockState state) {
         super(GlodUtil.getTileType(TileModularBeehive.class, TileModularBeehive::new, MBSingletons.MODULAR_BEEHIVE_CORE), pos, state);
@@ -125,8 +128,9 @@ public class TileModularBeehive extends TileMBModularCore implements ItemHandler
                 this.markDirty();
             }
             if (this.sending.isEmpty()) {
-                if (this.process >= WAITING_TICKS) {
+                if (this.process >= this.waitingTicks) {
                     this.process = 0;
+                    this.waitingTicks = WAITING_TICKS_HALF;
                     var outputs = new StackCacheMap(world.getRandom());
                     this.table.collectOutput(world, outputs::add);
                     if (this.geneDropChance > 0) {
