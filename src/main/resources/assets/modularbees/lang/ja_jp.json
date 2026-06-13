@@ -35,7 +35,7 @@
   "modularbees.chat.beehive_unformed": "モジュール式養蜂箱は未形成です",
   "modularbees.chat.centrifuge_unformed": "モジュール式遠心分離機は未形成です",
   "modularbees.chat.data_corrupted": "コントローラーブロックが破損しています。再設置してください",
-  "modularbees.chat.block_invalid": "I無効なブロック：%s, Y: %s, Z: %s",
+  "modularbees.chat.block_invalid": "無効なブロック：%s, Y: %s, Z: %s",
   "modularbees.chat.multiple_heater": "同じ遠心分離機の中に複数の加熱部品があります",
   "modularbees.gui.modular_beehive_overclocker.boost": "速度ブースト：",
   "modularbees.gui.modular_beehive_overclocker.empty": "電極無し",
