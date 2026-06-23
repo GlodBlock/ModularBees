@@ -1,0 +1,135 @@
+plugins {
+    id 'java-library'
+    id 'eclipse'
+    id 'idea'
+    id 'net.neoforged.moddev' version '2.0.134'
+}
+
+version = mod_version
+group = mod_group_id
+
+repositories {
+    mavenLocal()
+}
+
+base {
+    archivesName = mod_name
+}
+
+java.toolchain.languageVersion = JavaLanguageVersion.of(25)
+
+neoForge {
+    version = project.neoforge_version
+
+    mods {
+        modular_bees {
+            sourceSet sourceSets.main
+        }
+    }
+
+    runs {
+        client {
+            client()
+        }
+
+        server {
+            server()
+        }
+
+        gametestWorld {
+            client()
+            programArguments.addAll("--username", "Dev", "--quickPlaySingleplayer", "GametestWorld")
+        }
+
+        clientData {
+            clientData()
+            programArguments.addAll '--mod', project.mod_id, '--all', '--output', file('src/generated/resources/').getAbsolutePath(), '--existing', file('src/main/resources/').getAbsolutePath()
+        }
+
+        serverData {
+            serverData()
+            programArguments.addAll '--mod', project.mod_id, '--all', '--output', file('src/generated/resources/').getAbsolutePath(), '--existing', file('src/main/resources/').getAbsolutePath()
+        }
+
+        gametest {
+            type = "gameTestServer"
+            gameDirectory = project.file("build/gametest")
+        }
+
+    }
+
+}
+
+sourceSets.main.resources {
+    srcDir 'src/generated/resources'
+}
+
+repositories {
+    mavenCentral()
+    maven {
+        name = "TerraformersMC"
+        url = "https://maven.terraformersmc.com/"
+        content {
+            includeGroup "dev.emi"
+        }
+    }
+    maven {
+        name = 'cursemaven'
+        url = "https://www.cursemaven.com"
+        content {
+            includeGroup "curse.maven"
+        }
+    }
+    maven {
+        url = 'https://maven.blamejared.com/'
+        content {
+            includeGroup 'mezz.jei'
+        }
+    }
+    maven {
+        name = 'KubeJS'
+        url = "https://maven.latvian.dev/releases/"
+    }
+}
+
+dependencies {
+    implementation "io.github.glodblock:Glodium:26.1-1.2-neoforge"
+	implementation "curse.maven:productivebees-377897:8303935"
+	implementation files("libs/productivelib.jar")
+    implementation "mezz.jei:jei-26.1.2-neoforge:29.5.0.26"
+	//implementation "vazkii.patchouli:Patchouli:1.21-87-NEOFORGE"
+    compileOnly "org.appliedenergistics:appliedenergistics2:26.1.8-alpha"
+	//compileOnly "mekanism:Mekanism:1.21.1-10.7.9.72"
+	//compileOnly "cc.tweaked:cc-tweaked-1.21.1-forge:1.113.1"
+	// runtime test
+	runtimeOnly "curse.maven:jade-324717:8068368"
+    //runtimeOnly "mekanism:Mekanism:1.21.1-10.7.0.55"
+    //runtimeOnly "cc.tweaked:cc-tweaked-1.21.1-forge:1.113.1"
+    runtimeOnly "org.appliedenergistics:appliedenergistics2:26.1.8-alpha"
+    runtimeOnly "org.appliedenergistics:guideme:26.1.10-alpha"
+}
+
+tasks.withType(ProcessResources).configureEach {
+    var replaceProperties = [
+            minecraft_version   : minecraft_version, minecraft_version_range: minecraft_version_range,
+            neo_version         : neoforge_version, neo_version_range: neoforge_version_range,
+            loader_version_range: loader_version_range,
+            mod_id              : mod_id, mod_name: mod_name, mod_license: mod_license, mod_version: mod_version,
+            mod_authors         : mod_authors, mod_description: mod_description,
+    ]
+    inputs.properties replaceProperties
+
+    filesMatching(['META-INF/neoforge.mods.toml']) {
+        expand replaceProperties
+    }
+
+    exclude(".cache/**")
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = 'UTF-8' // Use the UTF-8 charset for Java compilation
+}
+
+tasks.named('jar') {
+    exclude 'com/glodblock/github/**/datagen/**'
+}

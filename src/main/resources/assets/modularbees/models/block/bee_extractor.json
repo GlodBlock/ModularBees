@@ -1,0 +1,6 @@
+{
+  "parent": "modularbees:block/base_machine",
+  "textures": {
+    "top": "modularbees:block/bee_extractor"
+  }
+}

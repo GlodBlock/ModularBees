@@ -1,0 +1,17 @@
+{
+  "name": "离心机输出舱",
+  "icon": "modularbees:modular_centrifuge_export",
+  "read_by_default": true,
+  "category": "modularbees:centrifuge",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "title": "离心机输出舱",
+      "text": "作为物流核心方块的代理，它可以自动将物品/液体发送到其对面的箱子/储罐中。"
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "modularbees:modular_centrifuge_export"
+    }
+  ]
+}

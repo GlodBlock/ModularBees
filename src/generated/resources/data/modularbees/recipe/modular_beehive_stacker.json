@@ -1,0 +1,26 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "A": {
+      "item": "productivelib:upgrade_block"
+    },
+    "C": {
+      "tag": "c:chests"
+    },
+    "L": {
+      "tag": "c:leathers"
+    },
+    "P": {
+      "item": "modularbees:modular_beehive_part"
+    }
+  },
+  "pattern": [
+    "CPC",
+    "LAL"
+  ],
+  "result": {
+    "count": 1,
+    "id": "modularbees:modular_beehive_stacker"
+  }
+}

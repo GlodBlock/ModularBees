@@ -1,0 +1,35 @@
+{
+  "name": "Acelerador da Centrífuga",
+  "icon": "modularbees:modular_centrifuge_overclocker",
+  "read_by_default": true,
+  "category": "modularbees:centrifuge",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "title": "Acelerador da Centrífuga",
+      "text": "Você pode usar o Acelerador da Centrífuga para acelerar a centrífuga. Ele precisa de energia e um Eletrodo para funcionar, melhores Eletrodos têm maior bônus de velocidade.$(br)Quando você usa múltiplos aceleradores ao mesmo tempo, os bônus de velocidade são aditivos. Isso significa que dois Eletrodos de Netherita (x5) podem fazer a centrífuga funcionar x10 mais rápido."
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "modularbees:modular_centrifuge_overclocker"
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Eletrodo",
+      "text": "Existem quatro níveis de eletrodos, e você pode encontrar seus bônus no JEI/dica flutuante.$(br)Eletrodos sempre perderão 1 de durabilidade a cada tick de trabalho."
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "modularbees:electrode_copper",
+      "recipe2": "modularbees:electrode_iron"
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "modularbees:electrode_gold"
+    },
+    {
+      "type": "patchouli:smithing",
+      "recipe": "modularbees:electrode_netherite"
+    }
+  ]
+}

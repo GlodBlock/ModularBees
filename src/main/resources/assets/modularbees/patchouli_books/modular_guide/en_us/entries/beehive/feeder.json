@@ -1,0 +1,17 @@
+{
+  "name": "Modular Feeder",
+  "icon": "modularbees:modular_beehive_feeder",
+  "read_by_default": true,
+  "category": "modularbees:beehive",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "title": "Modular Feeder",
+      "text": "Bees in Modular Beehive will only look for flowers in Modular Feeder, which can hold 9 types of flowers.$(br)If a bee needs fluid flower, you can put a bucket or tank contains the corresponding fluid."
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "modularbees:modular_feeder"
+    }
+  ]
+}

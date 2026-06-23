@@ -1,0 +1,17 @@
+{
+  "name": "模块化龙巢",
+  "icon": "modularbees:modular_dragon_hive",
+  "read_by_default": true,
+  "category": "modularbees:beehive",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "title": "模块化龙巢",
+      "text": "用于收集龙蜂龙息的特殊蜂巢。"
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "modularbees:modular_dragon_hive"
+    }
+  ]
+}

@@ -1,0 +1,36 @@
+{
+  "name": "蜂箱超频器",
+  "icon": "modularbees:modular_beehive_overclocker",
+  "read_by_default": true,
+  "category": "modularbees:beehive",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "title": "蜂箱超频器",
+      "text": "你可以使用蜂箱超频器来让你的蜜蜂更快地产出。它需要能量和电极才能工作，更好的电极可以提高蜜蜂产出的速度。$(br)当你同时使用多个超频器时，速度提升是叠加的。这意味着两个下界合金电极（x25）可以使蜜蜂的工作速度提高 50 倍。"
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "modularbees:modular_overclocker",
+      "text": "$(o)绝对安全"
+    },
+    {
+      "type": "patchouli:text",
+      "title": "电极",
+      "text": "电极有四层。$(li)铜：x1.2$(li)铁：x1.5$(li)金：x2.8$(li)下界合金：x5"
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "modularbees:electrode_copper",
+      "recipe2": "modularbees:electrode_iron"
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "modularbees:electrode_gold"
+    },
+    {
+      "type": "patchouli:smithing",
+      "recipe": "modularbees:electrode_netherite"
+    }
+  ]
+}

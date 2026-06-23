@@ -1,0 +1,27 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "B": {
+      "item": "minecraft:iron_bars"
+    },
+    "C": {
+      "item": "minecraft:cauldron"
+    },
+    "S": {
+      "item": "productivebees:obsidian_shard"
+    },
+    "W": {
+      "item": "productivebees:wither_skull_chip"
+    }
+  },
+  "pattern": [
+    "BSB",
+    "WCW",
+    "BSB"
+  ],
+  "result": {
+    "count": 1,
+    "id": "modularbees:modular_centrifuge_part"
+  }
+}

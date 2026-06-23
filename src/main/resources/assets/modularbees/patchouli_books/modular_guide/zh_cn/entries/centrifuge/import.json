@@ -1,0 +1,17 @@
+{
+  "name": "离心机输入舱",
+  "icon": "modularbees:modular_centrifuge_import",
+  "read_by_default": true,
+  "category": "modularbees:centrifuge",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "title": "离心机输入舱",
+      "text": "离心机的输入缓冲器，可自动从其朝向的箱子/储罐取出蜜脾。$(br)离心机可以直接将其库存作为输入。"
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "modularbees:modular_centrifuge_import"
+    }
+  ]
+}

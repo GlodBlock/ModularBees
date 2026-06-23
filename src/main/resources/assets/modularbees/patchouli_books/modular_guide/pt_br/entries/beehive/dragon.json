@@ -1,0 +1,17 @@
+{
+  "name": "Colmeia Dracônica Modular",
+  "icon": "modularbees:modular_dragon_hive",
+  "read_by_default": true,
+  "category": "modularbees:beehive",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "title": "Colmeia Dracônica Modular",
+      "text": "A colmeia especial para coletar bafo de dragão de abelhas dracônicas."
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "modularbees:modular_dragon_hive"
+    }
+  ]
+}

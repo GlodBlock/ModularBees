@@ -1,0 +1,17 @@
+{
+  "name": "Escotilha de Importação da Centrífuga",
+  "icon": "modularbees:modular_centrifuge_import",
+  "read_by_default": true,
+  "category": "modularbees:centrifuge",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "title": "Escotilha de Importação da Centrífuga",
+      "text": "Um buffer de entrada para a centrífuga, ele pode extrair favos automaticamente do baú/tanque para o qual está voltado.$(br)A Centrífuga pode usar seu inventário diretamente como entrada."
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "modularbees:modular_centrifuge_import"
+    }
+  ]
+}

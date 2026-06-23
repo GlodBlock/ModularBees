@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:smithing_transform",
+  "addition": {
+    "item": "minecraft:netherite_block"
+  },
+  "base": {
+    "item": "modularbees:electrode_gold"
+  },
+  "result": {
+    "count": 1,
+    "id": "modularbees:electrode_netherite"
+  },
+  "template": {
+    "item": "minecraft:netherite_upgrade_smithing_template"
+  }
+}

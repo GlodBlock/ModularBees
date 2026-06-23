@@ -1,0 +1,17 @@
+{
+  "name": "离心机加热器",
+  "icon": "modularbees:modular_centrifuge_heater",
+  "read_by_default": true,
+  "category": "modularbees:centrifuge",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "title": "离心机加热器",
+      "text": "加热器可以使离心机像热能离心机一样工作，从而处理蜜脾块并销毁所有蜡。$(br)每台离心机仅允许安装$(l)一$()个加热器。加热器需要电力才能工作，可以使离心机的转速提高 3 倍。$(br)安装加热器后，离心机只有在加热器通电时才能工作。"
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "modularbees:modular_centrifuge_heater"
+    }
+  ]
+}

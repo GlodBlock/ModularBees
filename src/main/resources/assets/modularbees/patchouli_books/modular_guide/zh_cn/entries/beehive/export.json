@@ -1,0 +1,17 @@
+{
+  "name": "蜂箱输出舱",
+  "icon": "modularbees:modular_export",
+  "read_by_default": true,
+  "category": "modularbees:beehive",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "title": "蜂箱输出舱",
+      "text": "作为物流核心方块的代理，它可以自动将产品和蜂蜜发送到其面对的箱子/罐子。"
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "modularbees:modular_export"
+    }
+  ]
+}

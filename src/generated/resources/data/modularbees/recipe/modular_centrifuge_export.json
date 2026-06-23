@@ -1,0 +1,28 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "H": {
+      "item": "minecraft:hopper"
+    },
+    "I": [
+      {
+        "item": "minecraft:piston"
+      },
+      {
+        "item": "minecraft:sticky_piston"
+      }
+    ],
+    "P": {
+      "item": "modularbees:modular_centrifuge_part"
+    }
+  },
+  "pattern": [
+    "IPI",
+    " H "
+  ],
+  "result": {
+    "count": 1,
+    "id": "modularbees:modular_centrifuge_export"
+  }
+}

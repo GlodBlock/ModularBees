@@ -1,0 +1,27 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "B": {
+      "tag": "c:dyes/black"
+    },
+    "G": {
+      "tag": "c:nuggets/gold"
+    },
+    "M": {
+      "tag": "c:ingots/copper"
+    },
+    "Z": {
+      "tag": "c:storage_blocks/copper"
+    }
+  },
+  "pattern": [
+    " BG",
+    " ZB",
+    "M  "
+  ],
+  "result": {
+    "count": 1,
+    "id": "modularbees:electrode_copper"
+  }
+}

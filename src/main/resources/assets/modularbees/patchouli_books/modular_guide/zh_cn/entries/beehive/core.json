@@ -1,0 +1,45 @@
+{
+  "name": "模块化蜂箱核心",
+  "icon": "modularbees:modular_beehive_core",
+  "read_by_default": true,
+  "category": "modularbees:beehive",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "title": "模块化蜂箱核心",
+      "text": "模块化蜂箱多方块控制器，3x3x3 立方体结构。$(br)您可以用功能部件替换任何蜂箱结构盒来改善蜂箱。$(br)模块化蜂箱不允许共享方块。"
+    },
+    {
+      "type": "patchouli:multiblock",
+      "name": "模块化蜂箱",
+      "multiblock": {
+        "pattern": [
+          ["XXX", "XXX", "XXX"],
+          ["XXX", "X0X", "XCX"],
+          ["XXX", "XXX", "XXX"]
+        ],
+        "mapping": {
+          "X": "modularbees:modular_beehive_part",
+          "0": "modularbees:modular_beehive_part",
+          "C": "modularbees:modular_beehive_core[facing=east]"
+        },
+        "symmetrical": true
+      },
+      "enable_visualize": false
+    },
+    {
+      "type": "patchouli:text",
+      "title": "特性",
+      "text": "模块化蜂箱具有内置模拟升级功能，因此蜜蜂不会从蜂巢中出来。$(br)蜜蜂不会在模块化蜂箱中繁殖和进行世界内的转化配方来节省性能，相反，它们会通过升级以惊人的速度生产蜜脾和蜂蜜。"
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "modularbees:modular_beehive_core",
+      "recipe2": "modularbees:modular_beehive_part"
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "modularbees:scented_plank"
+    }
+  ]
+}

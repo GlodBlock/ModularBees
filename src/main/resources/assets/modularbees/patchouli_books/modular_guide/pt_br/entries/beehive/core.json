@@ -1,0 +1,45 @@
+{
+  "name": "Núcleo da Colmeia Modular",
+  "icon": "modularbees:modular_beehive_core",
+  "read_by_default": true,
+  "category": "modularbees:beehive",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "title": "Núcleo da Colmeia Modular",
+      "text": "O controlador do multibloco Colmeia Modular, uma estrutura em cubo 3x3x3.$(br)Você pode substituir qualquer Caixa de Estrutura da Colmeia por partes funcionais para melhorar a colmeia.$(br)A Colmeia Modular não permite blocos compartilhados."
+    },
+    {
+      "type": "patchouli:multiblock",
+      "name": "Colmeia Modular",
+      "multiblock": {
+        "pattern": [
+          ["XXX", "XXX", "XXX"],
+          ["XXX", "X0X", "XCX"],
+          ["XXX", "XXX", "XXX"]
+        ],
+        "mapping": {
+          "X": "modularbees:modular_beehive_part",
+          "0": "modularbees:modular_beehive_part",
+          "C": "modularbees:modular_beehive_core[facing=east]"
+        },
+        "symmetrical": true
+      },
+      "enable_visualize": false
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Features",
+      "text": "A Colmeia Modular possui uma melhoria de simulação embutida, então as abelhas não sairão da colmeia.$(br)Abelhas não irão procriar ou fazer receitas de transformação no mundo na colmeia modular para salvar performance, em vez disso, elas produzirão favos e mel a uma velocidade incrível com melhorias."
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "modularbees:modular_beehive_core",
+      "recipe2": "modularbees:modular_beehive_part"
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "modularbees:scented_plank"
+    }
+  ]
+}

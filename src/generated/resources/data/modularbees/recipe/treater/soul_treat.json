@@ -1,0 +1,8 @@
+{
+  "type": "modularbees:treater_food",
+  "boost": 4.5,
+  "food": {
+    "item": "modularbees:soul_treat"
+  },
+  "output": {}
+}

@@ -1,0 +1,22 @@
+{
+  "name": "Tratador da Colmeia",
+  "icon": "modularbees:modular_treater",
+  "read_by_default": true,
+  "category": "modularbees:beehive",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "title": "Tratador da Colmeia",
+      "text": "O Tratador da Colmeia fornece comida extra para as abelhas, o que as faz produzir mais favos.$(br)Quando você usa múltiplos tratadores ao mesmo tempo, os bônus de produção são aditivos.$(br)Você pode encontrar comidas válidas e suas informações de bônus no JEI."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Suprimento de Guloseimas",
+      "text": "Diferente do Acelerador da Colmeia, o Tratador da Colmeia só consome comida quando as abelhas completam a coleta de néctar. No entanto, toda abelha precisa de suprimento de comida. O bônus será enfraquecido se a comida não puder alimentar todas as abelhas.$(br)O restante será enviado para o inventário de saída."
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "modularbees:modular_treater"
+    }
+  ]
+}

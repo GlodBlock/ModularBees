@@ -1,0 +1,22 @@
+{
+  "name": "Beehive Treater",
+  "icon": "modularbees:modular_treater",
+  "read_by_default": true,
+  "category": "modularbees:beehive",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "title": "Beehive Treater",
+      "text": "Beehive Treater provides extra food to bees, which makes them produce more combs.$(br)When you use multiple treaters at the same time, the production boosts are additive.$(br)You can find valid food and their boost info in JEI."
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Treat Supply",
+      "text": "Unlike Beehive Overclocker, Beehive Treater only consumes food when bees complete collecting nectar. However, every bee needs food supply. The boost will be weaken if the food can't feed every bee.$(br)The remains will be sent to output inventory."
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "modularbees:modular_treater"
+    }
+  ]
+}

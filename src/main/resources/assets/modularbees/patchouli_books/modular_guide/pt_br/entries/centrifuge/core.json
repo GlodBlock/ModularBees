@@ -1,0 +1,41 @@
+{
+  "name": "Núcleo da Centrífuga Modular",
+  "icon": "modularbees:modular_centrifuge_core",
+  "read_by_default": true,
+  "category": "modularbees:centrifuge",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "title": "Núcleo da Centrífuga Modular",
+      "text": "O controlador do multibloco Centrífuga Modular, uma estrutura 3x3x3 com 4 quatro cantos na camada inferior.$(br)Você pode substituir qualquer Caixa de Estrutura da Centrífuga por uma parte funcional para melhorar a centrífuga.$(br)A Centrífuga Modular não permite blocos compartilhados."
+    },
+    {
+      "type": "patchouli:multiblock",
+      "name": "Modular Centrifuge",
+      "multiblock": {
+        "pattern": [
+          ["XXX", "XXX", "XXX"],
+          ["XXX", "X0X", "XCX"],
+          ["X X", "   ", "X X"]
+        ],
+        "mapping": {
+          "X": "modularbees:modular_centrifuge_part",
+          "0": "modularbees:modular_centrifuge_part",
+          "C": "modularbees:modular_centrifuge_core[facing=east]"
+        },
+        "symmetrical": true
+      },
+      "enable_visualize": false
+    },
+    {
+      "type": "patchouli:text",
+      "title": "Recursos",
+      "text": "A Centrífuga Modular suporta todas as melhorias de centrífuga. As melhorias de velocidade podem encurtar o tempo de processamento e as melhorias de produtividade podem aumentar o paralelismo.$(br)O tempo de processo base é o mesmo da centrífuga básica (15s)."
+    },
+    {
+      "type": "patchouli:crafting",
+      "recipe": "modularbees:modular_centrifuge_core",
+      "recipe2": "modularbees:modular_centrifuge_part"
+    }
+  ]
+}
