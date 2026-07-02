@@ -18,6 +18,8 @@
   "block.modularbees.modular_centrifuge_import": "Escotilha de Importação da Centrífuga",
   "block.modularbees.modular_centrifuge_heater": "Aquecedor da Centrífuga",
   "block.modularbees.modular_centrifuge_gearbox": "Caixa de Engrenagens da Centrífuga",
+  "block.modularbees.me_beehive_export": "Escotilha ME de Exportação da Colmeia",
+  "block.modularbees.me_centrifuge_export": "Escotilha ME de Exportação da Centrífuga",
   "block.modularbees.bee_extractor": "Extrator de Abelha",
   "item.modularbees.electrode_copper": "Eletrodo de Cobre",
   "item.modularbees.electrode_iron": "Eletrodo de Ferro",
@@ -45,6 +47,10 @@
   "modularbees.gui.modular_beehive_alveary.solitary": "Abelha solitária não pode viver na colmeia.",
   "modularbees.gui.modular_beehive_alveary.child": "Abelha filhote não pode viver no apiário.",
   "modularbees.gui.modular_beehive_alveary.no_food": "Faltando flor",
+  "modularbees.gui.me_export.filter_enable": "Filter Enabled",
+  "modularbees.gui.me_export.filter_disable": "Filter Disabled",
+  "modularbees.gui.me_export.whitelist": "Whitelist Mode",
+  "modularbees.gui.me_export.blacklist": "Blacklist Mode",
   "modularbees.jei.treater_boost": "Produtividade +%s",
   "modularbees.jei.overclocker_boost": "Velocidade x%s"
 }
