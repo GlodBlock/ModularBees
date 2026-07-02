@@ -18,6 +18,8 @@
   "block.modularbees.modular_centrifuge_import": "离心机输入舱",
   "block.modularbees.modular_centrifuge_heater": "离心机加热器",
   "block.modularbees.modular_centrifuge_gearbox": "离心机齿轮箱",
+  "block.modularbees.me_beehive_export": "ME蜂箱输出舱",
+  "block.modularbees.me_centrifuge_export": "ME离心机输出仓",
   "block.modularbees.bee_extractor": "蜜蜂提取器",
   "item.modularbees.electrode_copper": "铜电极",
   "item.modularbees.electrode_iron": "铁电极",
@@ -45,6 +47,10 @@
   "modularbees.gui.modular_beehive_alveary.solitary": "独居蜂不能在蜂房中生活。",
   "modularbees.gui.modular_beehive_alveary.child": "幼蜂不能在蜂房内生活。",
   "modularbees.gui.modular_beehive_alveary.no_food": "缺少花朵",
+  "modularbees.gui.me_export.filter_enable": "Filter Enabled",
+  "modularbees.gui.me_export.filter_disable": "Filter Disabled",
+  "modularbees.gui.me_export.whitelist": "Whitelist Mode",
+  "modularbees.gui.me_export.blacklist": "Blacklist Mode",
   "modularbees.jei.treater_boost": "生产 +%s",
   "modularbees.jei.overclocker_boost": "速度 x%s"
 }
