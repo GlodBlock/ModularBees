@@ -1,18 +1,20 @@
 package com.glodblock.github.modularbees.common.tileentities.hive;
 
-import com.glodblock.github.glodium.util.GlodUtil;
-import com.glodblock.github.modularbees.common.MBSingletons;
 import com.glodblock.github.modularbees.common.caps.ItemHandlerHost;
 import com.glodblock.github.modularbees.common.inventory.MBItemInventory;
 import com.glodblock.github.modularbees.common.inventory.SlotListener;
 import com.glodblock.github.modularbees.common.recipe.TreaterRecipe;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.HolderLookup;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
-import net.neoforged.neoforge.items.IItemHandler;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
+import net.neoforged.neoforge.transfer.ResourceHandler;
+import net.neoforged.neoforge.transfer.item.ItemResource;
+import net.neoforged.neoforge.transfer.transaction.Transaction;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -24,8 +26,8 @@ public class TileBeehiveTreater extends TileBeehivePart implements ItemHandlerHo
     private TreaterRecipe cache = null;
     private boolean stuck = false;
 
-    public TileBeehiveTreater(BlockPos pos, BlockState state) {
-        super(GlodUtil.getTileType(TileBeehiveTreater.class, TileBeehiveTreater::new, MBSingletons.MODULAR_TREATER), pos, state);
+    public TileBeehiveTreater(BlockEntityType<?> type, BlockPos pos, BlockState state) {
+        super(type, pos, state);
     }
 
     public float getBoostAndConsume(int bees) {
@@ -35,21 +37,23 @@ public class TileBeehiveTreater extends TileBeehivePart implements ItemHandlerHo
         var find = this.findRecipe();
         if (find != null) {
             var want = bees;
-            for (var x = 0; x < this.foods.getSlots(); x ++) {
-                var stack = this.foods.getStackInSlot(x);
+            for (var x = 0; x < this.foods.size(); x ++) {
+                var stack = this.foods.getItemStack(x);
                 if (find.isValidInput(stack)) {
-                    var extracted = this.foods.forceExtractItem(x, want, false);
-                    int amt = extracted.getCount();
-                    if (amt <= 0) {
-                        continue;
+                    try (var trans = Transaction.openRoot()) {
+                        var extracted = this.foods.forceExtract(x, ItemResource.of(stack), want, trans);
+                        if (extracted <= 0) {
+                            continue;
+                        }
+                        if (find.output().isPresent()) {
+                            beehive.addOutput(find.output().get().withCount(extracted).create());
+                        }
+                        want -= extracted;
+                        trans.commit();
                     }
-                    if (!find.output().isEmpty()) {
-                        beehive.addOutput(find.output().copyWithCount(amt));
-                    }
-                    want -= amt;
-                    if (want <= 0) {
-                        break;
-                    }
+                }
+                if (want <= 0) {
+                    break;
                 }
             }
             if (want == 0) {
@@ -66,20 +70,20 @@ public class TileBeehiveTreater extends TileBeehivePart implements ItemHandlerHo
     }
 
     @Override
-    public IItemHandler getItemInventory() {
+    public MBItemInventory getItemInventory() {
         return this.foods;
     }
 
     @Override
-    public void saveTag(CompoundTag data, HolderLookup.@NotNull Provider provider) {
-        super.saveTag(data, provider);
-        data.put("foods", this.foods.serializeNBT(provider));
+    public void saveTag(ValueOutput data) {
+        super.saveTag(data);
+        this.foods.serialize(data.child("foods"));
     }
 
     @Override
-    public void loadTag(CompoundTag data, HolderLookup.@NotNull Provider provider) {
-        super.loadTag(data, provider);
-        this.foods.deserializeNBT(provider, data.getCompound("foods"));
+    public void loadTag(ValueInput data) {
+        super.loadTag(data);
+        data.child("foods").ifPresent(this.foods::deserialize);
     }
 
     @Override
@@ -89,7 +93,7 @@ public class TileBeehiveTreater extends TileBeehivePart implements ItemHandlerHo
 
     @Nullable
     private TreaterRecipe findRecipe() {
-        if (this.stuck || this.level == null) {
+        if (this.stuck || !(this.level instanceof ServerLevel serverLevel)) {
             return null;
         }
         if (this.cache != null) {
@@ -98,7 +102,7 @@ public class TileBeehiveTreater extends TileBeehivePart implements ItemHandlerHo
             }
         }
         this.cache = null;
-        for (var recipe : this.level.getRecipeManager().byType(TreaterRecipe.TYPE)) {
+        for (var recipe : serverLevel.recipeAccess().recipeMap().byType(TreaterRecipe.TYPE)) {
             if (this.foods.contains(recipe.value()::isValidInput)) {
                 this.cache = recipe.value();
                 break;
@@ -115,7 +119,7 @@ public class TileBeehiveTreater extends TileBeehivePart implements ItemHandlerHo
     }
 
     @Override
-    public void onChange(IItemHandler inv, int slot) {
+    public void onChange(ResourceHandler<@NotNull ItemResource> inv, int slot) {
         if (inv == this.foods) {
             this.stuck = false;
         }

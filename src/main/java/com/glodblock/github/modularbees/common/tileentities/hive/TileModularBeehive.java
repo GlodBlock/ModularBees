@@ -1,6 +1,5 @@
 package com.glodblock.github.modularbees.common.tileentities.hive;
 
-import com.glodblock.github.glodium.util.GlodUtil;
 import com.glodblock.github.modularbees.common.MBConfig;
 import com.glodblock.github.modularbees.common.MBSingletons;
 import com.glodblock.github.modularbees.common.blocks.hive.Hive;
@@ -26,20 +25,21 @@ import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 import it.unimi.dsi.fastutil.objects.ObjectSet;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.core.HolderLookup;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.Tag;
-import net.minecraft.world.entity.animal.Bee;
+import net.minecraft.world.entity.animal.bee.Bee;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
-import net.neoforged.neoforge.fluids.FluidStack;
-import net.neoforged.neoforge.fluids.capability.IFluidHandler;
-import net.neoforged.neoforge.items.IItemHandler;
-import net.neoforged.neoforge.items.wrapper.CombinedInvWrapper;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
+import net.neoforged.neoforge.transfer.CombinedResourceHandler;
+import net.neoforged.neoforge.transfer.ResourceHandler;
+import net.neoforged.neoforge.transfer.fluid.FluidResource;
+import net.neoforged.neoforge.transfer.item.ItemResource;
+import net.neoforged.neoforge.transfer.transaction.Transaction;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -68,7 +68,7 @@ public class TileModularBeehive extends TileMBModularCore implements ItemHandler
     protected final MBItemInventory upgrade = new MBItemInventory(this, 4, s -> ACCEPT_UPGRADES.contains(s.getItem())).setSlotLimit(1);
     protected final MBItemInventory bottle = new MBItemInventory(this, 2, MBItemInventory.ItemFilter.of(Items.GLASS_BOTTLE)).setIO(0, IO.IN).setIO(1, IO.OUT);
     protected final MBFluidInventory honey = new MBFluidInventory(this, 8 * GameConstants.BUCKET).outputOnly();
-    private final IItemHandler exposed = new CombinedInvWrapper(this.outputs, this.bottle);
+    private final ResourceHandler<@NotNull ItemResource> exposed = new CombinedResourceHandler<>(this.outputs, this.bottle);
     private final BeeTable table = new BeeTable(this, this::lookup);
     private float process = 0;
     private float tickSpeed = 1;
@@ -79,8 +79,8 @@ public class TileModularBeehive extends TileMBModularCore implements ItemHandler
     private float geneDropChance = 0;
     private int waitingTicks = WAITING_TICKS_FULL;
 
-    public TileModularBeehive(BlockPos pos, BlockState state) {
-        super(GlodUtil.getTileType(TileModularBeehive.class, TileModularBeehive::new, MBSingletons.MODULAR_BEEHIVE_CORE), pos, state);
+    public TileModularBeehive(BlockEntityType<?> type, BlockPos pos, BlockState state) {
+        super(type, pos, state);
     }
 
     public BeeTable getBeeTable() {
@@ -111,15 +111,15 @@ public class TileModularBeehive extends TileMBModularCore implements ItemHandler
                     component.sendToMENetwork(this.sending);
                     this.sending.removeIf(ItemStack::isEmpty);
                 }
-                for (int i = 0; i < this.sending.size(); ++i) {
-                    var stack = this.sending.get(i).copy();
-                    for (int x = 0; x < this.outputs.getSlots(); ++x) {
-                        if (stack.isEmpty()) {
-                            break;
-                        }
-                        stack = this.outputs.forceInsertItem(x, stack.copy(), false);
+                for (var stack : this.sending) {
+                    if (stack.isEmpty()) {
+                        continue;
                     }
-                    this.sending.set(i, stack);
+                    try (var trans = Transaction.openRoot()) {
+                        var added = this.outputs.forceInsert(ItemResource.of(stack), stack.getCount(), trans);
+                        stack.shrink(added);
+                        trans.commit();
+                    }
                 }
                 this.sending.removeIf(ItemStack::isEmpty);
                 if (!this.sending.isEmpty()) {
@@ -150,7 +150,10 @@ public class TileModularBeehive extends TileMBModularCore implements ItemHandler
                     this.sending.addAll(outputs.getItems(this.blockMode, this.upgradeMultiplier * treaterMultiplier));
                     var honeyAmt = world.getRandom().nextInt(working / 2, working + 1) * MBConfig.HONEY_PRODUCE_BASE.get();
                     if (honeyAmt > 0) {
-                        this.honey.forceFill(new FluidStack(ModFluids.HONEY.get(), honeyAmt), IFluidHandler.FluidAction.EXECUTE);
+                        try (var trans = Transaction.openRoot()) {
+                            this.honey.forceInsert(FluidResource.of(ModFluids.HONEY), honeyAmt, trans);
+                            trans.commit();
+                        }
                     }
                     if (dragonHive != null && this.table.getDragonBee() > 0) {
                         dragonHive.addDragonBreath(this.table.getDragonBee(), world);
@@ -169,11 +172,18 @@ public class TileModularBeehive extends TileMBModularCore implements ItemHandler
     }
 
     public void fillBottle() {
-        if (this.honey.getFluidAmount() >= GameConstants.BOTTLE && this.bottle.getStackInSlot(0).getItem() == Items.GLASS_BOTTLE) {
-            var left = this.bottle.forceInsertItem(1,  new ItemStack(Items.HONEY_BOTTLE), false);
-            if (left.isEmpty()) {
-                this.honey.drain(GameConstants.BOTTLE, IFluidHandler.FluidAction.EXECUTE);
-                this.bottle.forceExtractItem(0, 1, false);
+        if (this.honey.getAmountAsInt(0) >= GameConstants.BOTTLE && this.bottle.getItemStack(0).getItem() == Items.GLASS_BOTTLE) {
+            try (var trans = Transaction.openRoot()) {
+                var added = this.bottle.forceInsert(1,  ItemResource.of(Items.HONEY_BOTTLE), 1, trans);
+                if (added == 1) {
+                    var rmv = this.honey.forceExtract(FluidResource.of(ModFluids.HONEY), GameConstants.BOTTLE, trans);
+                    if (rmv == GameConstants.BOTTLE) {
+                        var bottle = this.bottle.forceExtract(0, ItemResource.of(Items.GLASS_BOTTLE), 1, trans);
+                        if (bottle == 1) {
+                            trans.commit();
+                        }
+                    }
+                }
             }
         }
     }
@@ -182,7 +192,7 @@ public class TileModularBeehive extends TileMBModularCore implements ItemHandler
         this.process += this.tickSpeed * overclock;
     }
 
-    public void onFeederChange(IItemHandler inv, int slot) {
+    public void onFeederChange(ResourceHandler<@NotNull ItemResource> inv, int slot) {
         this.table.feederUpdate(inv, slot);
     }
 
@@ -217,7 +227,7 @@ public class TileModularBeehive extends TileMBModularCore implements ItemHandler
         if (this.allChunk == null) {
             this.allChunk = new ObjectOpenHashSet<>();
             for (var pos : this.getPoses()) {
-                this.allChunk.add(new ChunkPos(pos));
+                this.allChunk.add(ChunkPos.containing(pos));
             }
         }
         return this.allChunk;
@@ -227,7 +237,7 @@ public class TileModularBeehive extends TileMBModularCore implements ItemHandler
     public Collection<BlockPos> getPoses() {
         if (this.allPos == null) {
             this.allPos = new ObjectOpenHashSet<>();
-            var face = MBSingletons.MODULAR_BEEHIVE_CORE.getFacing(this.getBlockState());
+            var face = MBSingletons.MODULAR_BEEHIVE_CORE.get().getFacing(this.getBlockState());
             if (face == null) {
                 return this.allPos;
             }
@@ -269,7 +279,7 @@ public class TileModularBeehive extends TileMBModularCore implements ItemHandler
     @Override
     public boolean isStructurePos(BlockPos pos) {
         // 3x3x3 cube
-        var face = MBSingletons.MODULAR_BEEHIVE_CORE.getFacing(this.getBlockState());
+        var face = MBSingletons.MODULAR_BEEHIVE_CORE.get().getFacing(this.getBlockState());
         if (face == null) {
             return false;
         }
@@ -278,7 +288,7 @@ public class TileModularBeehive extends TileMBModularCore implements ItemHandler
 
     @Override
     public boolean isStructurePos(ChunkPos pos) {
-        var face = MBSingletons.MODULAR_BEEHIVE_CORE.getFacing(this.getBlockState());
+        var face = MBSingletons.MODULAR_BEEHIVE_CORE.get().getFacing(this.getBlockState());
         if (face == null) {
             return false;
         }
@@ -287,7 +297,7 @@ public class TileModularBeehive extends TileMBModularCore implements ItemHandler
 
     @Override
     protected TryResult buildStructure(Consumer<TileMBModularComponent> collector, Level world) {
-        var face = MBSingletons.MODULAR_BEEHIVE_CORE.getFacing(this.getBlockState());
+        var face = MBSingletons.MODULAR_BEEHIVE_CORE.get().getFacing(this.getBlockState());
         if (face == null) {
             return TryResult.fail("modularbees.chat.data_corrupted");
         }
@@ -325,31 +335,23 @@ public class TileModularBeehive extends TileMBModularCore implements ItemHandler
     }
 
     @Override
-    public void saveTag(CompoundTag data, HolderLookup.@NotNull Provider provider) {
-        super.saveTag(data, provider);
-        data.put("outputs", this.outputs.serializeNBT(provider));
-        data.put("upgrade", this.upgrade.serializeNBT(provider));
-        data.put("bottle", this.bottle.serializeNBT(provider));
-        var tank = new CompoundTag();
-        this.honey.writeToNBT(provider, tank);
-        data.put("honey", tank);
-        var tag = GameUtil.saveItemList(this.sending, provider);
-        if (!tag.isEmpty()) {
-            data.put("sending", tag);
-        }
+    public void saveTag(ValueOutput data) {
+        super.saveTag(data);
+        this.outputs.serialize(data.child("outputs"));
+        this.upgrade.serialize(data.child("upgrade"));
+        this.bottle.serialize(data.child("bottle"));
+        this.honey.serialize(data.child("honey"));
+        GameUtil.saveItemList(this.sending, data, "sending");
     }
 
     @Override
-    public void loadTag(CompoundTag data, HolderLookup.@NotNull Provider provider) {
-        super.loadTag(data, provider);
-        this.outputs.deserializeNBT(provider, data.getCompound("outputs"));
-        this.upgrade.deserializeNBT(provider, data.getCompound("upgrade"));
-        this.bottle.deserializeNBT(provider, data.getCompound("bottle"));
-        this.honey.readFromNBT(provider, data.getCompound("honey"));
-        if (data.contains("sending")) {
-            var tag = data.getList("sending", Tag.TAG_COMPOUND);
-            GameUtil.loadItemList(tag, provider, this.sending);
-        }
+    public void loadTag(ValueInput data) {
+        super.loadTag(data);
+        data.child("outputs").ifPresent(this.outputs::deserialize);
+        data.child("upgrade").ifPresent(this.upgrade::deserialize);
+        data.child("bottle").ifPresent(this.bottle::deserialize);
+        data.child("honey").ifPresent(this.honey::deserialize);
+        GameUtil.loadItemList(this.sending, data, "sending");
     }
 
     @Override
@@ -381,12 +383,12 @@ public class TileModularBeehive extends TileMBModularCore implements ItemHandler
     }
 
     @Override
-    public IItemHandler getItemInventory() {
+    public ResourceHandler<@NotNull ItemResource> getItemInventory() {
         return this.exposed;
     }
 
     @Override
-    public void onChange(IItemHandler inv, int slot) {
+    public void onChange(ResourceHandler<@NotNull ItemResource> inv, int slot) {
         if (inv == this.upgrade) {
             this.updateUpgrade();
         } else if (inv == this.outputs) {

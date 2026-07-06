@@ -13,13 +13,12 @@ import appeng.me.helpers.IGridConnectedBlockEntity;
 import com.glodblock.github.modularbees.common.tileentities.base.TileMBModularComponent;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.core.HolderLookup;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
-import org.jetbrains.annotations.NotNull;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Set;
@@ -63,7 +62,7 @@ public abstract class TileAENetworkHost extends TileMBModularComponent implement
         if (this.level == null) {
             return;
         }
-        if (this.level.isClientSide) {
+        if (this.level.isClientSide()) {
             this.setChanged();
         } else {
             this.level.blockEntityChanged(this.worldPosition);
@@ -85,15 +84,15 @@ public abstract class TileAENetworkHost extends TileMBModularComponent implement
     }
 
     @Override
-    public void saveTag(CompoundTag data, HolderLookup.@NotNull Provider provider) {
-        super.saveTag(data, provider);
-        this.mainNode.saveToNBT(data);
+    public void saveTag(ValueOutput data) {
+        super.saveTag(data);
+        this.mainNode.serialize(data);
     }
 
     @Override
-    public void loadTag(CompoundTag data, HolderLookup.@NotNull Provider provider) {
-        super.loadTag(data, provider);
-        this.mainNode.loadFromNBT(data);
+    public void loadTag(ValueInput data) {
+        super.loadTag(data);
+        this.mainNode.deserialize(data);
     }
 
     protected IManagedGridNode createMainNode() {

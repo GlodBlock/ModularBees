@@ -7,7 +7,7 @@ import cy.jdkdigital.productivebees.init.ModItems;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenCustomHashMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -22,7 +22,7 @@ import java.util.Map;
 
 public class StackCacheMap {
 
-    private final Object2IntMap<ResourceLocation> comb = new Object2IntOpenHashMap<>();
+    private final Object2IntMap<Identifier> comb = new Object2IntOpenHashMap<>();
     private final Object2IntMap<ItemStack> nbtItem = new Object2IntOpenCustomHashMap<>(GameUtil.ITEM_HASH);
     private final Map<Item, Integer> item = new IdentityHashMap<>();
     private final RandomSource random;

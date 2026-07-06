@@ -12,12 +12,12 @@ import org.jetbrains.annotations.NotNull;
 
 public class BlockScentedPlank extends BlockMBBase {
 
-    public BlockScentedPlank() {
-        super(hive());
+    public BlockScentedPlank(Properties properties) {
+        super(hive(properties));
     }
 
     @Override
-    public TagKey<Block> harvestTool() {
+    public TagKey<@NotNull Block> harvestTool() {
         return BlockTags.MINEABLE_WITH_AXE;
     }
 

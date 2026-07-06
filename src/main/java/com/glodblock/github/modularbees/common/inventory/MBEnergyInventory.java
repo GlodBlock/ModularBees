@@ -1,14 +1,12 @@
 package com.glodblock.github.modularbees.common.inventory;
 
 import com.glodblock.github.modularbees.common.tileentities.base.TileMBBase;
-import net.minecraft.core.HolderLookup;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.Tag;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.neoforged.neoforge.energy.EnergyStorage;
+import net.neoforged.neoforge.transfer.energy.SimpleEnergyHandler;
+import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 import org.jetbrains.annotations.NotNull;
 
-public class MBEnergyInventory extends EnergyStorage {
+public class MBEnergyInventory extends SimpleEnergyHandler {
 
     protected IO mode = IO.ALL;
     protected final BlockEntity host;
@@ -29,31 +27,23 @@ public class MBEnergyInventory extends EnergyStorage {
     }
 
     @Override
-    public int receiveEnergy(int toReceive, boolean simulate) {
+    public int insert(int amount, @NotNull TransactionContext transaction) {
         if (!this.mode.canInsert()) {
             return 0;
         }
-        int accepted = super.receiveEnergy(toReceive, simulate);
-        if (this.host != null && accepted > 0 && !simulate) {
-            this.markDirty();
-        }
-        return accepted;
+        return super.insert(amount, transaction);
     }
 
     @Override
-    public int extractEnergy(int toExtract, boolean simulate) {
+    public int extract(int toExtract, @NotNull TransactionContext transaction) {
         if (!this.mode.canExtract()) {
             return 0;
         }
-        int extracted = super.extractEnergy(toExtract, simulate);
-        if (this.host != null && extracted > 0 && !simulate) {
-            this.markDirty();
-        }
-        return extracted;
+        return super.extract(toExtract, transaction);
     }
 
     public void setStoredEnergy(int energy) {
-        if (energy != this.getEnergyStored()) {
+        if (energy != this.getAmountAsInt()) {
             this.energy = energy;
             if (this.host != null) {
                 this.markDirty();
@@ -61,26 +51,12 @@ public class MBEnergyInventory extends EnergyStorage {
         }
     }
 
-    public int forceInsertEnergy(int toReceive, boolean simulate) {
-        return super.receiveEnergy(toReceive, simulate);
+    public int forceInsert(int toReceive, @NotNull TransactionContext transaction) {
+        return super.insert(toReceive, transaction);
     }
 
-    public int forceExtractEnergy(int toExtract, boolean simulate) {
-        return super.extractEnergy(toExtract, simulate);
-    }
-
-    @Override
-    public @NotNull CompoundTag serializeNBT(HolderLookup.@NotNull Provider provider) {
-        var tag = new CompoundTag();
-        tag.putInt("energy", this.energy);
-        return tag;
-    }
-
-    @Override
-    public void deserializeNBT(HolderLookup.@NotNull Provider provider, @NotNull Tag nbt) {
-        if (nbt instanceof CompoundTag tag) {
-            this.energy = tag.getInt("energy");
-        }
+    public int forceExtract(int toExtract, @NotNull TransactionContext transaction) {
+        return super.extract(toExtract, transaction);
     }
 
     private void markDirty() {

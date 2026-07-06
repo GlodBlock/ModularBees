@@ -22,7 +22,7 @@ public class MBModularBeehiveGui extends MBBaseGui<ContainerMBModularBeehive> {
 
     @Override
     protected Component getGuiName() {
-        return MBSingletons.MODULAR_BEEHIVE_CORE.getName();
+        return MBSingletons.MODULAR_BEEHIVE_CORE.get().getName();
     }
 
     @Override

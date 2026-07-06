@@ -13,19 +13,16 @@ import org.jetbrains.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class GhostSlotHandler<T extends MBBaseGui<?>> implements IGhostIngredientHandler<T> {
+public class GhostSlotHandler<T extends MBBaseGui<?>> implements IGhostIngredientHandler<@NotNull T> {
 
     @Override
-    public <I> @NotNull List<Target<I>> getTargetsTyped(@NotNull T gui, ITypedIngredient<I> ingredient, boolean doStart) {
+    public <I> @NotNull List<Target<@NotNull I>> getTargetsTyped(@NotNull T gui, ITypedIngredient<@NotNull I> ingredient, boolean doStart) {
         var wrapped = wrapDraggedItem(ingredient.getIngredient());
         if (wrapped == null) {
             return List.of();
         }
-
-        List<Target<I>> targets = new ArrayList<>();
-
+        List<Target<@NotNull I>> targets = new ArrayList<>();
         addItemStackTargets(gui, targets);
-
         return targets;
     }
 
@@ -37,7 +34,7 @@ public class GhostSlotHandler<T extends MBBaseGui<?>> implements IGhostIngredien
     /**
      * Returns possible drop-targets for ghost items.
      */
-    private static <I> void addItemStackTargets(MBBaseGui<?> gui, List<Target<I>> targets) {
+    private static <I> void addItemStackTargets(MBBaseGui<?> gui, List<Target<@NotNull I>> targets) {
         for (var slot : gui.getMenu().slots) {
             if (slot.isActive() && slot instanceof DisplaySlot fakeSlot) {
                 targets.add(new ItemSlotTarget<>(gui, fakeSlot));
@@ -49,7 +46,7 @@ public class GhostSlotHandler<T extends MBBaseGui<?>> implements IGhostIngredien
     public void onComplete() {
     }
 
-    private static class ItemSlotTarget<I> implements Target<I> {
+    private static class ItemSlotTarget<I> implements Target<@NotNull I> {
 
         private final MBBaseGui<?> gui;
         private final DisplaySlot slot;
@@ -58,7 +55,7 @@ public class GhostSlotHandler<T extends MBBaseGui<?>> implements IGhostIngredien
         public ItemSlotTarget(MBBaseGui<?> screen, DisplaySlot slot) {
             this.gui = screen;
             this.slot = slot;
-            this.area = new Rect2i(screen.getGuiLeft() + slot.x, screen.getGuiTop() + slot.y, 16, 16);
+            this.area = new Rect2i(screen.getLeftPos() + slot.x, screen.getTopPos() + slot.y, 16, 16);
         }
 
         @Override
@@ -71,7 +68,7 @@ public class GhostSlotHandler<T extends MBBaseGui<?>> implements IGhostIngredien
             var wrapped = wrapDraggedItem(ingredient);
             if (wrapped != null) {
                 this.slot.set(wrapped);
-                this.gui.sendAction("jei_slot", this.slot.index(), wrapped);
+                this.gui.sendAction("jei_slot", this.slot.index, wrapped);
             }
         }
     }

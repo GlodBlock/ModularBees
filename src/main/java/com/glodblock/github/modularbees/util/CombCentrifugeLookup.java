@@ -12,14 +12,17 @@ import it.unimi.dsi.fastutil.objects.Object2ReferenceMap;
 import it.unimi.dsi.fastutil.objects.Object2ReferenceOpenCustomHashMap;
 import it.unimi.dsi.fastutil.objects.Object2ReferenceOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ObjectOpenCustomHashSet;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.RandomSource;
+import net.minecraft.util.context.ContextMap;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.neoforge.event.OnDatapackSyncEvent;
 import net.neoforged.neoforge.fluids.FluidStack;
+import net.neoforged.neoforge.transfer.item.ItemResource;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.IdentityHashMap;
@@ -40,39 +43,44 @@ public final class CombCentrifugeLookup {
         // NO-OP
     }
 
-    public static boolean validInput(ItemStack stack, Level world) {
-        if (stack.isEmpty() || world == null) {
+    public static boolean validInput(ItemResource type, Level world) {
+        if (type.isEmpty() || !(world instanceof ServerLevel serverLevel)) {
             return false;
         }
+        var stack = type.toStack();
         var singleComb = ItemStack.EMPTY;
         if (stack.is(ModTags.Common.STORAGE_BLOCK_HONEYCOMBS)) {
             singleComb = BeeHelper.getSingleComb(stack);
         }
         if (needInit) {
             needInit = false;
-            for (var holder : world.getRecipeManager().byType(ModRecipeTypes.CENTRIFUGE_TYPE.get())) {
-                var input = holder.value().ingredient;
-                for (var item : input.getItems()) {
-                    VALID_INPUT.add(item.copy());
+            for (var holder : serverLevel.recipeAccess().recipeMap().byType(ModRecipeTypes.CENTRIFUGE_TYPE.get())) {
+                var ingredient = holder.value().ingredient;
+                var custom = ingredient.getCustomIngredient();
+                if (custom != null) {
+                    custom.display().resolveForStacks(ContextMap.EMPTY).forEach(input -> VALID_INPUT.add(input.copyWithCount(1)));
+                } else {
+                    ingredient.getValues().forEach(input -> VALID_INPUT.add(new ItemStack(input)));
                 }
             }
         }
         return VALID_INPUT.contains(stack) || VALID_INPUT.contains(singleComb);
     }
 
-    public static boolean query(Consumer<ItemStack> itemAcceptor, Consumer<FluidStack> fluidAcceptor, ItemStack comb, @NotNull Level world, int para, float chanceBoost, boolean heated) {
-        if (comb.isEmpty() || para <= 0) {
+    public static boolean query(Consumer<ItemStack> itemAcceptor, Consumer<FluidStack> fluidAcceptor, ItemResource combType, @NotNull Level world, int para, float chanceBoost, boolean heated) {
+        if (combType.isEmpty() || para <= 0) {
             return false;
         }
-        var item = comb.getItem();
-        if (comb.is(ModTags.Common.STORAGE_BLOCK_HONEYCOMBS) && !heated) {
+        var item = combType.getItem();
+        if (combType.is(ModTags.Common.STORAGE_BLOCK_HONEYCOMBS) && !heated) {
             return false;
         }
         Output cache;
+        var comb = combType.toStack(para);
         if (item instanceof Honeycomb || item instanceof CombBlockItem) {
-            var type = comb.get(ModDataComponents.BEE_TYPE);
+            var type = combType.get(ModDataComponents.BEE_TYPE);
             if (type != null) {
-                cache = RL_MAP.get(new RK(type, comb.is(ModTags.Common.STORAGE_BLOCK_HONEYCOMBS)));
+                cache = RL_MAP.get(new RK(type, combType.is(ModTags.Common.STORAGE_BLOCK_HONEYCOMBS)));
             } else {
                 cache = NBT_MAP.get(comb);
             }
@@ -81,22 +89,16 @@ public final class CombCentrifugeLookup {
         } else {
             cache = NBT_MAP.get(comb);
         }
-        System.out.println("Input: " + comb);
-        if (cache != null) {
-            System.out.println("Hit cache: " + cache);
-        } else {
-            System.out.println("Not hit cache");
-        }
         if (cache == null) {
             cache = lookupRecipe(comb, world);
             if (item instanceof Honeycomb || item instanceof CombBlockItem) {
-                var type = comb.get(ModDataComponents.BEE_TYPE);
+                var type = combType.get(ModDataComponents.BEE_TYPE);
                 if (type != null) {
-                    RL_MAP.put(new RK(type, comb.is(ModTags.Common.STORAGE_BLOCK_HONEYCOMBS)), cache);
+                    RL_MAP.put(new RK(type, combType.is(ModTags.Common.STORAGE_BLOCK_HONEYCOMBS)), cache);
                 } else {
                     NBT_MAP.put(comb, cache);
                 }
-            } else if (comb.isComponentsPatchEmpty()) {
+            } else if (combType.isComponentsPatchEmpty()) {
                 ITEM_MAP.put(item, cache);
             } else {
                 NBT_MAP.put(comb, cache);
@@ -234,7 +236,7 @@ public final class CombCentrifugeLookup {
         clear();
     }
 
-    record RK(ResourceLocation rl, boolean block) {
+    record RK(Identifier rl, boolean block) {
 
     }
 

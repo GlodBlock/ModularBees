@@ -2,27 +2,18 @@
   "type": "minecraft:crafting_shaped",
   "category": "misc",
   "key": {
-    "C": {
-      "tag": "c:chests"
-    },
+    "C": "#c:chests",
     "I": [
-      {
-        "item": "minecraft:piston"
-      },
-      {
-        "item": "minecraft:sticky_piston"
-      }
+      "minecraft:piston",
+      "minecraft:sticky_piston"
     ],
-    "P": {
-      "item": "modularbees:modular_centrifuge_part"
-    }
+    "P": "modularbees:modular_centrifuge_part"
   },
   "pattern": [
     "IPI",
     " C "
   ],
   "result": {
-    "count": 1,
     "id": "modularbees:modular_centrifuge_import"
   }
 }

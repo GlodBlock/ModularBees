@@ -10,22 +10,22 @@ import com.glodblock.github.modularbees.container.base.ContainerMBBase;
 import com.glodblock.github.modularbees.container.slot.DisplaySlot;
 import com.glodblock.github.modularbees.network.CMBGenericPacket;
 import com.glodblock.github.modularbees.network.MBNetworkHandler;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.ComponentRenderUtils;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.world.entity.player.Inventory;
-import net.minecraft.world.inventory.ClickType;
+import net.minecraft.world.inventory.ContainerInput;
 import net.minecraft.world.inventory.Slot;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public abstract class MBBaseGui<C extends ContainerMBBase<? extends TileMBBase>> extends AbstractContainerScreen<C> implements IActionHolder {
+public abstract class MBBaseGui<C extends ContainerMBBase<? extends TileMBBase>> extends AbstractContainerScreen<@NotNull C> implements IActionHolder {
 
-    public static final int DEFAULT_TEXT_COLOR = 4210752;
+    public static final int DEFAULT_TEXT_COLOR = -12566464;
     protected final ElementGroup group = new ElementGroup();
     private final ActionMap actions = ActionMap.create();
 
@@ -58,10 +58,10 @@ public abstract class MBBaseGui<C extends ContainerMBBase<? extends TileMBBase>>
     }
 
     @Override
-    public void render(@NotNull GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
+    public void extractRenderState(@NotNull GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTicks) {
         this.updateGuiData();
-        super.render(graphics, mouseX, mouseY, partialTicks);
-        this.renderTooltip(graphics, mouseX, mouseY);
+        super.extractRenderState(graphics, mouseX, mouseY, partialTicks);
+        this.extractTooltip(graphics, mouseX, mouseY);
         for (var e : this.group) {
             if (e instanceof TooltipElement tooltip) {
                 if (tooltip.shouldDisplay(mouseX, mouseY) && !tooltip.getTooltipMessage(hasShiftDown()).isEmpty()) {
@@ -71,7 +71,7 @@ public abstract class MBBaseGui<C extends ContainerMBBase<? extends TileMBBase>>
                     for (Component line : lines) {
                         styledLines.addAll(ComponentRenderUtils.wrapComponents(line, maxWidth, font));
                     }
-                    graphics.renderTooltip(this.font, styledLines, mouseX, mouseY);
+                    graphics.setTooltipForNextFrame(this.font, styledLines, mouseX, mouseY);
                     break;
                 }
             }
@@ -79,33 +79,33 @@ public abstract class MBBaseGui<C extends ContainerMBBase<? extends TileMBBase>>
     }
 
     @Override
-    protected void renderBg(@NotNull GuiGraphics graphics, float partialTicks, int mouseX, int mouseY) {
+    protected void extractMenuBackground(@NotNull GuiGraphicsExtractor graphics, int x, int y, int width, int height) {
         // Background rendering doesn't count GUI offset yet
         this.getBackground().render(graphics, this.leftPos, this.topPos);
     }
 
     @Override
-    protected void renderLabels(@NotNull GuiGraphics graphics, int mouseX, int mouseY) {
-        super.renderLabels(graphics, mouseX, mouseY);
-        graphics.drawString(this.font, this.getGuiName(), this.titleLabelX, this.titleLabelY, DEFAULT_TEXT_COLOR, false);
+    protected void extractLabels(@NotNull GuiGraphicsExtractor graphics, int mouseX, int mouseY) {
+        super.extractLabels(graphics, mouseX, mouseY);
+        graphics.text(this.font, this.getGuiName(), this.titleLabelX, this.titleLabelY, DEFAULT_TEXT_COLOR, false);
     }
 
-    protected void drawStringCenter(@NotNull GuiGraphics graphics, Component text, int centerX, int y) {
+    protected void drawStringCenter(@NotNull GuiGraphicsExtractor graphics, Component text, int centerX, int y) {
         this.drawStringCenter(graphics, text, centerX, y, false);
     }
 
-    protected void drawStringCenter(@NotNull GuiGraphics graphics, Component text, int centerX, int y, boolean shadow) {
+    protected void drawStringCenter(@NotNull GuiGraphicsExtractor graphics, Component text, int centerX, int y, boolean shadow) {
         var length = this.font.width(text);
-        graphics.drawString(
+        graphics.text(
                 this.font, text,
                 centerX - length / 2, y,
                 DEFAULT_TEXT_COLOR, shadow
         );
     }
 
-    protected void drawStringCenter(@NotNull GuiGraphics graphics, String text, int centerX, int y) {
+    protected void drawStringCenter(@NotNull GuiGraphicsExtractor graphics, String text, int centerX, int y) {
         var length = this.font.width(text);
-        graphics.drawString(
+        graphics.text(
                 this.font, text,
                 centerX - length / 2, y,
                 DEFAULT_TEXT_COLOR, false
@@ -113,11 +113,11 @@ public abstract class MBBaseGui<C extends ContainerMBBase<? extends TileMBBase>>
     }
 
     @Override
-    protected void slotClicked(@NotNull Slot slot, int slotIdx, int mouseButton, @NotNull ClickType clickType) {
+    protected void slotClicked(@NotNull Slot slot, int slotIdx, int mouseButton, @NotNull ContainerInput input) {
         if (slot instanceof DisplaySlot) {
             this.sendAction("display_slot_click", slot.index);
         } else {
-            super.slotClicked(slot, slotIdx, mouseButton, clickType);
+            super.slotClicked(slot, slotIdx, mouseButton, input);
         }
     }
 
@@ -125,6 +125,10 @@ public abstract class MBBaseGui<C extends ContainerMBBase<? extends TileMBBase>>
     @Override
     public ActionMap getActionMap() {
         return this.actions;
+    }
+
+    public boolean hasShiftDown() {
+        return this.getMinecraft().hasShiftDown();
     }
 
 }

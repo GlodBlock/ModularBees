@@ -1,7 +1,6 @@
 {
   "type": "modularbees:overclocker_electrode",
   "electrode": {
-    "count": 1,
     "id": "modularbees:electrode_netherite"
   },
   "power": 5.0

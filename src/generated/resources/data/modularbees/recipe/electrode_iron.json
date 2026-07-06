@@ -2,18 +2,10 @@
   "type": "minecraft:crafting_shaped",
   "category": "misc",
   "key": {
-    "B": {
-      "tag": "c:dyes/black"
-    },
-    "G": {
-      "tag": "c:nuggets/gold"
-    },
-    "M": {
-      "tag": "c:ingots/iron"
-    },
-    "Z": {
-      "tag": "c:storage_blocks/iron"
-    }
+    "B": "#c:dyes/black",
+    "G": "#c:nuggets/gold",
+    "M": "#c:ingots/iron",
+    "Z": "#c:storage_blocks/iron"
   },
   "pattern": [
     " BG",
@@ -21,7 +13,6 @@
     "M  "
   ],
   "result": {
-    "count": 1,
     "id": "modularbees:electrode_iron"
   }
 }

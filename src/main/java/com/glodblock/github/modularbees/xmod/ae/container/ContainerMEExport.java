@@ -1,12 +1,12 @@
 package com.glodblock.github.modularbees.xmod.ae.container;
 
+import com.glodblock.github.modularbees.common.inventory.MBItemInventory;
 import com.glodblock.github.modularbees.container.base.ContainerMBBase;
 import com.glodblock.github.modularbees.container.base.MBGuiHandler;
 import com.glodblock.github.modularbees.container.slot.DisplaySlot;
 import com.glodblock.github.modularbees.xmod.ae.tileentities.TileMEExport;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.MenuType;
-import net.neoforged.neoforge.items.IItemHandler;
 import org.jetbrains.annotations.Nullable;
 
 public class ContainerMEExport extends ContainerMBBase<TileMEExport> {
@@ -22,12 +22,12 @@ public class ContainerMEExport extends ContainerMBBase<TileMEExport> {
         this.getSync()
                 .addBool(1, this::isEnableFilter, this::setEnableFilter)
                 .addBool(2, this::isWhitelist, this::setWhitelist);
-        this.getActionMap().put("enable_filter", o -> this.setEnableFilter(o.get(0)));
-        this.getActionMap().put("filter_mode", o -> this.setWhitelist(o.get(0)));
+        this.getActionMap().put("enable_filter", o -> this.setEnableFilter(o.getBoolean()));
+        this.getActionMap().put("filter_mode", o -> this.setWhitelist(o.getBoolean()));
     }
 
-    private void addConfigSlot(IItemHandler config) {
-        for (int index = 0; index < config.getSlots(); index ++) {
+    private void addConfigSlot(MBItemInventory config) {
+        for (int index = 0; index < config.size(); index ++) {
             int x = index % 4;
             int y = index / 4;
             this.addSlot(new DisplaySlot(config, index, 53 + x * 18, 17 + y * 18));

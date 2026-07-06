@@ -1,5 +1,9 @@
 {
   "values": [
+    {
+      "id": "modularbees:me_centrifuge_export",
+      "required": false
+    },
     "modularbees:modular_centrifuge_core",
     "modularbees:modular_centrifuge_part",
     "modularbees:modular_centrifuge_overclocker",
@@ -7,10 +11,6 @@
     "modularbees:modular_centrifuge_import",
     "modularbees:modular_centrifuge_heater",
     "modularbees:modular_centrifuge_gearbox",
-    "modularbees:bee_extractor",
-    {
-      "id": "modularbees:me_centrifuge_export",
-      "required": false
-    }
+    "modularbees:bee_extractor"
   ]
 }

@@ -22,7 +22,7 @@ public class MBImportGui extends MBBaseGui<ContainerMBImport> {
 
     @Override
     protected Component getGuiName() {
-        return MBSingletons.MODULAR_CENTRIFUGE_IMPORT.getName();
+        return MBSingletons.MODULAR_CENTRIFUGE_IMPORT.get().getName();
     }
 
 }

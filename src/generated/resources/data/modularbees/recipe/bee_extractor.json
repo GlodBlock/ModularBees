@@ -2,23 +2,13 @@
   "type": "minecraft:crafting_shaped",
   "category": "misc",
   "key": {
-    "B": {
-      "item": "productivebees:bottler"
-    },
+    "B": "productivebees:bottler",
     "P": [
-      {
-        "item": "minecraft:piston"
-      },
-      {
-        "item": "minecraft:sticky_piston"
-      }
+      "minecraft:piston",
+      "minecraft:sticky_piston"
     ],
-    "R": {
-      "tag": "c:dusts/redstone"
-    },
-    "S": {
-      "tag": "c:stones"
-    }
+    "R": "#c:dusts/redstone",
+    "S": "#c:stones"
   },
   "pattern": [
     "RPR",
@@ -26,7 +16,6 @@
     " B "
   ],
   "result": {
-    "count": 1,
     "id": "modularbees:bee_extractor"
   }
 }

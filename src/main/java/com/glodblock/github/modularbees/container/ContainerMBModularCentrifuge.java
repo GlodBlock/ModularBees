@@ -28,7 +28,7 @@ public class ContainerMBModularCentrifuge extends ContainerMBBase<TileModularCen
     }
 
     public FluidStack getTank(int slot) {
-        return this.getHost().getFluidInventory().getFluidInTank(slot);
+        return this.getHost().getFluidInventory().getFluidStack(slot);
     }
 
     public double getProcess() {

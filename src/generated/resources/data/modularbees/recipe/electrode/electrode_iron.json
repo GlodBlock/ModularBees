@@ -1,7 +1,6 @@
 {
   "type": "modularbees:overclocker_electrode",
   "electrode": {
-    "count": 1,
     "id": "modularbees:electrode_iron"
   },
   "power": 1.5

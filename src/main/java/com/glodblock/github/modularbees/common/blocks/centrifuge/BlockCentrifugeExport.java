@@ -1,5 +1,6 @@
 package com.glodblock.github.modularbees.common.blocks.centrifuge;
 
+import com.glodblock.github.modularbees.ModularBees;
 import com.glodblock.github.modularbees.client.util.ConnectBlock;
 import com.glodblock.github.modularbees.common.blocks.base.BlockMBTileBase;
 import com.glodblock.github.modularbees.common.tileentities.centrifuge.TileCentrifugeExport;
@@ -7,23 +8,25 @@ import com.glodblock.github.modularbees.dynamic.DyResourcePack;
 import com.glodblock.github.modularbees.util.RotorBlocks;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.resources.Identifier;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.NotNull;
 
 public class BlockCentrifugeExport extends BlockMBTileBase<TileCentrifugeExport> implements ConnectBlock, Centrifuge {
 
-    public BlockCentrifugeExport() {
-        super(centrifuge());
+    public BlockCentrifugeExport(BlockBehaviour.Properties properties) {
+        super(centrifuge(properties));
     }
 
     @Override
-    public TagKey<Block> harvestTool() {
+    public TagKey<@NotNull Block> harvestTool() {
         return BlockTags.MINEABLE_WITH_PICKAXE;
     }
 
@@ -54,6 +57,11 @@ public class BlockCentrifugeExport extends BlockMBTileBase<TileCentrifugeExport>
     public BlockState getStateForPlacement(@NotNull BlockPlaceContext context) {
         var state = super.defaultBlockState();
         return state.setValue(this.getRotorStrategy().property(), context.getHorizontalDirection().getOpposite());
+    }
+
+    @Override
+    public Identifier modelType() {
+        return ModularBees.id("modular_connect_model");
     }
 
 }

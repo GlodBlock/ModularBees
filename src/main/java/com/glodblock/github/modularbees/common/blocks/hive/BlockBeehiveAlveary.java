@@ -1,5 +1,6 @@
 package com.glodblock.github.modularbees.common.blocks.hive;
 
+import com.glodblock.github.modularbees.ModularBees;
 import com.glodblock.github.modularbees.client.util.ConnectBlock;
 import com.glodblock.github.modularbees.common.blocks.base.BlockMBGuiBase;
 import com.glodblock.github.modularbees.common.tileentities.hive.TileBeehiveAlveary;
@@ -12,42 +13,46 @@ import cy.jdkdigital.productivebees.common.entity.bee.SolitaryBee;
 import cy.jdkdigital.productivebees.common.item.BeeCage;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.Identifier;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.TagKey;
-import net.minecraft.world.ItemInteractionResult;
-import net.minecraft.world.entity.animal.Bee;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.animal.bee.Bee;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.phys.BlockHitResult;
+import net.neoforged.neoforge.transfer.item.ItemResource;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
 public class BlockBeehiveAlveary extends BlockMBGuiBase<TileBeehiveAlveary> implements ConnectBlock, Hive {
 
-    public BlockBeehiveAlveary() {
-        super(hive());
+    public BlockBeehiveAlveary(BlockBehaviour.Properties properties) {
+        super(hive(properties));
     }
 
     @Override
-    public ItemInteractionResult check(TileBeehiveAlveary tile, ItemStack stack, Level world, BlockPos pos, BlockHitResult hit, Player p) {
+    public InteractionResult check(TileBeehiveAlveary tile, ItemStack stack, Level world, BlockPos pos, BlockHitResult hit, Player p) {
         if (!world.isClientSide()) {
             var one = stack.copyWithCount(1);
             if (BeeCage.isFilled(one) && tile.hasRoom()) {
                 var bee = BeeCage.getEntityFromStack(one, world, true);
                 if (bee == null) {
-                    p.displayClientMessage(Component.translatable("modularbees.gui.modular_beehive_alveary.invalid"), true);
-                    return ItemInteractionResult.FAIL;
+                    p.sendOverlayMessage(Component.translatable("modularbees.gui.modular_beehive_alveary.invalid"));
+                    return InteractionResult.FAIL;
                 }
                 if (bee instanceof SolitaryBee) {
-                    p.displayClientMessage(Component.translatable("modularbees.gui.modular_beehive_alveary.solitary"), true);
-                    return ItemInteractionResult.FAIL;
+                    p.sendOverlayMessage(Component.translatable("modularbees.gui.modular_beehive_alveary.solitary"));
+                    return InteractionResult.FAIL;
                 }
                 if (bee.getAge() < 0) {
-                    p.displayClientMessage(Component.translatable("modularbees.gui.modular_beehive_alveary.child"), true);
-                    return ItemInteractionResult.FAIL;
+                    p.sendOverlayMessage(Component.translatable("modularbees.gui.modular_beehive_alveary.child"));
+                    return InteractionResult.FAIL;
                 }
                 tile.addBee(world, bee);
                 tile.notifyCore();
@@ -56,8 +61,8 @@ public class BlockBeehiveAlveary extends BlockMBGuiBase<TileBeehiveAlveary> impl
                 if (!p.addItem(empty)) {
                     GameUtil.spawnDrops(world, p.getOnPos(), List.of(empty));
                 }
-                return ItemInteractionResult.SUCCESS;
-            } else if (tile.isEmptyCage(one) && !tile.getBees().isEmpty()) {
+                return InteractionResult.SUCCESS;
+            } else if (tile.isEmptyCage(ItemResource.of(one)) && !tile.getBees().isEmpty()) {
                 var entity = tile.getBees().getLast().toOccupant().createEntity(world, pos);
                 if (entity instanceof Bee bee) {
                     bee.setHivePos(pos);
@@ -69,7 +74,7 @@ public class BlockBeehiveAlveary extends BlockMBGuiBase<TileBeehiveAlveary> impl
                     if (!p.addItem(one)) {
                         GameUtil.spawnDrops(world, p.getOnPos(), List.of(one));
                     }
-                    return ItemInteractionResult.SUCCESS;
+                    return InteractionResult.SUCCESS;
                 }
             }
         }
@@ -85,7 +90,7 @@ public class BlockBeehiveAlveary extends BlockMBGuiBase<TileBeehiveAlveary> impl
     }
 
     @Override
-    public TagKey<Block> harvestTool() {
+    public TagKey<@NotNull Block> harvestTool() {
         return BlockTags.MINEABLE_WITH_AXE;
     }
 
@@ -97,6 +102,11 @@ public class BlockBeehiveAlveary extends BlockMBGuiBase<TileBeehiveAlveary> impl
     @Override
     public boolean canConnect(BlockGetter world, BlockPos otherPos) {
         return world.getBlockState(otherPos).getBlock() instanceof Hive;
+    }
+
+    @Override
+    public Identifier modelType() {
+        return ModularBees.id("modular_connect_model");
     }
 
 }

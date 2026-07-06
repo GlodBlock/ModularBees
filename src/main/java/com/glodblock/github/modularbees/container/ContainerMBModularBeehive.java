@@ -6,6 +6,7 @@ import com.glodblock.github.modularbees.container.base.MBGuiHandler;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.MenuType;
 import net.neoforged.neoforge.fluids.FluidStack;
+import net.neoforged.neoforge.transfer.fluid.FluidResource;
 import org.jetbrains.annotations.Nullable;
 
 public class ContainerMBModularBeehive extends ContainerMBBase<TileModularBeehive> {
@@ -21,11 +22,11 @@ public class ContainerMBModularBeehive extends ContainerMBBase<TileModularBeehiv
         this.addSlot(host.getHandlerByName("bottle"), 1, 35, 53);
         this.addItemHandlerSlot(host.getHandlerByName("upgrade"), 178, 8, 1);
         this.bindPlayerInventorySlots(inv);
-        this.getSync().addFluid(1, this::getHoney, fluid -> host.getFluidInventory().setFluid(fluid));
+        this.getSync().addFluid(1, this::getHoney, fluid -> host.getFluidInventory().set(0, FluidResource.of(fluid), fluid.getAmount()));
     }
 
     public FluidStack getHoney() {
-        return this.getHost().getFluidInventory().getFluid();
+        return this.getHost().getFluidInventory().getFluidStack(0);
     }
 
     @Override

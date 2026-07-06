@@ -18,8 +18,8 @@ import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.neoforge.items.IItemHandler;
-import net.neoforged.neoforge.items.SlotItemHandler;
+import net.neoforged.neoforge.transfer.ResourceHandler;
+import net.neoforged.neoforge.transfer.item.ItemResource;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -40,8 +40,8 @@ public abstract class ContainerMBBase<T extends TileMBBase> extends AbstractCont
         super(type, id);
         this.host = host;
         this.playerInventory = inv;
-        this.getActionMap().put("display_slot_click", o -> handleDisplaySlotClick(o.get(0)));
-        this.getActionMap().put("jei_slot", o -> handleJeiClick(o.get(0), o.get(1)));
+        this.getActionMap().put("display_slot_click", o -> handleDisplaySlotClick(o.getInt()));
+        this.getActionMap().put("jei_slot", o -> handleJeiClick(o.getInt(), o.get(ItemStack.class)));
     }
 
     public void setResolver(ContainerResolver resolver) {
@@ -69,7 +69,7 @@ public abstract class ContainerMBBase<T extends TileMBBase> extends AbstractCont
     }
 
     protected final void bindPlayerInventorySlots(Inventory inventory) {
-        for (int i = 0; i < inventory.items.size(); i++) {
+        for (int i = 0; i < inventory.getNonEquipmentItems().size(); i++) {
             int x = i % 9;
             int y = i / 9;
             int hotBarOffset = i < Inventory.getSelectionSize() ? 0 : 4;
@@ -81,29 +81,27 @@ public abstract class ContainerMBBase<T extends TileMBBase> extends AbstractCont
         }
     }
 
-    protected void addItemHandlerSlot(@Nullable IItemHandler handler, int posX, int posY, int columns) {
+    protected void addItemHandlerSlot(@Nullable ResourceHandler<@NotNull ItemResource> handler, int posX, int posY, int columns) {
         if (handler == null) {
             return;
         }
-        for (int index = 0; index < handler.getSlots(); index ++) {
+        for (int index = 0; index < handler.size(); index ++) {
             int x = index % columns;
             int y = index / columns;
             if (handler instanceof MBItemInventory inv) {
                 this.addSlot(new MBInventorySlot(inv, index, posX + x * 18, posY + y * 18));
-            } else {
-                this.addSlot(new SlotItemHandler(handler, index, posX + x * 18, posY + y * 18));
             }
         }
     }
 
-    protected Slot addSlot(@Nullable IItemHandler handler, int index, int posX, int posY) {
+    protected Slot addSlot(@Nullable ResourceHandler<@NotNull ItemResource> handler, int index, int posX, int posY) {
         if (handler == null) {
             return null;
         }
         if (handler instanceof MBItemInventory inv) {
             return this.addSlot(new MBInventorySlot(inv, index, posX, posY));
         }
-        return this.addSlot(new SlotItemHandler(handler, index, posX, posY));
+        return null;
     }
 
     protected int playerBottomOffset() {
@@ -251,7 +249,7 @@ public abstract class ContainerMBBase<T extends TileMBBase> extends AbstractCont
     }
 
     public boolean isClientSide() {
-        return this.getPlayer().getCommandSenderWorld().isClientSide();
+        return this.getPlayer().level().isClientSide();
     }
 
     public boolean isServerSide() {

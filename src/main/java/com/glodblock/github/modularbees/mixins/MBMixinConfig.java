@@ -4,7 +4,7 @@ import com.glodblock.github.modularbees.xmod.ModIDs;
 import it.unimi.dsi.fastutil.objects.Object2ObjectMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import net.neoforged.fml.ModList;
-import net.neoforged.fml.loading.LoadingModList;
+import net.neoforged.fml.loading.FMLLoader;
 import net.neoforged.fml.loading.moddiscovery.ModInfo;
 import org.objectweb.asm.tree.ClassNode;
 import org.spongepowered.asm.mixin.extensibility.IMixinConfigPlugin;
@@ -59,7 +59,7 @@ public class MBMixinConfig implements IMixinConfigPlugin {
 
     private static boolean isModLoaded(String modId) {
         if (ModList.get() == null) {
-            return LoadingModList.get().getMods()
+            return FMLLoader.getCurrent().getLoadingModList().getMods()
                     .stream().map(ModInfo::getModId)
                     .anyMatch(modId::equals);
         } else {

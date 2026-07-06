@@ -2,15 +2,9 @@
   "type": "minecraft:crafting_shaped",
   "category": "building",
   "key": {
-    "H": {
-      "item": "modularbees:honey_jelly"
-    },
-    "P": {
-      "tag": "minecraft:planks"
-    },
-    "W": {
-      "item": "productivebees:wax"
-    }
+    "H": "modularbees:honey_jelly",
+    "P": "#minecraft:planks",
+    "W": "productivebees:wax"
   },
   "pattern": [
     "WHW",

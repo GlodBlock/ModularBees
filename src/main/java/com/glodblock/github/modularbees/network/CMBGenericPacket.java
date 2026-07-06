@@ -2,7 +2,7 @@ package com.glodblock.github.modularbees.network;
 
 import com.glodblock.github.modularbees.ModularBees;
 import com.glodblock.github.glodium.network.packet.CGenericPacket;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import org.jetbrains.annotations.NotNull;
 
 public class CMBGenericPacket extends CGenericPacket {
@@ -20,7 +20,7 @@ public class CMBGenericPacket extends CGenericPacket {
     }
 
     @Override
-    public @NotNull ResourceLocation id() {
+    public @NotNull Identifier id() {
         return ModularBees.id("c_generic");
     }
 }

@@ -1,5 +1,6 @@
 package com.glodblock.github.modularbees.xmod.ae.blocks;
 
+import com.glodblock.github.modularbees.ModularBees;
 import com.glodblock.github.modularbees.client.util.ConnectBlock;
 import com.glodblock.github.modularbees.common.blocks.hive.Hive;
 import com.glodblock.github.modularbees.container.base.MBGuiHandler;
@@ -9,6 +10,7 @@ import com.glodblock.github.modularbees.util.RotorBlocks;
 import com.glodblock.github.modularbees.xmod.ae.container.ContainerMEExport;
 import com.glodblock.github.modularbees.xmod.ae.tileentities.TileMEHiveExport;
 import net.minecraft.core.BlockPos;
+import net.minecraft.resources.Identifier;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.player.Player;
@@ -20,8 +22,8 @@ import org.jetbrains.annotations.NotNull;
 
 public class BlockMEHiveExport extends BlockAENetworkHost<TileMEHiveExport> implements ConnectBlock, Hive {
 
-    public BlockMEHiveExport() {
-        super(hive());
+    public BlockMEHiveExport(Properties properties) {
+        super(hive(properties));
     }
 
     @Override
@@ -53,6 +55,11 @@ public class BlockMEHiveExport extends BlockAENetworkHost<TileMEHiveExport> impl
     @Override
     public boolean canConnect(BlockGetter world, BlockPos otherPos) {
         return world.getBlockState(otherPos).getBlock() instanceof Hive;
+    }
+
+    @Override
+    public Identifier modelType() {
+        return ModularBees.id("modular_connect_model");
     }
 
 }

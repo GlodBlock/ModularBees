@@ -2,27 +2,18 @@
   "type": "minecraft:crafting_shaped",
   "category": "misc",
   "key": {
-    "H": {
-      "item": "minecraft:hopper"
-    },
+    "H": "minecraft:hopper",
     "I": [
-      {
-        "item": "minecraft:piston"
-      },
-      {
-        "item": "minecraft:sticky_piston"
-      }
+      "minecraft:piston",
+      "minecraft:sticky_piston"
     ],
-    "P": {
-      "item": "modularbees:modular_beehive_part"
-    }
+    "P": "modularbees:modular_beehive_part"
   },
   "pattern": [
     "IPI",
     " H "
   ],
   "result": {
-    "count": 1,
     "id": "modularbees:modular_export"
   }
 }

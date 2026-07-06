@@ -3,7 +3,7 @@ package com.glodblock.github.modularbees.mixins;
 import com.glodblock.github.modularbees.common.inventory.MBBigItemInventory;
 import com.glodblock.github.modularbees.container.slot.MBInventorySlot;
 import com.glodblock.github.modularbees.util.GameUtil;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.network.chat.Component;
@@ -19,20 +19,20 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public abstract class AbstractContainerScreenMixin extends Screen {
 
     @Shadow
-    protected int imageWidth;
+    public int imageWidth;
 
     @Inject(
             method = "renderSlotContents",
             at = @At("HEAD"),
             cancellable = true
     )
-    private void renderBigInventorySlot(GuiGraphics guiGraphics, ItemStack itemstack, Slot slot, String countString, CallbackInfo ci) {
+    private void renderBigInventorySlot(GuiGraphicsExtractor graphics, ItemStack itemStack, Slot slot, String itemCount, CallbackInfo ci) {
         if (slot instanceof MBInventorySlot mb) {
-            var inv = mb.getItemHandler();
+            var inv = mb.getResourceHandler();
             if (inv instanceof MBBigItemInventory) {
-                var stack = itemstack.copyWithCount(1);
-                guiGraphics.renderItem(stack, slot.x, slot.y, slot.x + slot.y * this.imageWidth);
-                guiGraphics.renderItemDecorations(this.font, stack, slot.x, slot.y, GameUtil.readableCount(itemstack.getCount()));
+                var stack = itemStack.copyWithCount(1);
+                graphics.item(stack, slot.x, slot.y, slot.x + slot.y * this.imageWidth);
+                graphics.itemDecorations(this.font, stack, slot.x, slot.y, GameUtil.readableCount(itemStack.getCount()));
                 ci.cancel();
             }
         }

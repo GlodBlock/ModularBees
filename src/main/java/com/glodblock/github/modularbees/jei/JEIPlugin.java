@@ -2,6 +2,7 @@ package com.glodblock.github.modularbees.jei;
 
 import com.glodblock.github.modularbees.ModularBees;
 import com.glodblock.github.modularbees.client.gui.MBBaseGui;
+import com.glodblock.github.modularbees.client.util.SyncRecipes;
 import com.glodblock.github.modularbees.common.MBSingletons;
 import com.glodblock.github.modularbees.common.recipe.ElectrodeRecipe;
 import com.glodblock.github.modularbees.common.recipe.TreaterRecipe;
@@ -11,12 +12,10 @@ import mezz.jei.api.registration.IGuiHandlerRegistration;
 import mezz.jei.api.registration.IRecipeCatalystRegistration;
 import mezz.jei.api.registration.IRecipeCategoryRegistration;
 import mezz.jei.api.registration.IRecipeRegistration;
-import net.minecraft.client.Minecraft;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.item.crafting.RecipeInput;
-import net.minecraft.world.item.crafting.RecipeManager;
 import net.minecraft.world.item.crafting.RecipeType;
 import org.jetbrains.annotations.NotNull;
 
@@ -26,7 +25,7 @@ import java.util.List;
 public class JEIPlugin implements IModPlugin {
 
     @Override
-    public @NotNull ResourceLocation getPluginUid() {
+    public @NotNull Identifier getPluginUid() {
         return ModularBees.id("jei_plugin");
     }
 
@@ -39,16 +38,14 @@ public class JEIPlugin implements IModPlugin {
 
     @Override
     public void registerRecipes(@NotNull IRecipeRegistration registry) {
-        assert Minecraft.getInstance().level != null;
-        var manager = Minecraft.getInstance().level.getRecipeManager();
-        registry.addRecipes(MBTreaterCategory.RECIPE_TYPE, this.getRecipes(TreaterRecipe.TYPE, manager));
-        registry.addRecipes(MBElectrodeCategory.RECIPE_TYPE, this.getRecipes(ElectrodeRecipe.TYPE, manager));
+        registry.addRecipes(MBTreaterCategory.RECIPE_TYPE, this.getRecipes(TreaterRecipe.TYPE));
+        registry.addRecipes(MBElectrodeCategory.RECIPE_TYPE, this.getRecipes(ElectrodeRecipe.TYPE));
     }
 
     @Override
     public void registerRecipeCatalysts(@NotNull IRecipeCatalystRegistration registry) {
-        registry.addRecipeCatalyst(MBSingletons.MODULAR_TREATER, MBTreaterCategory.RECIPE_TYPE);
-        registry.addRecipeCatalyst(MBSingletons.MODULAR_BEEHIVE_OVERCLOCKER, MBElectrodeCategory.RECIPE_TYPE);
+        registry.addCraftingStation(MBTreaterCategory.RECIPE_TYPE, MBSingletons.MODULAR_TREATER);
+        registry.addCraftingStation(MBElectrodeCategory.RECIPE_TYPE, MBSingletons.MODULAR_BEEHIVE_OVERCLOCKER, MBSingletons.MODULAR_CENTRIFUGE_OVERCLOCKER);
     }
 
     @Override
@@ -56,8 +53,8 @@ public class JEIPlugin implements IModPlugin {
         registration.addGhostIngredientHandler(MBBaseGui.class, new GhostSlotHandler<>());
     }
 
-    private <I extends RecipeInput, T extends Recipe<I>> List<RecipeHolder<T>> getRecipes(RecipeType<T> type, RecipeManager manager) {
-        return manager.getAllRecipesFor(type);
+    private <I extends RecipeInput, T extends Recipe<@NotNull I>> List<RecipeHolder<@NotNull T>> getRecipes(RecipeType<@NotNull T> type) {
+        return SyncRecipes.INSTANCE.byType(type).stream().toList();
     }
 
 }

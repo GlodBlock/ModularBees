@@ -20,7 +20,7 @@ public abstract class ContainerMBMachine<M extends TileMBMachine> extends Contai
     protected abstract void addInventorySlots();
 
     public int getEnergy() {
-        return this.getHost().getEnergyStorage().getEnergyStored();
+        return this.getHost().getEnergyStorage().getAmountAsInt();
     }
 
     public double getProcess() {

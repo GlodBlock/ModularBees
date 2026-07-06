@@ -6,6 +6,7 @@ import com.glodblock.github.modularbees.container.base.MBGuiHandler;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.MenuType;
 import net.neoforged.neoforge.fluids.FluidStack;
+import net.neoforged.neoforge.transfer.fluid.FluidResource;
 import org.jetbrains.annotations.Nullable;
 
 public class ContainerMBDragon extends ContainerMBBase<TileBeehiveDragon> {
@@ -19,11 +20,11 @@ public class ContainerMBDragon extends ContainerMBBase<TileBeehiveDragon> {
         this.addSlot(host.getHandlerByName("bottle"), 0, 90, 17);
         this.addSlot(host.getHandlerByName("bottle"), 1, 90, 53);
         this.bindPlayerInventorySlots(inv);
-        this.getSync().addFluid(1, this::getDragonBreath, fluid -> host.getFluidInventory().setFluid(fluid));
+        this.getSync().addFluid(1, this::getDragonBreath, fluid -> host.getFluidInventory().set(0, FluidResource.of(fluid), fluid.getAmount()));
     }
 
     public FluidStack getDragonBreath() {
-        return this.getHost().getFluidInventory().getFluid();
+        return this.getHost().getFluidInventory().getFluidStack(0);
     }
 
     @Override

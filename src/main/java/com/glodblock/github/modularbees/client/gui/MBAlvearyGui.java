@@ -7,7 +7,7 @@ import com.glodblock.github.modularbees.common.MBSingletons;
 import com.glodblock.github.modularbees.container.ContainerMBAlveary;
 import cy.jdkdigital.productivebees.common.entity.bee.SolitaryBee;
 import net.minecraft.ChatFormatting;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Inventory;
 import org.jetbrains.annotations.NotNull;
@@ -36,7 +36,7 @@ public class MBAlvearyGui extends MBBaseGui<ContainerMBAlveary> {
 
     @Override
     protected Component getGuiName() {
-        return MBSingletons.MODULAR_ALVEARY.getName();
+        return MBSingletons.MODULAR_ALVEARY.get().getName();
     }
 
     @Override
@@ -45,8 +45,8 @@ public class MBAlvearyGui extends MBBaseGui<ContainerMBAlveary> {
     }
 
     @Override
-    protected void renderBg(@NotNull GuiGraphics graphics, float partialTicks, int mouseX, int mouseY) {
-        super.renderBg(graphics, partialTicks, mouseX, mouseY);
+    protected void extractMenuBackground(@NotNull GuiGraphicsExtractor graphics, int x, int y, int width, int height) {
+        super.extractMenuBackground(graphics, x, y, width, height);
         if (this.getMenu().renderInputSlot()) {
             INPUT.render(graphics, 32 + this.leftPos, 36 + this.topPos);
         }
@@ -56,8 +56,8 @@ public class MBAlvearyGui extends MBBaseGui<ContainerMBAlveary> {
     }
 
     @Override
-    protected void renderLabels(@NotNull GuiGraphics graphics, int mouseX, int mouseY) {
-        super.renderLabels(graphics, mouseX, mouseY);
+    protected void extractLabels(@NotNull GuiGraphicsExtractor graphics, int mouseX, int mouseY) {
+        super.extractLabels(graphics, mouseX, mouseY);
         var inputBee = this.getMenu().getInputBee();
         if (inputBee != null) {
             if (inputBee instanceof SolitaryBee) {

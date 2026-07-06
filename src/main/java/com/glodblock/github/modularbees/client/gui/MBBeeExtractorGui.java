@@ -22,7 +22,7 @@ public class MBBeeExtractorGui extends MBBaseGui<ContainerMBBeeExtractor> {
         process.setPosition(88, 37);
         process.setSize(16, 12);
         var energy = new EnergyDisplay(container::getEnergy)
-                .capacity(container.getHost().getEnergyStorage().getMaxEnergyStored())
+                .capacity(container.getHost().getEnergyStorage().getCapacityAsInt())
                 .texture(PicData.of(ModularBees.id("textures/gui/bee_extractor.png")).select(202, 0, 11, 52));
         energy.setPosition(20, 17);
         energy.setSize(11, 52);
@@ -32,7 +32,7 @@ public class MBBeeExtractorGui extends MBBaseGui<ContainerMBBeeExtractor> {
 
     @Override
     protected Component getGuiName() {
-        return MBSingletons.BEE_EXTRACTOR.getName();
+        return MBSingletons.BEE_EXTRACTOR.get().getName();
     }
 
     @Override

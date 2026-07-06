@@ -1,14 +1,14 @@
 package com.glodblock.github.modularbees.common.caps;
 
 import net.minecraft.core.Direction;
-import net.neoforged.neoforge.energy.IEnergyStorage;
+import net.neoforged.neoforge.transfer.energy.EnergyHandler;
 
 public interface EnergyHandlerHost {
 
-    default IEnergyStorage getEnergyStorage(Direction side) {
+    default EnergyHandler getEnergyStorage(Direction side) {
         return this.getEnergyStorage();
     }
 
-    IEnergyStorage getEnergyStorage();
+    EnergyHandler getEnergyStorage();
 
 }

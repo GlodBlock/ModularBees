@@ -21,7 +21,7 @@ public class ContainerMBOverclocker extends ContainerMBBase<TileMBOverclocker> {
     }
 
     public int getEnergy() {
-        return this.getHost().getEnergyStorage().getEnergyStored();
+        return this.getHost().getEnergyStorage().getAmountAsInt();
     }
 
     @Override

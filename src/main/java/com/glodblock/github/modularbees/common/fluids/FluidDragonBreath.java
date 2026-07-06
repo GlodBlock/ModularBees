@@ -24,8 +24,8 @@ public abstract class FluidDragonBreath extends BaseFlowingFluid {
         super(new Properties(() -> TYPE, FluidDragonBreath::getFluid, FluidDragonBreath::getFlowFluid)
                 .slopeFindDistance(8)
                 .explosionResistance(100)
-                .bucket(() -> MBSingletons.DRAGON_BREATH_BUCKET)
-                .block(() -> MBSingletons.DRAGON_BREATH)
+                .bucket(MBSingletons.DRAGON_BREATH_BUCKET)
+                .block(MBSingletons.DRAGON_BREATH)
         );
     }
 
@@ -68,7 +68,7 @@ public abstract class FluidDragonBreath extends BaseFlowingFluid {
         static FluidDragonBreath INSTANCE = new Flow();
 
         @Override
-        protected void createFluidStateDefinition(StateDefinition.@NotNull Builder<Fluid, FluidState> builder) {
+        protected void createFluidStateDefinition(StateDefinition.@NotNull Builder<@NotNull Fluid, @NotNull FluidState> builder) {
             super.createFluidStateDefinition(builder);
             builder.add(LEVEL);
         }

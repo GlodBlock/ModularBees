@@ -23,7 +23,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.Mob;
-import net.minecraft.world.entity.animal.Bee;
+import net.minecraft.world.entity.animal.bee.Bee;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.RecipeHolder;
@@ -34,7 +34,8 @@ import net.minecraft.world.level.storage.loot.LootTable;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import net.neoforged.neoforge.common.util.FakePlayerFactory;
-import net.neoforged.neoforge.items.IItemHandler;
+import net.neoforged.neoforge.transfer.ResourceHandler;
+import net.neoforged.neoforge.transfer.item.ItemResource;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -48,7 +49,7 @@ import java.util.function.Supplier;
 
 public final class BeeTable {
 
-    private final IdentityHashMap<IItemHandler, Int2ReferenceMap<List<BeeCache>>> index = new IdentityHashMap<>();
+    private final IdentityHashMap<ResourceHandler<@NotNull ItemResource>, Int2ReferenceMap<List<BeeCache>>> index = new IdentityHashMap<>();
     private final List<BeeCache> data = new ArrayList<>();
     private final Function<TileBeehiveAlveary.AlvearyBee, TileBeehiveFeeder.FeedSlot> linker;
     private final BlockEntity host;
@@ -62,9 +63,11 @@ public final class BeeTable {
     @SuppressWarnings("deprecation")
     public void loadBee(TileBeehiveAlveary.AlvearyBee beeData) {
         var tag = beeData.toOccupant().entityData().getUnsafe();
-        if (tag.getString("type").equals("productivebees:draconic")) {
-            this.dragonCount ++;
-        }
+        tag.getString("type").ifPresent(type -> {
+            if (type.equals("productivebees:draconic")) {
+                this.dragonCount++;
+            }
+        });
         var cache = new BeeCache(beeData, this.host);
         this.data.add(cache);
         this.add(null, -1, cache);
@@ -103,14 +106,14 @@ public final class BeeTable {
                 this.link(cache);
             }
             if (cache.isBind()) {
-                if (world.random.nextFloat() <= dropChance) {
+                if (world.getRandom().nextFloat() <= dropChance) {
                     cache.beeGene.get(collector, world.getRandom());
                 }
             }
         }
     }
 
-    public void feederUpdate(IItemHandler inv, int slot) {
+    public void feederUpdate(ResourceHandler<@NotNull ItemResource> inv, int slot) {
         if (inv != null && slot != -1) {
             this.feederUpdate(null, -1);
         }
@@ -139,7 +142,7 @@ public final class BeeTable {
         return this.dragonCount;
     }
 
-    private void add(IItemHandler handler, int slot, BeeCache cache) {
+    private void add(ResourceHandler<@NotNull ItemResource> handler, int slot, BeeCache cache) {
         var map = this.index.computeIfAbsent(handler, k -> new Int2ReferenceOpenHashMap<>());
         var list = map.computeIfAbsent(slot, k -> new ArrayList<>());
         list.add(cache);
@@ -149,7 +152,7 @@ public final class BeeTable {
         this.remove(cache.inv, cache.slot, cache);
     }
 
-    private void remove(IItemHandler handler, int slot, BeeCache cache) {
+    private void remove(ResourceHandler<@NotNull ItemResource> handler, int slot, BeeCache cache) {
         var map = this.index.computeIfAbsent(handler, k -> new Int2ReferenceOpenHashMap<>());
         var list = map.computeIfAbsent(slot, k -> new ArrayList<>());
         list.remove(cache);
@@ -191,15 +194,14 @@ public final class BeeTable {
         private final ChanceStack beeGene;
         private Output output = null;
         private Supplier<Output> special = () -> Output.EMPTY;
-        IItemHandler inv = null;
+        ResourceHandler<@NotNull ItemResource> inv = null;
         int slot = -1;
         boolean needLookup = true;
         int geneBoost = 0;
 
         BeeCache(TileBeehiveAlveary.AlvearyBee key, BlockEntity host) {
             this.key = key;
-            var world = host.getLevel();
-            if (world != null) {
+            if (host.getLevel() instanceof ServerLevel world) {
                 var entity = key.toOccupant().createEntity(world, host.getBlockPos());
                 if (entity instanceof Bee bee) {
                     if (entity.hasData(ProductiveBees.ATTRIBUTE_HANDLER)) {
@@ -232,10 +234,10 @@ public final class BeeTable {
             }
         }
 
-        RecipeHolder<AdvancedBeehiveRecipe> lookupRecipe(Level world) {
-            List<RecipeHolder<AdvancedBeehiveRecipe>> allRecipes = world.getRecipeManager().getAllRecipesFor(ModRecipeTypes.ADVANCED_BEEHIVE_TYPE.get());
+        RecipeHolder<@NotNull AdvancedBeehiveRecipe> lookupRecipe(ServerLevel world) {
+            var allRecipes = world.recipeAccess().recipeMap().byType(ModRecipeTypes.ADVANCED_BEEHIVE_TYPE.get());
             var beeInv = new BeeHelper.IdentifierInventory(this.beeId);
-            for (RecipeHolder<AdvancedBeehiveRecipe> recipe : allRecipes) {
+            for (RecipeHolder<@NotNull AdvancedBeehiveRecipe> recipe : allRecipes) {
                 if (recipe.value().matches(beeInv, world)) {
                     return recipe;
                 }
@@ -248,14 +250,16 @@ public final class BeeTable {
         }
 
         @NotNull
-        Output lookupSpecialOutput(Level world, BlockPos pos) {
+        Output lookupSpecialOutput(ServerLevel world, BlockPos pos) {
             if (!this.isBind()) {
                 return Output.EMPTY;
             }
-            var input = this.inv.getStackInSlot(this.slot);
-            if (input.isEmpty()) {
+            var type = this.inv.getResource(this.slot);
+            var amount = this.inv.getAmountAsInt(this.slot);
+            if (type.isEmpty() || amount <= 0) {
                 return Output.EMPTY;
             }
+            var input = type.toStack(amount);
             final var inputBlock = GameUtil.getBlockFromItem(input);
             switch (this.beeId) {
                 case "productivebees:lumber_bee" -> {
@@ -280,10 +284,10 @@ public final class BeeTable {
                     if (inputBlock.getBlock() instanceof Amber) {
                         var tag = input.get(DataComponents.ENTITY_DATA);
                         if (tag != null) {
-                            var entity = AmberBlockEntity.createEntity(world, tag.copyTag());
-                            if (entity instanceof Mob mob && world instanceof ServerLevel serverWorld) {
-                                var loot = serverWorld.getServer().reloadableRegistries().getLootTable(mob.getLootTable());
-                                return new Output(List.of(new MobOutput(mob, loot, serverWorld, pos, 1)), this.geneBoost);
+                            var entity = AmberBlockEntity.createEntity(world, tag.copyTagWithoutId());
+                            if (entity instanceof Mob mob && mob.getLootTable().isPresent()) {
+                                var loot = world.getServer().reloadableRegistries().getLootTable(mob.getLootTable().get());
+                                return new Output(List.of(new MobOutput(mob, loot, world, pos, 1)), this.geneBoost);
                             }
                         }
                     }
@@ -308,7 +312,7 @@ public final class BeeTable {
             return ChanceStack.IMPOSSIBLE;
         }
 
-        void setIndex(IItemHandler inv, int slot) {
+        void setIndex(ResourceHandler<@NotNull ItemResource> inv, int slot) {
             this.inv = inv;
             this.slot = slot;
             this.needLookup = false;

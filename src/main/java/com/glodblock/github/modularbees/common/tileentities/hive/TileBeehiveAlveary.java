@@ -1,32 +1,31 @@
 package com.glodblock.github.modularbees.common.tileentities.hive;
 
-import com.glodblock.github.glodium.util.GlodUtil;
-import com.glodblock.github.modularbees.ModularBees;
-import com.glodblock.github.modularbees.common.MBSingletons;
 import com.glodblock.github.modularbees.common.caps.ItemHandlerHost;
 import com.glodblock.github.modularbees.common.inventory.MBItemInventory;
 import com.glodblock.github.modularbees.util.GameUtil;
 import com.glodblock.github.modularbees.util.ServerTickTile;
 import com.glodblock.github.modularbees.util.TryResult;
 import com.glodblock.github.modularbees.xmod.mek.CardboxWrap;
+import com.mojang.serialization.Codec;
 import cy.jdkdigital.productivebees.common.entity.bee.SolitaryBee;
 import cy.jdkdigital.productivebees.common.item.BeeCage;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.core.HolderLookup;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.NbtOps;
 import net.minecraft.network.chat.Component;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
-import net.minecraft.world.entity.animal.Bee;
+import net.minecraft.world.entity.animal.bee.Bee;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BeehiveBlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
-import net.neoforged.neoforge.items.IItemHandler;
-import net.neoforged.neoforge.items.wrapper.CombinedInvWrapper;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
+import net.neoforged.neoforge.transfer.CombinedResourceHandler;
+import net.neoforged.neoforge.transfer.ResourceHandler;
+import net.neoforged.neoforge.transfer.item.ItemResource;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -39,17 +38,17 @@ public class TileBeehiveAlveary extends TileBeehivePart implements ServerTickTil
 
     public static int MAX_BEES = 5;
     protected final List<AlvearyBee> bees = new ArrayList<>();
-    protected final MBItemInventory cageIn = new MBItemInventory(this, 1, BeeCage::isFilled).setSlotLimit(1);
+    protected final MBItemInventory cageIn = new MBItemInventory(this, 1, MBItemInventory.ItemFilter.of(BeeCage::isFilled)).setSlotLimit(1);
     protected final MBItemInventory cageOut = new MBItemInventory(this, 1, this::isEmptyCage).setSlotLimit(1);
-    private final IItemHandler exposed = new CombinedInvWrapper(this.cageIn, this.cageOut);
+    private final ResourceHandler<@NotNull ItemResource> exposed = new CombinedResourceHandler<>(this.cageIn, this.cageOut);
     private boolean wrap = false;
 
-    public TileBeehiveAlveary(BlockPos pos, BlockState state) {
-        super(GlodUtil.getTileType(TileBeehiveAlveary.class, TileBeehiveAlveary::new, MBSingletons.MODULAR_ALVEARY), pos, state);
+    public TileBeehiveAlveary(BlockEntityType<?> type, BlockPos pos, BlockState state) {
+        super(type, pos, state);
     }
 
-    public boolean isEmptyCage(ItemStack stack) {
-        return stack.getItem() instanceof BeeCage && !BeeCage.isFilled(stack);
+    public boolean isEmptyCage(ItemResource stack) {
+        return stack.getItem() instanceof BeeCage && !BeeCage.isFilled(stack.toStack());
     }
 
     public void collectBees(Consumer<AlvearyBee> collector) {
@@ -74,9 +73,9 @@ public class TileBeehiveAlveary extends TileBeehivePart implements ServerTickTil
         this.markDirty();
     }
 
-    public void loadBees(List<BeehiveBlockEntity.Occupant> occupants) {
+    public void loadBees(List<AlvearyBee> occupants) {
         this.bees.clear();
-        occupants.stream().map(AlvearyBee::new).forEach(this.bees::add);
+        this.bees.addAll(occupants);
         this.notifyCore();
     }
 
@@ -94,24 +93,19 @@ public class TileBeehiveAlveary extends TileBeehivePart implements ServerTickTil
     }
 
     @Override
-    public void saveTag(CompoundTag data, HolderLookup.@NotNull Provider provider) {
-        super.saveTag(data, provider);
-        data.put("bees", BeehiveBlockEntity.Occupant.LIST_CODEC
-                .encodeStart(NbtOps.INSTANCE, this.bees.stream().map(AlvearyBee::toOccupant).toList())
-                .getOrThrow());
-        data.put("cageIn", this.cageIn.serializeNBT(provider));
-        data.put("cageOut", this.cageOut.serializeNBT(provider));
+    public void saveTag(ValueOutput data) {
+        super.saveTag(data);
+        data.store("bees", AlvearyBee.LIST_CODEC, this.bees);
+        this.cageIn.serialize(data.child("cageIn"));
+        this.cageOut.serialize(data.child("cageOut"));
     }
 
     @Override
-    public void loadTag(CompoundTag data, HolderLookup.@NotNull Provider provider) {
-        super.loadTag(data, provider);
-        BeehiveBlockEntity.Occupant.LIST_CODEC
-                .parse(NbtOps.INSTANCE, data.get("bees"))
-                .resultOrPartial(bee -> ModularBees.LOGGER.error("Failed to parse bees: '{}'", bee))
-                .ifPresent(this::loadBees);
-        this.cageIn.deserializeNBT(provider, data.getCompound("cageIn"));
-        this.cageOut.deserializeNBT(provider, data.getCompound("cageOut"));
+    public void loadTag(ValueInput data) {
+        super.loadTag(data);
+        data.read("bees", AlvearyBee.LIST_CODEC).ifPresent(this::loadBees);
+        data.child("cageIn").ifPresent(this.cageIn::deserialize);
+        data.child("cageOut").ifPresent(this.cageOut::deserialize);
     }
 
     @Override
@@ -125,8 +119,8 @@ public class TileBeehiveAlveary extends TileBeehivePart implements ServerTickTil
 
     @Override
     public void tickServer(Level world, BlockState state) {
-        var in = this.cageIn.getStackInSlot(0);
-        var out = this.cageOut.getStackInSlot(0);
+        var in = this.cageIn.getItemStack(0);
+        var out = this.cageOut.getItemStack(0);
         if (in.isEmpty() && out.isEmpty()) {
             return;
         }
@@ -135,19 +129,19 @@ public class TileBeehiveAlveary extends TileBeehivePart implements ServerTickTil
                 var bee = BeeCage.getEntityFromStack(in, world, true);
                 if (bee != null && !(bee instanceof SolitaryBee) && bee.getAge() >= 0) {
                     this.addBee(world, bee);
-                    this.cageIn.setStackInSlot(0, GameUtil.emptyCage(in));
+                    this.cageIn.setItemStack(0, GameUtil.emptyCage(in));
                     this.notifyCore();
                 }
             }
         }
-        if (this.isEmptyCage(out)) {
+        if (this.isEmptyCage(ItemResource.of(out))) {
             if (!this.bees.isEmpty()) {
                 var entity = this.bees.getLast().toOccupant().createEntity(world, this.getBlockPos());
                 if (entity instanceof Bee bee) {
                     bee.setHivePos(this.getBlockPos());
                     BeeCage.captureEntity(bee, out);
                     this.bees.removeLast();
-                    this.cageOut.setStackInSlot(0, out);
+                    this.cageOut.setItemStack(0, out);
                     this.markDirty();
                     this.notifyCore();
                 }
@@ -173,7 +167,7 @@ public class TileBeehiveAlveary extends TileBeehivePart implements ServerTickTil
     }
 
     @Override
-    public IItemHandler getItemInventory() {
+    public ResourceHandler<@NotNull ItemResource> getItemInventory() {
         return this.exposed;
     }
 
@@ -208,6 +202,7 @@ public class TileBeehiveAlveary extends TileBeehivePart implements ServerTickTil
 
     public static class AlvearyBee {
 
+        private static final Codec<List<AlvearyBee>> LIST_CODEC = BeehiveBlockEntity.Occupant.CODEC.xmap(AlvearyBee::new, AlvearyBee::toOccupant).listOf();
         private static final TryResult FAIL = TryResult.fail(Component.translatable("modularbees.gui.modular_beehive_alveary.no_food").withStyle(ChatFormatting.RED));
         private final BeehiveBlockEntity.BeeData bee;
         private TryResult linkStatus = FAIL;

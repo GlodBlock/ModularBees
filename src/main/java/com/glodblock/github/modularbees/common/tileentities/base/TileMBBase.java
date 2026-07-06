@@ -2,6 +2,7 @@ package com.glodblock.github.modularbees.common.tileentities.base;
 
 import com.glodblock.github.modularbees.ModularBees;
 import com.glodblock.github.modularbees.common.inventory.MBItemInventory;
+import com.glodblock.github.modularbees.util.GameUtil;
 import io.netty.buffer.Unpooled;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
@@ -15,9 +16,12 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class TileMBBase extends BlockEntity {
@@ -42,39 +46,38 @@ public class TileMBBase extends BlockEntity {
         if (this.level == null) {
             return false;
         }
-        return this.level.isClientSide;
+        return this.level.isClientSide();
     }
 
     @Override
-    public Packet<ClientGamePacketListener> getUpdatePacket() {
+    public Packet<@NotNull ClientGamePacketListener> getUpdatePacket() {
         return ClientboundBlockEntityDataPacket.create(this);
     }
 
     @Override
-    public final void loadAdditional(CompoundTag tag, HolderLookup.@NotNull Provider provider) {
-        if (tag.contains("#upd", 7) && tag.size() == 1) {
-            byte[] updateData = tag.getByteArray("#upd");
+    public final void loadAdditional(ValueInput tag) {
+        tag.read("#upd", GameUtil.BYTE_ARR_CODEC).ifPresentOrElse(updateData -> {
             if (this.readUpdateData(new FriendlyByteBuf(Unpooled.wrappedBuffer(updateData))) && this.level != null) {
                 this.requestModelDataUpdate();
                 this.level.sendBlockUpdated(this.getBlockPos(), this.getBlockState(), this.getBlockState(), 0);
             }
-        } else {
-            super.loadAdditional(tag, provider);
-            this.loadTag(tag, provider);
-        }
+        }, () -> {
+            super.loadAdditional(tag);
+            this.loadTag(tag);
+        });
     }
 
     @Override
-    public final void saveAdditional(@NotNull CompoundTag tag, HolderLookup.@NotNull Provider provider) {
-        super.saveAdditional(tag, provider);
-        this.saveTag(tag, provider);
+    public final void saveAdditional(@NotNull ValueOutput tag) {
+        super.saveAdditional(tag);
+        this.saveTag(tag);
     }
 
-    public void saveTag(CompoundTag data, HolderLookup.@NotNull Provider provider) {
+    public void saveTag(ValueOutput data) {
 
     }
 
-    public void loadTag(CompoundTag data, HolderLookup.@NotNull Provider provider) {
+    public void loadTag(ValueInput data) {
 
     }
 
@@ -113,6 +116,15 @@ public class TileMBBase extends BlockEntity {
     public final void markDirty() {
         if (this.level != null) {
             this.level.blockEntityChanged(this.worldPosition);
+        }
+    }
+
+    @Override
+    public void preRemoveSideEffects(@NotNull BlockPos pos, @NotNull BlockState state) {
+        if (!this.isClient() && this.level != null) {
+            List<ItemStack> drops = new ArrayList<>();
+            this.addInventoryDrops(this.level, pos, drops);
+            GameUtil.spawnDrops(this.level, pos, drops);
         }
     }
 

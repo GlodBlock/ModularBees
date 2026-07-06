@@ -2,26 +2,14 @@
   "type": "minecraft:crafting_shapeless",
   "category": "misc",
   "ingredients": [
+    "modularbees:royal_treat",
+    "modularbees:royal_treat",
+    "modularbees:honey_jelly",
+    "minecraft:dragon_breath",
+    "productivebees:draconic_chunk",
+    "productivebees:draconic_chunk",
     {
-      "item": "modularbees:royal_treat"
-    },
-    {
-      "item": "modularbees:royal_treat"
-    },
-    {
-      "item": "modularbees:honey_jelly"
-    },
-    {
-      "item": "minecraft:dragon_breath"
-    },
-    {
-      "item": "productivebees:draconic_chunk"
-    },
-    {
-      "item": "productivebees:draconic_chunk"
-    },
-    {
-      "type": "neoforge:components",
+      "neoforge:ingredient_type": "neoforge:components",
       "components": {
         "minecraft:potion_contents": {
           "potion": "minecraft:swiftness"
@@ -31,7 +19,6 @@
     }
   ],
   "result": {
-    "count": 1,
     "id": "modularbees:ender_treat"
   }
 }

@@ -2,26 +2,14 @@
   "type": "minecraft:crafting_shapeless",
   "category": "misc",
   "ingredients": [
+    "modularbees:ender_treat",
+    "modularbees:ender_treat",
+    "modularbees:royal_treat",
+    "minecraft:sculk",
+    "minecraft:sculk",
+    "minecraft:sculk_catalyst",
     {
-      "item": "modularbees:ender_treat"
-    },
-    {
-      "item": "modularbees:ender_treat"
-    },
-    {
-      "item": "modularbees:royal_treat"
-    },
-    {
-      "item": "minecraft:sculk"
-    },
-    {
-      "item": "minecraft:sculk"
-    },
-    {
-      "item": "minecraft:sculk_catalyst"
-    },
-    {
-      "type": "neoforge:components",
+      "neoforge:ingredient_type": "neoforge:components",
       "components": {
         "minecraft:potion_contents": {
           "potion": "minecraft:regeneration"
@@ -31,7 +19,6 @@
     }
   ],
   "result": {
-    "count": 1,
     "id": "modularbees:soul_treat"
   }
 }

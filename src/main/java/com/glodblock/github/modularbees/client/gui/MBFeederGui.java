@@ -22,7 +22,7 @@ public class MBFeederGui extends MBBaseGui<ContainerMBFeeder> {
 
     @Override
     protected Component getGuiName() {
-        return MBSingletons.MODULAR_FEEDER.getName();
+        return MBSingletons.MODULAR_FEEDER.get().getName();
     }
 
 }

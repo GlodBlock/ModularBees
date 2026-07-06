@@ -2,20 +2,12 @@
   "type": "minecraft:crafting_shapeless",
   "category": "misc",
   "ingredients": [
+    "productivebees:honey_treat",
+    "modularbees:honey_jelly",
+    "modularbees:honey_jelly",
+    "modularbees:honey_jelly",
     {
-      "item": "productivebees:honey_treat"
-    },
-    {
-      "item": "modularbees:honey_jelly"
-    },
-    {
-      "item": "modularbees:honey_jelly"
-    },
-    {
-      "item": "modularbees:honey_jelly"
-    },
-    {
-      "type": "neoforge:components",
+      "neoforge:ingredient_type": "neoforge:components",
       "components": {
         "minecraft:potion_contents": {
           "potion": "minecraft:healing"
@@ -25,7 +17,6 @@
     }
   ],
   "result": {
-    "count": 1,
     "id": "modularbees:royal_treat"
   }
 }

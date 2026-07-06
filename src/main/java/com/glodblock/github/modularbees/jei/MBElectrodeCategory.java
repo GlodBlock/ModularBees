@@ -9,16 +9,16 @@ import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
 import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
 import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.recipe.IFocusGroup;
-import mezz.jei.api.recipe.RecipeType;
+import mezz.jei.api.recipe.types.IRecipeType;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.crafting.RecipeHolder;
 import org.jetbrains.annotations.NotNull;
 
 public class MBElectrodeCategory extends MBRecipeCategory<ElectrodeRecipe> {
 
-    public static RecipeType<RecipeHolder<ElectrodeRecipe>> RECIPE_TYPE = RecipeType.createFromVanilla(ElectrodeRecipe.TYPE);
+    public static IRecipeType<@NotNull RecipeHolder<@NotNull ElectrodeRecipe>> RECIPE_TYPE = IRecipeType.create(ElectrodeRecipe.TYPE);
 
     public MBElectrodeCategory(IGuiHelper helpers) {
         super(helpers, RECIPE_TYPE, MBSingletons.MODULAR_BEEHIVE_OVERCLOCKER, 110, 18);
@@ -30,12 +30,12 @@ public class MBElectrodeCategory extends MBRecipeCategory<ElectrodeRecipe> {
 
     @Override
     void setRecipe(@NotNull IRecipeLayoutBuilder builder, @NotNull ElectrodeRecipe recipe, @NotNull IFocusGroup focuses) {
-        builder.addInputSlot(12, 1).addItemStack(recipe.electrode()).setSlotName("input");
+        builder.addInputSlot(12, 1).add(recipe.electrode()).setSlotName("input");
     }
 
     @Override
-    public void draw(@NotNull ElectrodeRecipe recipe, @NotNull IRecipeSlotsView recipeSlotsView, @NotNull GuiGraphics guiGraphics, double mouseX, double mouseY) {
-        guiGraphics.drawString(Minecraft.getInstance().font, Component.translatable("modularbees.jei.overclocker_boost", GameUtil.NUMBER_F.format(recipe.power())), 33, 5, MBBaseGui.DEFAULT_TEXT_COLOR, false);
+    public void draw(@NotNull ElectrodeRecipe recipe, @NotNull IRecipeSlotsView recipeSlotsView, @NotNull GuiGraphicsExtractor guiGraphics, double mouseX, double mouseY) {
+        guiGraphics.text(Minecraft.getInstance().font, Component.translatable("modularbees.jei.overclocker_boost", GameUtil.NUMBER_F.format(recipe.power())), 33, 5, MBBaseGui.DEFAULT_TEXT_COLOR, false);
     }
 
 }

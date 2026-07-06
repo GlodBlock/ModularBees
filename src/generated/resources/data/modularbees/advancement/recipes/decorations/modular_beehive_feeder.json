@@ -13,7 +13,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "modularbees:modular_alveary"
+        "recipe": "modularbees:modular_beehive_feeder"
       },
       "trigger": "minecraft:recipe_unlocked"
     }
@@ -26,7 +26,7 @@
   ],
   "rewards": {
     "recipes": [
-      "modularbees:modular_alveary"
+      "modularbees:modular_beehive_feeder"
     ]
   }
 }

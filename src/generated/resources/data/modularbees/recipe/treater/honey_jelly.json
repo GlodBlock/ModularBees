@@ -1,8 +1,5 @@
 {
   "type": "modularbees:treater_food",
   "boost": 1.4,
-  "food": {
-    "item": "modularbees:honey_jelly"
-  },
-  "output": {}
+  "food": "modularbees:honey_jelly"
 }

@@ -1,6 +1,5 @@
 package com.glodblock.github.modularbees.common.blocks.base;
 
-import com.glodblock.github.modularbees.common.items.ItemMBBlock;
 import com.glodblock.github.modularbees.dynamic.DyDataPack;
 import com.glodblock.github.modularbees.dynamic.DyResourcePack;
 import com.glodblock.github.modularbees.util.DataProvider;
@@ -12,12 +11,11 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.ItemInteractionResult;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
@@ -45,7 +43,7 @@ public class BlockMBBase extends Block implements RegisterTask, ResourceProvider
             ),
             BooleanOp.ONLY_FIRST
     );
-    private ResourceLocation registryName;
+    private Identifier registryName;
 
     public BlockMBBase(Properties properties) {
         super(properties);
@@ -64,17 +62,13 @@ public class BlockMBBase extends Block implements RegisterTask, ResourceProvider
         return RotorBlocks.NONE;
     }
 
-    public Item createItem() {
-        return new ItemMBBlock(this, new Item.Properties());
-    }
-
     @NotNull
     public final Direction[] getValidFaces() {
         return this.getRotorStrategy().isNone() ? new Direction[0] : this.getRotorStrategy().faces();
     }
 
     @Override
-    protected void createBlockStateDefinition(StateDefinition.@NotNull Builder<Block, BlockState> builder) {
+    protected void createBlockStateDefinition(StateDefinition.@NotNull Builder<@NotNull Block, @NotNull BlockState> builder) {
         super.createBlockStateDefinition(builder);
         if (!this.getRotorStrategy().isNone()) {
             builder.add(this.getRotorStrategy().property());
@@ -82,7 +76,7 @@ public class BlockMBBase extends Block implements RegisterTask, ResourceProvider
     }
 
     @Nullable
-    public TagKey<Block> harvestTool() {
+    public TagKey<@NotNull Block> harvestTool() {
         return null;
     }
 
@@ -91,17 +85,17 @@ public class BlockMBBase extends Block implements RegisterTask, ResourceProvider
     }
 
     @Override
-    public @NotNull ItemInteractionResult useItemOn(@NotNull ItemStack heldItem, @NotNull BlockState state, @NotNull Level level, @NotNull BlockPos pos, @NotNull Player p, @NotNull InteractionHand hand, @NotNull BlockHitResult hit) {
+    public @NotNull InteractionResult useItemOn(@NotNull ItemStack heldItem, @NotNull BlockState state, @NotNull Level level, @NotNull BlockPos pos, @NotNull Player p, @NotNull InteractionHand hand, @NotNull BlockHitResult hit) {
         if (heldItem.is(MBTags.WRENCH) && !this.getRotorStrategy().isNone()) {
             var newFacing = p.isShiftKeyDown() ? hit.getDirection().getOpposite() : hit.getDirection();
             if (this.getRotorStrategy().validFace(newFacing)) {
                 this.setFacing(state, newFacing, level, pos);
-                return ItemInteractionResult.SUCCESS;
+                return InteractionResult.SUCCESS;
             } else {
-                return ItemInteractionResult.FAIL;
+                return InteractionResult.FAIL;
             }
         }
-        return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+        return InteractionResult.PASS;
     }
 
     public Direction getFacing(BlockState state) {
@@ -124,31 +118,31 @@ public class BlockMBBase extends Block implements RegisterTask, ResourceProvider
     }
 
     @Override
-    public void onRegister(ResourceLocation id) {
+    public void onRegister(Identifier id) {
         this.registryName = id;
     }
 
-    public ResourceLocation getRegistryName() {
+    public Identifier getRegistryName() {
         return registryName;
     }
 
-    public static BlockBehaviour.Properties hive() {
-        return BlockBehaviour.Properties.of()
+    public static BlockBehaviour.Properties hive(Properties properties) {
+        return properties
                 .instrument(NoteBlockInstrument.BASS)
                 .strength(2.2f)
                 .mapColor(MapColor.WOOD)
                 .sound(SoundType.WOOD);
     }
 
-    public static BlockBehaviour.Properties centrifuge() {
-        return BlockBehaviour.Properties.of()
+    public static BlockBehaviour.Properties centrifuge(Properties properties) {
+        return properties
                 .mapColor(MapColor.STONE)
                 .requiresCorrectToolForDrops()
                 .strength(2.5F);
     }
 
-    public static BlockBehaviour.Properties machine() {
-        return BlockBehaviour.Properties.of()
+    public static BlockBehaviour.Properties machine(Properties properties) {
+        return properties
                 .mapColor(MapColor.METAL)
                 .requiresCorrectToolForDrops()
                 .strength(2.5F);
@@ -166,12 +160,16 @@ public class BlockMBBase extends Block implements RegisterTask, ResourceProvider
     @Override
     public void load(DyResourcePack pack) {
         this.loadBlockState(pack);
+        this.loadItemState(pack);
         this.loadBlockModel(pack);
-        this.loadBlockItemModel(pack);
     }
 
     protected void loadBlockState(DyResourcePack pack) {
-        pack.addBlockState(this.registryName, createStateJson(this.registryName));
+        pack.addBlockState(this.registryName, createBlockStateJson(this.registryName));
+    }
+
+    protected void loadItemState(DyResourcePack pack) {
+        pack.addItemState(this.registryName, createItemStateJson(this.registryName));
     }
 
     // Default full cube block
@@ -179,11 +177,7 @@ public class BlockMBBase extends Block implements RegisterTask, ResourceProvider
         pack.addBlockModel(this.registryName, createFullCubeModelJson(this.registryName));
     }
 
-    protected void loadBlockItemModel(DyResourcePack pack) {
-        pack.addItemModel(this.registryName, createItemModelJson(this.registryName));
-    }
-
-    protected JsonObject createSingleBlockLootJson(ResourceLocation id) {
+    protected JsonObject createSingleBlockLootJson(Identifier id) {
         var root = new JsonObject();
         root.addProperty("type", "minecraft:block");
         {
@@ -209,24 +203,27 @@ public class BlockMBBase extends Block implements RegisterTask, ResourceProvider
             }
             root.add("pools", pools);
         }
-        root.addProperty("random_sequence", this.addPrefix(id));
+        root.addProperty("random_sequence", this.addBlockPrefix(id));
         return root;
     }
 
-    protected JsonObject createFullCubeModelJson(ResourceLocation id) {
+    protected JsonObject createFullCubeModelJson(Identifier id) {
         var texture = new JsonObject();
-        texture.addProperty("all", this.addPrefix(id));
+        texture.addProperty("all", this.addBlockPrefix(id));
         var root = new JsonObject();
         root.add("textures", texture);
         root.addProperty("parent", "minecraft:block/cube_all");
         return root;
     }
 
-    protected JsonObject createStateJson(ResourceLocation id) {
+    protected JsonObject createBlockStateJson(Identifier id) {
         var variants = new JsonObject();
         for (var face : this.getValidFaces()) {
             var sub = new JsonObject();
-            sub.addProperty("model", this.addPrefix(id));
+            sub.addProperty("model", this.addBlockPrefix(id));
+            if (this.modelType() != null) {
+                sub.addProperty("type", this.modelType().toString());
+            }
             switch (face) {
                 case UP -> this.modifyModel(270, 0, sub);
                 case DOWN -> this.modifyModel(90, 0, sub);
@@ -239,11 +236,31 @@ public class BlockMBBase extends Block implements RegisterTask, ResourceProvider
         }
         if (this.getValidFaces().length == 0) {
             var sub = new JsonObject();
-            sub.addProperty("model", this.addPrefix(id));
+            sub.addProperty("model", this.addBlockPrefix(id));
+            if (this.modelType() != null) {
+                sub.addProperty("type", this.modelType().toString());
+            }
             variants.add("", sub);
         }
         var root = new JsonObject();
         root.add("variants", variants);
+        return root;
+    }
+
+    protected Identifier modelType() {
+        return null;
+    }
+
+    protected JsonObject createItemStateJson(Identifier id) {
+        var model = new JsonObject();
+        model.addProperty("model", this.addBlockPrefix(id));
+        if (this.modelType() != null) {
+            model.addProperty("type", this.modelType().toString());
+        } else {
+            model.addProperty("type", "minecraft:model");
+        }
+        var root = new JsonObject();
+        root.add("model", model);
         return root;
     }
 
@@ -256,15 +273,9 @@ public class BlockMBBase extends Block implements RegisterTask, ResourceProvider
         }
     }
 
-    protected String addPrefix(ResourceLocation id) {
+    protected String addBlockPrefix(Identifier id) {
         String[] s = id.toString().split(":");
         return s[0] + ":block/" + s[1];
-    }
-
-    protected JsonObject createItemModelJson(ResourceLocation id) {
-        var parent = new JsonObject();
-        parent.addProperty("parent", this.addPrefix(id));
-        return parent;
     }
 
 }

@@ -5,14 +5,10 @@ import com.glodblock.github.modularbees.client.util.RelativeRect2i;
 import com.glodblock.github.modularbees.client.util.TooltipElement;
 import com.glodblock.github.modularbees.util.GameUtil;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Renderable;
 import net.minecraft.client.renderer.Rect2i;
-import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.network.chat.Component;
-import net.minecraft.world.inventory.InventoryMenu;
-import net.neoforged.neoforge.client.extensions.common.IClientFluidTypeExtensions;
 import net.neoforged.neoforge.fluids.FluidStack;
 import org.jetbrains.annotations.NotNull;
 
@@ -40,19 +36,21 @@ public class FluidTankDisplay extends RelativeRect2i implements Renderable, Tool
     }
 
     @Override
-    public void render(@NotNull GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
+    public void extractRenderState(@NotNull GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTicks) {
         var fluid = this.fluid.get();
         if (fluid == null || fluid.isEmpty() || this.capacity == 0) {
             if (this.contains(mouseX, mouseY)) {
-                graphics.fillGradient(RenderType.guiOverlay(), this.getX(), this.getY(), this.getX() + this.width, this.getY() + this.height, 0x80FFFFFF, 0x80FFFFFF, 0);
+                graphics.fillGradient(this.getX(), this.getY(), this.getX() + this.width, this.getY() + this.height, 0x80FFFFFF, 0x80FFFFFF);
             }
             return;
         }
-        var attributes = IClientFluidTypeExtensions.of(fluid.getFluid());
-        TextureAtlasSprite sprite = Minecraft.getInstance()
-                .getTextureAtlas(InventoryMenu.BLOCK_ATLAS)
-                .apply(attributes.getStillTexture(fluid));
-        var texture = PicData.of(sprite).color(attributes.getTintColor(fluid));
+        var fluidModel = Minecraft.getInstance().getModelManager().getFluidStateModelSet().get(fluid.getFluid().defaultFluidState());
+        var sprite = fluidModel.stillMaterial().sprite();
+        var texture = PicData.of(sprite);
+        var tintSource = fluidModel.fluidTintSource();
+        if (tintSource != null) {
+            texture.color(tintSource.colorAsStack(fluid));
+        }
         int maxX = this.width;
         int maxY = this.getDisplayHeight(fluid.getAmount());
         var unit = texture.getSelect();
@@ -67,7 +65,7 @@ public class FluidTankDisplay extends RelativeRect2i implements Renderable, Tool
             }
         }
         if (this.contains(mouseX, mouseY)) {
-            graphics.fillGradient(RenderType.guiOverlay(), this.getX(), this.getY(), this.getX() + this.width, this.getY() + this.height, 0x80FFFFFF, 0x80FFFFFF, 0);
+            graphics.fillGradient(this.getX(), this.getY(), this.getX() + this.width, this.getY() + this.height, 0x80FFFFFF, 0x80FFFFFF);
         }
     }
 

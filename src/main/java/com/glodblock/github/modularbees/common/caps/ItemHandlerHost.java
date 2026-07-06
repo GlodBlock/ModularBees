@@ -1,14 +1,16 @@
 package com.glodblock.github.modularbees.common.caps;
 
 import net.minecraft.core.Direction;
-import net.neoforged.neoforge.items.IItemHandler;
+import net.neoforged.neoforge.transfer.ResourceHandler;
+import net.neoforged.neoforge.transfer.item.ItemResource;
+import org.jetbrains.annotations.NotNull;
 
 public interface ItemHandlerHost {
 
-    default IItemHandler getItemInventory(Direction side) {
+    default ResourceHandler<@NotNull ItemResource> getItemInventory(Direction side) {
         return this.getItemInventory();
     }
 
-    IItemHandler getItemInventory();
+    ResourceHandler<@NotNull ItemResource> getItemInventory();
 
 }

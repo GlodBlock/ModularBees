@@ -8,25 +8,16 @@
   "type": "minecraft:crafting_shaped",
   "category": "misc",
   "key": {
-    "F": {
-      "tag": "c:gems/fluix"
-    },
-    "I": {
-      "tag": "ae2:interface"
-    },
-    "P": {
-      "item": "minecraft:iron_bars"
-    },
-    "S": {
-      "item": "modularbees:modular_centrifuge_export"
-    }
+    "F": "#c:gems/fluix",
+    "I": "#ae2:interface",
+    "P": "minecraft:iron_bars",
+    "S": "modularbees:modular_centrifuge_export"
   },
   "pattern": [
     "FIF",
     "PSP"
   ],
   "result": {
-    "count": 1,
     "id": "modularbees:me_centrifuge_export"
   }
 }

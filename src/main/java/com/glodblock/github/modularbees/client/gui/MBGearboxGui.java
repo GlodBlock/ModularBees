@@ -34,7 +34,7 @@ public class MBGearboxGui extends MBBaseGui<ContainerMBGearbox> {
 
     @Override
     protected Component getGuiName() {
-        return MBSingletons.MODULAR_CENTRIFUGE_GEARBOX.getName();
+        return MBSingletons.MODULAR_CENTRIFUGE_GEARBOX.get().getName();
     }
 
     private static class WaxDisplay extends EnergyDisplay {

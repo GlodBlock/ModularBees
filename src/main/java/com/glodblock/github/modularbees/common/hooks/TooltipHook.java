@@ -5,8 +5,9 @@ import com.glodblock.github.modularbees.util.GameUtil;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
 import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.neoforge.client.event.RecipesUpdatedEvent;
+import net.neoforged.neoforge.client.event.RecipesReceivedEvent;
 import net.neoforged.neoforge.event.entity.player.ItemTooltipEvent;
 
 import java.util.IdentityHashMap;
@@ -29,12 +30,16 @@ public class TooltipHook {
     }
 
     @SubscribeEvent
-    public void onRecipeUpdate(RecipesUpdatedEvent event) {
+    public void onRecipeUpdate(RecipesReceivedEvent event) {
         CACHE.clear();
-        var recipes = event.getRecipeManager().byType(ElectrodeRecipe.TYPE);
+        var recipes = event.getRecipeMap().byType(ElectrodeRecipe.TYPE);
         for (var recipe : recipes) {
-            CACHE.put(recipe.value().electrode().getItem(), recipe.value().power());
+            CACHE.put(recipe.value().electrode().item().value(), recipe.value().power());
         }
+    }
+
+    public Float getPowerAtClient(ItemStack stack) {
+        return CACHE.get(stack.getItem());
     }
 
 }

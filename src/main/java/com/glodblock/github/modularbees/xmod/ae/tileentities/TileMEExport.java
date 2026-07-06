@@ -8,15 +8,14 @@ import com.glodblock.github.modularbees.common.inventory.MBItemInventory;
 import com.glodblock.github.modularbees.util.ServerTickTile;
 import com.glodblock.github.modularbees.xmod.ae.expose.MEExportAction;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.HolderLookup;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import net.neoforged.neoforge.fluids.FluidStack;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
@@ -74,19 +73,19 @@ public abstract class TileMEExport extends TileAENetworkHost implements ServerTi
     }
 
     @Override
-    public void saveTag(CompoundTag data, HolderLookup.@NotNull Provider provider) {
-        super.saveTag(data, provider);
-        data.put("config", this.config.serializeNBT(provider));
-        data.putBoolean("enableFilter", this.enableFilter);
+    public void saveTag(ValueOutput data) {
+        super.saveTag(data);
+        this.config.serialize(data.child("config"));
+        data.putBoolean("enable_filter", this.enableFilter);
         data.putBoolean("whitelist", this.whitelist);
     }
 
     @Override
-    public void loadTag(CompoundTag data, HolderLookup.@NotNull Provider provider) {
-        super.loadTag(data, provider);
-        this.config.deserializeNBT(provider, data.getCompound("config"));
-        this.enableFilter = data.getBoolean("enableFilter");
-        this.whitelist = data.getBoolean("whitelist");
+    public void loadTag(ValueInput data) {
+        super.loadTag(data);
+        data.child("config").ifPresent(this.config::deserialize);
+        this.enableFilter = data.getBooleanOr("enable_filter", false);
+        this.whitelist = data.getBooleanOr("whitelist", false);
     }
 
     public MBItemInventory getConfig() {

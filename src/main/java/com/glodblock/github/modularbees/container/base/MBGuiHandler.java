@@ -13,7 +13,7 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.game.ServerboundContainerClosePacket;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.SimpleMenuProvider;
@@ -22,6 +22,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.MenuType;
 import net.neoforged.neoforge.common.extensions.IMenuTypeExtension;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.IdentityHashMap;
 import java.util.function.Supplier;
@@ -56,7 +57,7 @@ public class MBGuiHandler {
 
     public interface ContainerConstructor<T, C extends ContainerMBBase<?>> {
 
-        C construct(MenuType<C> type, int id, Inventory inv, T host);
+        C construct(MenuType<@NotNull C> type, int id, Inventory inv, T host);
 
     }
 
@@ -109,8 +110,8 @@ public class MBGuiHandler {
 
         private final Class<T> hostCls;
         private ContainerConstructor<T, C> factory;
-        private ResourceLocation id;
-        private MenuType<C> type;
+        private Identifier id;
+        private MenuType<@NotNull C> type;
 
         private MenuTypeBuilder(Class<T> hostCls) {
             this.hostCls = hostCls;
@@ -125,7 +126,7 @@ public class MBGuiHandler {
             return this.build(ModularBees.id(id));
         }
 
-        public MenuHandler build(ResourceLocation id) {
+        public MenuHandler build(Identifier id) {
             this.id = id;
             this.type = IMenuTypeExtension.create(this::fromBytes);
             OPENERS.put(this.type, this::open);
@@ -185,15 +186,15 @@ public class MBGuiHandler {
 
     }
 
-    public record MenuHandler(MenuType<?> type, ResourceLocation id) {
+    public record MenuHandler(MenuType<?> type, Identifier id) {
 
         public void register() {
             Registry.register(BuiltInRegistries.MENU, this.id, this.type);
         }
 
         @SuppressWarnings("unchecked")
-        public <T extends AbstractContainerMenu> MenuType<T> castType() {
-            return (MenuType<T>) this.type;
+        public <T extends AbstractContainerMenu> MenuType<@NotNull T> castType() {
+            return (MenuType<@NotNull T>) this.type;
         }
 
     }

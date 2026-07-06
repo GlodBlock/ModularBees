@@ -5,7 +5,7 @@ import com.glodblock.github.modularbees.container.base.ContainerMBBase;
 import com.glodblock.github.modularbees.container.base.MBGuiHandler;
 import com.glodblock.github.modularbees.util.GameUtil;
 import cy.jdkdigital.productivebees.common.item.BeeCage;
-import net.minecraft.world.entity.animal.Bee;
+import net.minecraft.world.entity.animal.bee.Bee;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.inventory.Slot;

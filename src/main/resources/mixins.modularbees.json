@@ -6,12 +6,11 @@
   "compatibilityLevel": "JAVA_17",
   "mixins": [
     "BeeDataMixin",
-    "ItemBlockCardboardBoxMixin"
+    "StacksResourceHandlerMixin"
   ],
   "client": [
     "AbstractContainerScreenMixin",
-    "ModelManagerMixin",
-    "NeoForgeClientXplatImplMixin"
+    "ModelManagerMixin"
   ],
   "server": []
 }

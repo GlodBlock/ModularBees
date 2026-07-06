@@ -2,24 +2,13 @@
   "type": "minecraft:crafting_shapeless",
   "category": "misc",
   "ingredients": [
-    {
-      "item": "minecraft:bucket"
-    },
-    {
-      "item": "minecraft:dragon_breath"
-    },
-    {
-      "item": "minecraft:dragon_breath"
-    },
-    {
-      "item": "minecraft:dragon_breath"
-    },
-    {
-      "item": "minecraft:dragon_breath"
-    }
+    "minecraft:bucket",
+    "minecraft:dragon_breath",
+    "minecraft:dragon_breath",
+    "minecraft:dragon_breath",
+    "minecraft:dragon_breath"
   ],
   "result": {
-    "count": 1,
     "id": "modularbees:dragon_breath_bucket"
   }
 }

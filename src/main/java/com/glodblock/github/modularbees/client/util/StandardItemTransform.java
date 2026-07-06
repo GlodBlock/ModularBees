@@ -1,30 +1,14 @@
 package com.glodblock.github.modularbees.client.util;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonObject;
-import net.minecraft.client.renderer.block.model.ItemTransforms;
+import net.minecraft.client.resources.model.cuboid.CuboidModel;
+import net.minecraft.client.resources.model.cuboid.ItemTransforms;
 
 public class StandardItemTransform {
 
-    private static final Gson GSON = new Gson();
-    private static ItemTransforms INSTANCE;
+    public static final ItemTransforms INSTANCE = create();
 
-    public static ItemTransforms get() {
-        if (INSTANCE == null) {
-            throw new NullPointerException("Item Transforms aren't ready yet.");
-        }
-        return INSTANCE;
-    }
-
-    public static void init(JsonDeserializationContext ctx) {
-        if (INSTANCE == null) {
-            INSTANCE = create(ctx);
-        }
-    }
-
-    private static ItemTransforms create(JsonDeserializationContext ctx) {
-        var json = GSON.fromJson(
+    private static ItemTransforms create() {
+        return CuboidModel.GSON.fromJson(
                 """
                      {
                                 "gui": {
@@ -59,9 +43,8 @@ public class StandardItemTransform {
                                 }
                      }
                 """,
-                JsonObject.class
+                ItemTransforms.class
         );
-        return ctx.deserialize(json, ItemTransforms.class);
     }
 
 }

@@ -11,14 +11,18 @@ import com.glodblock.github.modularbees.util.GameConstants;
 import com.glodblock.github.modularbees.util.GameUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.core.HolderLookup;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
-import net.neoforged.neoforge.items.IItemHandler;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
+import net.neoforged.neoforge.transfer.ResourceHandler;
+import net.neoforged.neoforge.transfer.item.ItemResource;
+import net.neoforged.neoforge.transfer.transaction.Transaction;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -38,20 +42,24 @@ public abstract class TileMBOverclocker extends TileMBModularComponent implement
 
     public float getBoostAndConsume(int bees) {
         if (this.isActive() && bees > 0) {
-            var stack = this.electrode.getStackInSlot(0);
+            var stack = this.electrode.getResource(0);
             if (!stack.isEmpty()) {
                 if (this.running == null) {
-                    this.running = this.findRecipe(stack);
+                    this.running = this.findRecipe(stack.getItem());
                 }
                 if (this.running != null) {
                     var boost = this.running.power() - 1;
-                    if (boost > 0 && this.energy.getEnergyStored() >= bees * POWER_USE) {
-                        int power = this.energy.forceExtractEnergy(bees * POWER_USE, false);
-                        if (power >= bees * POWER_USE) {
-                            if (GameUtil.fastDamage(stack, this.damage(bees))) {
-                                this.electrode.setStackInSlot(0, ItemStack.EMPTY);
+                    if (boost > 0 && this.energy.getAmountAsInt() >= bees * POWER_USE) {
+                        try (var trans = Transaction.openRoot()) {
+                            int power = this.energy.forceExtract(bees * POWER_USE, trans);
+                            if (power >= bees * POWER_USE) {
+                                var stored = this.electrode.getItemStack(0);
+                                if (GameUtil.fastDamage(stored, this.damage(bees))) {
+                                    this.electrode.setItemStack(0, ItemStack.EMPTY);
+                                }
+                                trans.commit();
+                                return boost;
                             }
-                            return boost;
                         }
                     }
                 }
@@ -67,21 +75,21 @@ public abstract class TileMBOverclocker extends TileMBModularComponent implement
     }
 
     @Override
-    public void saveTag(CompoundTag data, HolderLookup.@NotNull Provider provider) {
-        super.saveTag(data, provider);
-        data.put("electrode", this.electrode.serializeNBT(provider));
-        data.put("energy", this.energy.serializeNBT(provider));
+    public void saveTag(ValueOutput data) {
+        super.saveTag(data);
+        this.electrode.serialize(data.child("electrode"));
+        this.energy.serialize(data.child("energy"));
     }
 
     @Override
-    public void loadTag(CompoundTag data, HolderLookup.@NotNull Provider provider) {
-        super.loadTag(data, provider);
-        this.electrode.deserializeNBT(provider, data.getCompound("electrode"));
-        this.energy.deserializeNBT(provider, data.getCompound("energy"));
+    public void loadTag(ValueInput data) {
+        super.loadTag(data);
+        data.child("electrode").ifPresent(this.electrode::deserialize);
+        data.child("energy").ifPresent(this.energy::deserialize);
     }
 
     @Override
-    public IItemHandler getItemInventory() {
+    public MBItemInventory getItemInventory() {
         return this.electrode;
     }
 
@@ -116,22 +124,22 @@ public abstract class TileMBOverclocker extends TileMBModularComponent implement
     public abstract Component getDisplayName();
 
     @Nullable
-    private ElectrodeRecipe findRecipe(ItemStack stack) {
-        if (this.stuck || this.level == null) {
+    private ElectrodeRecipe findRecipe(Item stack) {
+        if (this.stuck || !(this.level instanceof ServerLevel serverLevel)) {
             return null;
         }
-        return ElectrodeRecipe.getCache(this.level).get(stack.getItem());
+        return ElectrodeRecipe.getCache(serverLevel).get(stack);
     }
 
-    private boolean isElectrode(ItemStack stack) {
-        if (this.level == null) {
+    private boolean isElectrode(ItemResource stack) {
+        if (!(this.level instanceof ServerLevel serverLevel)) {
             return false;
         }
-        return ElectrodeRecipe.getCache(this.level).containsKey(stack.getItem());
+        return ElectrodeRecipe.getCache(serverLevel).containsKey(stack.getItem());
     }
 
     @Override
-    public void onChange(IItemHandler inv, int slot) {
+    public void onChange(ResourceHandler<@NotNull ItemResource> inv, int slot) {
         if (inv == this.electrode) {
             this.stuck = false;
             this.running = null;

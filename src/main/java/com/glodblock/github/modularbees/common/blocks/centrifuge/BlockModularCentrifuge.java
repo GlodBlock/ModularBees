@@ -1,5 +1,6 @@
 package com.glodblock.github.modularbees.common.blocks.centrifuge;
 
+import com.glodblock.github.modularbees.ModularBees;
 import com.glodblock.github.modularbees.client.util.ConnectBlock;
 import com.glodblock.github.modularbees.common.blocks.base.BlockMBGuiBase;
 import com.glodblock.github.modularbees.common.tileentities.centrifuge.TileModularCentrifuge;
@@ -13,6 +14,7 @@ import com.glodblock.github.modularbees.util.RotorBlocks;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.TagKey;
@@ -21,6 +23,7 @@ import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.NotNull;
 
@@ -28,8 +31,8 @@ import java.util.Objects;
 
 public class BlockModularCentrifuge extends BlockMBGuiBase<TileModularCentrifuge> implements ConnectBlock, Centrifuge {
 
-    public BlockModularCentrifuge() {
-        super(centrifuge());
+    public BlockModularCentrifuge(BlockBehaviour.Properties properties) {
+        super(centrifuge(properties));
     }
 
     @Override
@@ -38,7 +41,7 @@ public class BlockModularCentrifuge extends BlockMBGuiBase<TileModularCentrifuge
     }
 
     @Override
-    public TagKey<Block> harvestTool() {
+    public TagKey<@NotNull Block> harvestTool() {
         return BlockTags.MINEABLE_WITH_PICKAXE;
     }
 
@@ -53,7 +56,7 @@ public class BlockModularCentrifuge extends BlockMBGuiBase<TileModularCentrifuge
         if (tile.isFormed()) {
             MBGuiHandler.open(ContainerMBModularCentrifuge.TYPE.type(), p, ContainerResolver.of(tile));
         } else {
-            p.displayClientMessage(Objects.requireNonNullElse(tile.getUnformedMessage(), Component.translatable("modularbees.chat.centrifuge_unformed")), true);
+            p.sendOverlayMessage(Objects.requireNonNullElse(tile.getUnformedMessage(), Component.translatable("modularbees.chat.centrifuge_unformed")));
             if (tile.getErrorInfo() instanceof BlockPos pos && p instanceof ServerPlayer sp) {
                 MBNetworkHandler.INSTANCE.sendTo(new SMBHighlighter(pos, p.level().dimension()), sp);
             }
@@ -77,6 +80,11 @@ public class BlockModularCentrifuge extends BlockMBGuiBase<TileModularCentrifuge
     public BlockState getStateForPlacement(@NotNull BlockPlaceContext context) {
         var state = super.defaultBlockState();
         return state.setValue(this.getRotorStrategy().property(), context.getHorizontalDirection().getOpposite());
+    }
+
+    @Override
+    public Identifier modelType() {
+        return ModularBees.id("modular_connect_model");
     }
 
 }

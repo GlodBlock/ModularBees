@@ -22,8 +22,8 @@ import javax.annotation.Nonnull;
 
 public class BlockBeeExtractor extends BlockMBGuiBase<TileBeeExtractor> {
 
-    public BlockBeeExtractor() {
-        super(machine());
+    public BlockBeeExtractor(Properties properties) {
+        super(machine(properties));
     }
 
     @Override
@@ -42,7 +42,7 @@ public class BlockBeeExtractor extends BlockMBGuiBase<TileBeeExtractor> {
     }
 
     @Override
-    public TagKey<Block> harvestTool() {
+    public TagKey<@NotNull Block> harvestTool() {
         return BlockTags.MINEABLE_WITH_PICKAXE;
     }
 

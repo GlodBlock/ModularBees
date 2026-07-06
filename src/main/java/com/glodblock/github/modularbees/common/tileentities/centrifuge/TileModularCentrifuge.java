@@ -1,13 +1,11 @@
 package com.glodblock.github.modularbees.common.tileentities.centrifuge;
 
-import com.glodblock.github.glodium.util.GlodUtil;
 import com.glodblock.github.modularbees.common.MBSingletons;
 import com.glodblock.github.modularbees.common.blocks.centrifuge.Centrifuge;
 import com.glodblock.github.modularbees.common.caps.FluidHandlerHost;
 import com.glodblock.github.modularbees.common.caps.ItemHandlerHost;
 import com.glodblock.github.modularbees.common.inventory.MBFluidInventory;
 import com.glodblock.github.modularbees.common.inventory.MBItemInventory;
-import com.glodblock.github.modularbees.common.inventory.RandomAccessTank;
 import com.glodblock.github.modularbees.common.inventory.SlotListener;
 import com.glodblock.github.modularbees.common.inventory.TankListener;
 import com.glodblock.github.modularbees.common.tileentities.base.TileMBModularComponent;
@@ -24,21 +22,20 @@ import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 import it.unimi.dsi.fastutil.objects.ObjectSet;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.core.HolderLookup;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.Tag;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
-import net.neoforged.neoforge.common.util.INBTSerializable;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import net.neoforged.neoforge.fluids.FluidStack;
-import net.neoforged.neoforge.fluids.IFluidTank;
-import net.neoforged.neoforge.fluids.capability.IFluidHandler;
-import net.neoforged.neoforge.items.IItemHandler;
-import net.neoforged.neoforge.items.IItemHandlerModifiable;
-import net.neoforged.neoforge.items.wrapper.CombinedInvWrapper;
+import net.neoforged.neoforge.transfer.CombinedResourceHandler;
+import net.neoforged.neoforge.transfer.ResourceHandler;
+import net.neoforged.neoforge.transfer.fluid.FluidResource;
+import net.neoforged.neoforge.transfer.item.ItemResource;
+import net.neoforged.neoforge.transfer.transaction.Transaction;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -64,8 +61,8 @@ public class TileModularCentrifuge extends TileMBModularCore implements ItemHand
     protected final MBItemInventory upgrade = new MBItemInventory(this, 4, s -> ACCEPT_UPGRADES.contains(s.getItem())).setSlotLimit(1);
     protected final MBItemInventory inputs = new MBItemInventory(this, 3, this::validInput).inputOnly();
     protected final MBItemInventory outputs = new MBItemInventory(this, 9).outputOnly();
-    private final IItemHandlerModifiable exposed = new CombinedInvWrapper(this.outputs, this.inputs);
-    private final MultiTank tanks;
+    private final ResourceHandler<@NotNull ItemResource> exposed = new CombinedResourceHandler<>(this.outputs, this.inputs);
+    private final MBFluidInventory tanks;
     private float process = 0;
     private float tickSpeed = 1;
     private final List<ItemStack> sending = new ArrayList<>();
@@ -73,26 +70,22 @@ public class TileModularCentrifuge extends TileMBModularCore implements ItemHand
     private boolean stuck = false;
     private int para = 1;
     private float chanceBoost = 0;
-    private IItemHandlerModifiable combinedInputs;
+    private ResourceHandler<@NotNull ItemResource> combinedInputs;
     private TileCentrifugeHeater heater;
 
-    public TileModularCentrifuge(BlockPos pos, BlockState state) {
-        super(GlodUtil.getTileType(TileModularCentrifuge.class, TileModularCentrifuge::new, MBSingletons.MODULAR_CENTRIFUGE_CORE), pos, state);
-        this.tanks = new MultiTank(new MBFluidInventory[] {
-                new MBFluidInventory(this, 64 * GameConstants.BUCKET).outputOnly(),
-                new MBFluidInventory(this, 64 * GameConstants.BUCKET).outputOnly(),
-                new MBFluidInventory(this, 64 * GameConstants.BUCKET).outputOnly(),
-        });
+    public TileModularCentrifuge(BlockEntityType<?> type, BlockPos pos, BlockState state) {
+        super(type, pos, state);
+        this.tanks = new MBFluidInventory(this, 3, 64 * GameConstants.BUCKET).outputOnly();
     }
 
-    private IItemHandlerModifiable getCombinedInputs() {
+    private ResourceHandler<@NotNull ItemResource> getCombinedInputs() {
         if (this.combinedInputs == null) {
-            List<IItemHandlerModifiable> inv = new ArrayList<>();
+            List<ResourceHandler<@NotNull ItemResource>> inv = new ArrayList<>();
             inv.add(this.inputs);
             for (var input : this.getComponents(TileCentrifugeImport.class)) {
                 inv.add(input.getItemInventory());
             }
-            this.combinedInputs = new CombinedInvWrapper(inv.toArray(new IItemHandlerModifiable[0]));
+            this.combinedInputs = new CombinedResourceHandler<>(inv);
             this.stuck = false;
         }
         return this.combinedInputs;
@@ -113,29 +106,30 @@ public class TileModularCentrifuge extends TileMBModularCore implements ItemHand
                         this.filling.removeIf(FluidStack::isEmpty);
                     }
                 }
-                for (int i = 0; i < this.sending.size(); ++i) {
-                    var stack = this.sending.get(i).copy();
-                    for (int x = 0; x < this.outputs.getSlots(); ++x) {
-                        if (stack.isEmpty()) {
-                            break;
-                        }
-                        stack = this.outputs.forceInsertItem(x, stack.copy(), false);
+                for (var stack : this.sending) {
+                    if (stack.isEmpty()) {
+                        continue;
                     }
-                    this.sending.set(i, stack);
+                    try (var trans = Transaction.openRoot()) {
+                        var added = this.outputs.forceInsert(ItemResource.of(stack), stack.getCount(), trans);
+                        stack.shrink(added);
+                        trans.commit();
+                    }
                 }
                 this.sending.removeIf(ItemStack::isEmpty);
                 if (!this.sending.isEmpty()) {
                     this.stuck = true;
                     this.process = 0;
                 }
-                for (int i = 0; i < this.filling.size(); ++i) {
-                    var stack = this.filling.get(i).copy();
+                for (var stack : this.filling) {
                     if (stack.isEmpty()) {
                         continue;
                     }
-                    var filled = this.tanks.forceFill(stack, IFluidHandler.FluidAction.EXECUTE);
-                    stack.shrink(filled);
-                    this.filling.set(i, stack);
+                    try (var trans = Transaction.openRoot()) {
+                        var filled = this.tanks.forceInsert(FluidResource.of(stack), stack.getAmount(), trans);
+                        stack.shrink(filled);
+                        trans.commit();
+                    }
                 }
                 this.filling.removeIf(FluidStack::isEmpty);
                 if (!this.filling.isEmpty()) {
@@ -179,15 +173,20 @@ public class TileModularCentrifuge extends TileMBModularCore implements ItemHand
                         }
                         boost = Math.max(1, boost);
                         left = Math.round(left * boost);
-                        for (int x = 0; x < this.getCombinedInputs().getSlots(); x ++) {
+                        for (int x = 0; x < this.getCombinedInputs().size(); x ++) {
                             if (left >= 0) {
-                                var comb = this.getCombinedInputs().getStackInSlot(x);
-                                int used = Math.min(left, comb.getCount());
-                                if (CombCentrifugeLookup.query(this.sending::add, this.filling::add, comb, world, used, this.chanceBoost, this.heater != null)) {
-                                    left -= used;
-                                    comb.shrink(used);
-                                    this.getCombinedInputs().setStackInSlot(x, comb);
-                                    this.markDirty();
+                                var combType = this.getCombinedInputs().getResource(x);
+                                var combAmount = this.getCombinedInputs().getAmountAsInt(x);
+                                int used = Math.min(left, combAmount);
+                                if (CombCentrifugeLookup.query(this.sending::add, this.filling::add, combType, world, used, this.chanceBoost, this.heater != null)) {
+                                    try (var trans = Transaction.openRoot()) {
+                                        var rmv = this.getCombinedInputs().extract(x, combType, used, trans);
+                                        if (rmv == used) {
+                                            left -= used;
+                                            this.markDirty();
+                                            trans.commit();
+                                        }
+                                    }
                                 }
                             }
                         }
@@ -208,7 +207,7 @@ public class TileModularCentrifuge extends TileMBModularCore implements ItemHand
         return this.filling;
     }
 
-    public boolean validInput(ItemStack stack) {
+    public boolean validInput(ItemResource stack) {
         return CombCentrifugeLookup.validInput(stack, this.level);
     }
 
@@ -225,7 +224,7 @@ public class TileModularCentrifuge extends TileMBModularCore implements ItemHand
     }
 
     public void setTankFluid(int slot, FluidStack stack) {
-        this.tanks.tanks[slot].setFluid(stack);
+        this.tanks.set(slot, FluidResource.of(stack), stack.getAmount());
     }
 
     @Override
@@ -242,7 +241,7 @@ public class TileModularCentrifuge extends TileMBModularCore implements ItemHand
     public Collection<BlockPos> getPoses() {
         if (this.allPos == null) {
             this.allPos = new ObjectOpenHashSet<>();
-            var face = MBSingletons.MODULAR_CENTRIFUGE_CORE.getFacing(this.getBlockState());
+            var face = MBSingletons.MODULAR_CENTRIFUGE_CORE.get().getFacing(this.getBlockState());
             if (face == null) {
                 return this.allPos;
             }
@@ -284,7 +283,7 @@ public class TileModularCentrifuge extends TileMBModularCore implements ItemHand
         if (this.allChunk == null) {
             this.allChunk = new ObjectOpenHashSet<>();
             for (var pos : this.getPoses()) {
-                this.allChunk.add(new ChunkPos(pos));
+                this.allChunk.add(ChunkPos.containing(pos));
             }
         }
         return this.allChunk;
@@ -308,45 +307,33 @@ public class TileModularCentrifuge extends TileMBModularCore implements ItemHand
     }
 
     @Override
-    public void saveTag(CompoundTag data, HolderLookup.@NotNull Provider provider) {
-        super.saveTag(data, provider);
-        data.put("outputs", this.outputs.serializeNBT(provider));
-        data.put("inputs", this.inputs.serializeNBT(provider));
-        data.put("upgrade", this.upgrade.serializeNBT(provider));
-        data.put("tanks", this.tanks.serializeNBT(provider));
+    public void saveTag(ValueOutput data) {
+        super.saveTag(data);
+        this.outputs.serialize(data.child("outputs"));
+        this.inputs.serialize(data.child("inputs"));
+        this.upgrade.serialize(data.child("upgrade"));
+        this.tanks.serialize(data.child("tanks"));
         data.putFloat("process", this.process);
-        var tag = GameUtil.saveItemList(this.sending, provider);
-        if (!tag.isEmpty()) {
-            data.put("sending", tag);
-        }
-        var tagFluid = GameUtil.saveFluidList(this.filling, provider);
-        if (!tagFluid.isEmpty()) {
-            data.put("filling", tagFluid);
-        }
+        GameUtil.saveItemList(this.sending, data, "sending");
+        GameUtil.saveFluidList(this.filling, data, "filling");
     }
 
     @Override
-    public void loadTag(CompoundTag data, HolderLookup.@NotNull Provider provider) {
-        super.loadTag(data, provider);
-        this.outputs.deserializeNBT(provider, data.getCompound("outputs"));
-        this.inputs.deserializeNBT(provider, data.getCompound("inputs"));
-        this.upgrade.deserializeNBT(provider, data.getCompound("upgrade"));
-        this.tanks.deserializeNBT(provider, data.getCompound("tanks"));
-        this.process = data.getFloat("process");
-        if (data.contains("sending")) {
-            var tag = data.getList("sending", Tag.TAG_COMPOUND);
-            GameUtil.loadItemList(tag, provider, this.sending);
-        }
-        if (data.contains("filling")) {
-            var tag = data.getList("filling", Tag.TAG_COMPOUND);
-            GameUtil.loadFluidList(tag, provider, this.filling);
-        }
+    public void loadTag(ValueInput data) {
+        super.loadTag(data);
+        data.child("outputs").ifPresent(this.outputs::deserialize);
+        data.child("inputs").ifPresent(this.inputs::deserialize);
+        data.child("upgrade").ifPresent(this.upgrade::deserialize);
+        data.child("tanks").ifPresent(this.tanks::deserialize);
+        this.process = data.getFloatOr("process", 0);
+        GameUtil.loadItemList(this.sending, data, "sending");
+        GameUtil.loadFluidList(this.filling, data, "filling");
     }
 
     @Override
     public boolean isStructurePos(BlockPos pos) {
         // 3x2x3 cube with 4 corners
-        var face = MBSingletons.MODULAR_CENTRIFUGE_CORE.getFacing(this.getBlockState());
+        var face = MBSingletons.MODULAR_CENTRIFUGE_CORE.get().getFacing(this.getBlockState());
         if (face == null) {
             return false;
         }
@@ -355,7 +342,7 @@ public class TileModularCentrifuge extends TileMBModularCore implements ItemHand
 
     @Override
     public boolean isStructurePos(ChunkPos pos) {
-        var face = MBSingletons.MODULAR_CENTRIFUGE_CORE.getFacing(this.getBlockState());
+        var face = MBSingletons.MODULAR_CENTRIFUGE_CORE.get().getFacing(this.getBlockState());
         if (face == null) {
             return false;
         }
@@ -364,7 +351,7 @@ public class TileModularCentrifuge extends TileMBModularCore implements ItemHand
 
     @Override
     protected TryResult buildStructure(Consumer<TileMBModularComponent> collector, Level world) {
-        var face = MBSingletons.MODULAR_CENTRIFUGE_CORE.getFacing(this.getBlockState());
+        var face = MBSingletons.MODULAR_CENTRIFUGE_CORE.get().getFacing(this.getBlockState());
         this.heater = null;
         if (face == null) {
             return TryResult.fail("modularbees.chat.data_corrupted");
@@ -406,15 +393,16 @@ public class TileModularCentrifuge extends TileMBModularCore implements ItemHand
     }
 
     private boolean emptyInput() {
-        for (var x = 0; x < this.getCombinedInputs().getSlots(); x ++) {
-            var stack = this.getCombinedInputs().getStackInSlot(x);
-            if (stack.isEmpty()) {
+        for (var x = 0; x < this.getCombinedInputs().size(); x ++) {
+            var amount = this.getCombinedInputs().getAmountAsInt(x);
+            if (amount <= 0) {
                 continue;
             }
             if (this.heater != null) {
                 return false;
             } else {
-                if (!stack.is(ModTags.Common.STORAGE_BLOCK_HONEYCOMBS)) {
+                var type = this.getCombinedInputs().getResource(x);
+                if (!type.is(ModTags.Common.STORAGE_BLOCK_HONEYCOMBS)) {
                     return false;
                 }
             }
@@ -423,7 +411,7 @@ public class TileModularCentrifuge extends TileMBModularCore implements ItemHand
     }
 
     @Override
-    public void onChange(IItemHandler inv, int slot) {
+    public void onChange(ResourceHandler<@NotNull ItemResource> inv, int slot) {
         if (inv == this.upgrade) {
             this.updateUpgrade();
         } else if (inv == this.outputs ||  inv == this.inputs) {
@@ -432,7 +420,7 @@ public class TileModularCentrifuge extends TileMBModularCore implements ItemHand
     }
 
     @Override
-    public void onChange(IFluidHandler tank) {
+    public void onChange(ResourceHandler<@NotNull FluidResource> tank) {
         this.stuck = false;
     }
 
@@ -441,12 +429,12 @@ public class TileModularCentrifuge extends TileMBModularCore implements ItemHand
     }
 
     @Override
-    public RandomAccessTank getFluidInventory() {
+    public MBFluidInventory getFluidInventory() {
         return this.tanks;
     }
 
     @Override
-    public IItemHandler getItemInventory() {
+    public ResourceHandler<@NotNull ItemResource> getItemInventory() {
         return this.exposed;
     }
 
@@ -474,115 +462,6 @@ public class TileModularCentrifuge extends TileMBModularCore implements ItemHand
         }
         this.chanceBoost = 0;
         this.chanceBoost += (float) (this.upgrade.countStack(LibItems.UPGRADE_STABILITY.get()) * ProductiveBeesConfig.UPGRADES.stabilityChanceIncrease.get());
-    }
-
-    private record MultiTank(MBFluidInventory[] tanks) implements RandomAccessTank, INBTSerializable<CompoundTag> {
-
-        @Override
-        public int getTanks() {
-            return this.tanks.length;
-        }
-
-        @Override
-        public @NotNull FluidStack getFluidInTank(int tank) {
-            return this.tanks[tank].getFluid();
-        }
-
-        @Override
-        public int getTankCapacity(int tank) {
-            return this.tanks[tank].getCapacity();
-        }
-
-        @Override
-        public boolean isFluidValid(int tank, @NotNull FluidStack stack) {
-            return this.tanks[tank].isFluidValid(stack);
-        }
-
-        // Output only
-        @Override
-        public int fill(@NotNull FluidStack resource, @NotNull FluidAction action) {
-            return 0;
-        }
-
-        public int forceFill(FluidStack resource, IFluidHandler.FluidAction action) {
-            if (resource.isEmpty()) {
-                return 0;
-            }
-            int tot = resource.getAmount();
-            for (var tank : this.tanks) {
-                if (resource.isEmpty()) {
-                    return tot;
-                }
-                if (tank.getFluid().is(resource.getFluid())) {
-                    int filled = tank.forceFill(resource, action);
-                    resource.shrink(filled);
-                }
-            }
-            for (var tank : this.tanks) {
-                if (resource.isEmpty()) {
-                    return tot;
-                }
-                if (tank.getFluid().isEmpty()) {
-                    int filled = tank.forceFill(resource, action);
-                    resource.shrink(filled);
-                }
-            }
-            return tot - resource.getAmount();
-        }
-
-        @Override
-        public @NotNull FluidStack drain(@NotNull FluidStack resource, @NotNull FluidAction action) {
-            var fluid = resource.copy();
-            for (var tank : this.tanks) {
-                if (fluid.isEmpty()) {
-                    return resource.copy();
-                }
-                var drained = tank.drain(fluid, action);
-                fluid.shrink(drained.getAmount());
-            }
-            fluid.setAmount(resource.getAmount() - fluid.getAmount());
-            return fluid;
-        }
-
-        @Override
-        public @NotNull FluidStack drain(int maxDrain, @NotNull FluidAction action) {
-            for (var tank : this.tanks) {
-                if (!tank.getFluid().isEmpty()) {
-                    return drain(tank.getFluid().copyWithAmount(maxDrain), action);
-                }
-            }
-            return FluidStack.EMPTY;
-        }
-
-        @Override
-        public CompoundTag serializeNBT(HolderLookup.@NotNull Provider provider) {
-            var nbt = new CompoundTag();
-            for (int x = 0; x < this.tanks.length; x ++) {
-                if (!this.tanks[x].getFluid().isEmpty()) {
-                    var tankTag = this.tanks[x].writeToNBT(provider, new CompoundTag());
-                    nbt.put("#" + x, tankTag);
-                }
-            }
-            return nbt;
-        }
-
-        @Override
-        public void deserializeNBT(HolderLookup.@NotNull Provider provider, @NotNull CompoundTag nbt) {
-            for (int x = 0; x < this.tanks.length; x ++) {
-                if (nbt.contains("#" + x, Tag.TAG_COMPOUND)) {
-                    var tankTag = nbt.getCompound("#" + x);
-                    this.tanks[x].readFromNBT(provider, tankTag);
-                } else {
-                    this.tanks[x].setFluid(FluidStack.EMPTY);
-                }
-            }
-        }
-
-        @Override
-        public IFluidTank getTank(int tank) {
-            return this.tanks[tank];
-        }
-
     }
 
 }

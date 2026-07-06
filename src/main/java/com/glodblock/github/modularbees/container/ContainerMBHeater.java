@@ -20,7 +20,7 @@ public class ContainerMBHeater extends ContainerMBBase<TileCentrifugeHeater> {
     }
 
     public int getEnergy() {
-        return this.getHost().getEnergyStorage().getEnergyStored();
+        return this.getHost().getEnergyStorage().getAmountAsInt();
     }
 
     @Override

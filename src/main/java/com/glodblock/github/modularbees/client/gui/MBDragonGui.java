@@ -22,7 +22,7 @@ public class MBDragonGui extends MBBaseGui<ContainerMBDragon> {
 
     @Override
     protected Component getGuiName() {
-        return MBSingletons.MODULAR_DRAGON_HIVE.getName();
+        return MBSingletons.MODULAR_DRAGON_HIVE.get().getName();
     }
 
     @Override

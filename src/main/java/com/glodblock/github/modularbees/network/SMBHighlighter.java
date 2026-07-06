@@ -8,15 +8,16 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
+import org.jetbrains.annotations.NotNull;
 
 public class SMBHighlighter implements IMessage {
 
     static final ColorData RED = new ColorData(1f, 0f, 0f);
     BlockPos pos;
-    ResourceKey<Level> level;
+    ResourceKey<@NotNull Level> level;
 
     public SMBHighlighter() {
         // NO-OP
@@ -50,7 +51,7 @@ public class SMBHighlighter implements IMessage {
     }
 
     @Override
-    public ResourceLocation id() {
+    public Identifier id() {
         return ModularBees.id("highlighter");
     }
 

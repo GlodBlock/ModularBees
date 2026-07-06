@@ -1,29 +1,29 @@
 package com.glodblock.github.modularbees.client.model;
 
-import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.client.resources.model.Material;
-import net.minecraft.client.resources.model.ModelState;
+import net.minecraft.client.renderer.block.dispatch.ModelState;
+import net.minecraft.client.resources.model.ModelDebugName;
+import net.minecraft.client.resources.model.sprite.Material;
+import net.minecraft.client.resources.model.sprite.MaterialBaker;
 import net.minecraft.core.Direction;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.inventory.InventoryMenu;
+import net.minecraft.resources.Identifier;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.EnumMap;
-import java.util.function.Function;
 
 public class ModularConnectBakedModel extends ConnectBorderlineBakedModel {
 
-    private final EnumMap<Direction, TextureAtlasSprite> sides = new EnumMap<>(Direction.class);
-    private final TextureAtlasSprite defaultAtlas;
-    private final TextureAtlasSprite particle;
+    private final EnumMap<Direction, Material.Baked> sides = new EnumMap<>(Direction.class);
+    private final Material.Baked defaultAtlas;
+    private final Material.Baked particle;
 
-    public ModularConnectBakedModel(Function<Material, TextureAtlasSprite> getter, ModelState modelTransform, ResourceLocation border, @Nullable ResourceLocation particle, Object[] faces) {
+    public ModularConnectBakedModel(MaterialBaker getter, ModelState modelTransform, Identifier border, @Nullable Identifier particle, Object[] faces) {
         super(getter, modelTransform, border);
-        TextureAtlasSprite atlas = null;
+        ModelDebugName debugName = getClass()::toString;
+        Material.Baked atlas = null;
         for (Object obj : faces) {
-            if (obj instanceof ResourceLocation location) {
-                atlas = getter.apply(new Material(InventoryMenu.BLOCK_ATLAS, location));
+            if (obj instanceof Identifier location) {
+                atlas = getter.get(new Material(location), debugName);
             } else if (obj instanceof Direction face) {
                 if (atlas == null) {
                     throw new IllegalArgumentException("Need to input texture first.");
@@ -32,16 +32,16 @@ public class ModularConnectBakedModel extends ConnectBorderlineBakedModel {
             }
         }
         this.defaultAtlas = atlas;
-        this.particle = particle == null ? this.defaultAtlas : getter.apply(new Material(InventoryMenu.BLOCK_ATLAS, particle));
+        this.particle = particle == null ? this.defaultAtlas : getter.get(new Material(particle), debugName);
     }
 
     @Override
-    public @NotNull TextureAtlasSprite getParticleIcon() {
-        return this.particle == null ? super.getParticleIcon() : this.particle;
+    public @NotNull Material.Baked particleMaterial() {
+        return this.particle == null ? super.particleMaterial() : this.particle;
     }
 
     @Override
-    TextureAtlasSprite getFaceSprite(Direction side) {
+    Material.Baked getFaceSprite(Direction side) {
         return this.sides.getOrDefault(side, this.defaultAtlas);
     }
 

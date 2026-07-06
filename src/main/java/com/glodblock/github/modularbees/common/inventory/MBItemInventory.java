@@ -1,18 +1,20 @@
 package com.glodblock.github.modularbees.common.inventory;
 
 import com.glodblock.github.modularbees.common.tileentities.base.TileMBBase;
-import net.minecraft.core.NonNullList;
+import com.glodblock.github.modularbees.util.ResourceHandlerAccessor;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.neoforged.neoforge.items.ItemStackHandler;
+import net.neoforged.neoforge.transfer.item.ItemResource;
+import net.neoforged.neoforge.transfer.item.ItemStacksResourceHandler;
+import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.function.Predicate;
 
-public class MBItemInventory extends ItemStackHandler {
+public class MBItemInventory extends ItemStacksResourceHandler {
 
     protected final IO[] mode;
     protected final BlockEntity host;
@@ -76,33 +78,41 @@ public class MBItemInventory extends ItemStackHandler {
     }
 
     @Override
-    public @NotNull ItemStack insertItem(int slot, @NotNull ItemStack stack, boolean simulate) {
-        if (this.mode[slot].canInsert() && this.filter[slot].valid(stack)) {
-            return super.insertItem(slot, stack, simulate);
+    public int insert(int slot, @NotNull ItemResource item, int amount, @NotNull TransactionContext transaction) {
+        if (this.mode[slot].canInsert() && this.filter[slot].valid(item)) {
+            return super.insert(slot, item, amount, transaction);
         } else {
-            return stack;
+            return 0;
         }
     }
 
     @Override
-    public @NotNull ItemStack extractItem(int slot, int amount, boolean simulate) {
+    public int extract(int slot, @NotNull ItemResource item, int amount, @NotNull TransactionContext transaction) {
         if (this.mode[slot].canExtract()) {
-            return super.extractItem(slot, amount, simulate);
+            return super.extract(slot, item, amount, transaction);
         } else {
-            return ItemStack.EMPTY;
+            return 0;
         }
     }
 
-    public @NotNull ItemStack forceInsertItem(int slot, @NotNull ItemStack stack, boolean simulate) {
-        return super.insertItem(slot, stack, simulate);
+    public int forceInsert(int slot, @NotNull ItemResource item, int amount, @NotNull TransactionContext transaction) {
+        return super.insert(slot, item, amount, transaction);
     }
 
-    public @NotNull ItemStack forceExtractItem(int slot, int amount, boolean simulate) {
-        return super.extractItem(slot, amount, simulate);
+    public int forceInsert(@NotNull ItemResource item, int amount, @NotNull TransactionContext transaction) {
+        return super.insert(item, amount, transaction);
+    }
+
+    public int forceExtract(int slot, @NotNull ItemResource item, int amount, @NotNull TransactionContext transaction) {
+        return super.extract(slot, item, amount, transaction);
+    }
+
+    public int forceExtract(@NotNull ItemResource item, int amount, @NotNull TransactionContext transaction) {
+        return super.extract(item, amount, transaction);
     }
 
     @Override
-    protected void onContentsChanged(int slot) {
+    protected void onContentsChanged(int slot, ItemStack stack) {
         if (this.host != null) {
             if (this.host instanceof SlotListener listener) {
                 listener.onChange(this, slot);
@@ -112,21 +122,8 @@ public class MBItemInventory extends ItemStackHandler {
     }
 
     @Override
-    public int getSlotLimit(int slot) {
-        return this.slotLimit;
-    }
-
-    @Override
-    public void setSize(int size) {
-        if (size == this.stacks.size()) {
-            return;
-        }
-        var newStack = NonNullList.withSize(size, ItemStack.EMPTY);
-        int bound = Math.min(this.stacks.size(), size);
-        for (int i = 0; i < bound; i++) {
-            newStack.set(i, this.stacks.get(i));
-        }
-        this.stacks = newStack;
+    public int getCapacity(int index, @NotNull ItemResource item) {
+        return item.isEmpty() ? this.slotLimit : Math.min(this.slotLimit, item.getMaxStackSize());
     }
 
     public List<ItemStack> toList() {
@@ -152,6 +149,22 @@ public class MBItemInventory extends ItemStackHandler {
         return cnt;
     }
 
+    public ItemStack getItemStack(int slot) {
+        return this.stacks.get(slot);
+    }
+
+    public void setItemStack(int slot, ItemStack stack) {
+        var old = this.stacks.get(slot);
+        this.stacks.set(slot, stack);
+        if (!ItemStack.isSameItemSameComponents(old, stack)) {
+            this.onContentsChanged(slot, stack);
+        }
+    }
+
+    public ResourceHandlerAccessor accessor() {
+        return (ResourceHandlerAccessor) this;
+    }
+
     private void markDirty() {
         if (this.host instanceof TileMBBase base) {
             base.markDirty();
@@ -164,10 +177,14 @@ public class MBItemInventory extends ItemStackHandler {
 
         ItemFilter PASS = s -> true;
 
-        boolean valid(ItemStack stack);
+        boolean valid(ItemResource stack);
 
         static ItemFilter of(Item stack) {
             return input -> input.is(stack);
+        }
+
+        static ItemFilter of(Predicate<ItemStack> filter) {
+            return type -> filter.test(type.toStack());
         }
 
     }

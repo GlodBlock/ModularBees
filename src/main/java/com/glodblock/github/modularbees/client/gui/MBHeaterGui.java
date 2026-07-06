@@ -15,7 +15,7 @@ public class MBHeaterGui extends MBBaseGui<ContainerMBHeater> {
     public MBHeaterGui(ContainerMBHeater container, Inventory inv, Component component) {
         super(container, inv, component);
         var energy = new EnergyDisplay(container::getEnergy)
-                .capacity(container.getHost().getEnergyStorage().getMaxEnergyStored())
+                .capacity(container.getHost().getEnergyStorage().getCapacityAsInt())
                 .texture(PicData.of(ModularBees.id("textures/gui/heater.png")).select(176, 0, 11, 52));
         energy.setPosition(82, 17);
         energy.setSize(11, 52);
@@ -29,7 +29,7 @@ public class MBHeaterGui extends MBBaseGui<ContainerMBHeater> {
 
     @Override
     protected Component getGuiName() {
-        return MBSingletons.MODULAR_CENTRIFUGE_HEATER.getName();
+        return MBSingletons.MODULAR_CENTRIFUGE_HEATER.get().getName();
     }
 
 }

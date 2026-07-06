@@ -1,5 +1,6 @@
 package com.glodblock.github.modularbees.common.blocks.hive;
 
+import com.glodblock.github.modularbees.ModularBees;
 import com.glodblock.github.modularbees.client.util.ConnectBlock;
 import com.glodblock.github.modularbees.common.blocks.base.BlockMBGuiBase;
 import com.glodblock.github.modularbees.common.tileentities.hive.TileModularBeehive;
@@ -12,14 +13,16 @@ import com.glodblock.github.modularbees.util.ContainerResolver;
 import com.glodblock.github.modularbees.util.GameConstants;
 import com.glodblock.github.modularbees.util.GameUtil;
 import com.glodblock.github.modularbees.util.RotorBlocks;
+import cy.jdkdigital.productivebees.init.ModFluids;
 import cy.jdkdigital.productivebees.init.ModItems;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.TagKey;
-import net.minecraft.world.ItemInteractionResult;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -27,9 +30,11 @@ import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
-import net.neoforged.neoforge.fluids.capability.IFluidHandler;
+import net.neoforged.neoforge.transfer.fluid.FluidResource;
+import net.neoforged.neoforge.transfer.transaction.Transaction;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
@@ -37,33 +42,43 @@ import java.util.Objects;
 
 public class BlockModularBeehive extends BlockMBGuiBase<TileModularBeehive> implements ConnectBlock, Hive {
 
-    public BlockModularBeehive() {
-        super(hive());
+    public BlockModularBeehive(BlockBehaviour.Properties properties) {
+        super(hive(properties));
     }
 
     @Override
-    public TagKey<Block> harvestTool() {
+    public TagKey<@NotNull Block> harvestTool() {
         return BlockTags.MINEABLE_WITH_AXE;
     }
 
     @Override
-    public ItemInteractionResult check(TileModularBeehive tile, ItemStack stack, Level world, BlockPos pos, BlockHitResult hit, Player p) {
+    public InteractionResult check(TileModularBeehive tile, ItemStack stack, Level world, BlockPos pos, BlockHitResult hit, Player p) {
         if (!world.isClientSide()) {
             var tank = tile.getFluidInventory();
-            if (stack.is(Items.GLASS_BOTTLE) && tank.getFluidAmount() >= GameConstants.BOTTLE) {
-                stack.shrink(1);
-                tank.drain(GameConstants.BOTTLE, IFluidHandler.FluidAction.EXECUTE);
-                if (!p.addItem(new ItemStack(Items.HONEY_BOTTLE))) {
-                    GameUtil.spawnDrops(world, p.getOnPos(), List.of(new ItemStack(Items.HONEY_BOTTLE)));
+            if (stack.is(Items.GLASS_BOTTLE) && tank.getAmountAsInt(0) >= GameConstants.BOTTLE) {
+                try (var trans = Transaction.openRoot()) {
+                    var removed = tank.extract(0, FluidResource.of(ModFluids.HONEY), GameConstants.BOTTLE, trans);
+                    if (removed == GameConstants.BOTTLE) {
+                        stack.shrink(1);
+                        if (!p.addItem(new ItemStack(Items.HONEY_BOTTLE))) {
+                            GameUtil.spawnDrops(world, p.getOnPos(), List.of(new ItemStack(Items.HONEY_BOTTLE)));
+                        }
+                        trans.commit();
+                    }
                 }
-                return ItemInteractionResult.SUCCESS;
-            } else if (stack.is(Items.BUCKET) && tank.getFluidAmount() >= GameConstants.BUCKET) {
-                stack.shrink(1);
-                tank.drain(GameConstants.BUCKET, IFluidHandler.FluidAction.EXECUTE);
-                if (!p.addItem(new ItemStack(ModItems.HONEY_BUCKET))) {
-                    GameUtil.spawnDrops(world, p.getOnPos(), List.of(new ItemStack(ModItems.HONEY_BUCKET)));
+                return InteractionResult.SUCCESS;
+            } else if (stack.is(Items.BUCKET) && tank.getAmountAsInt(0) >= GameConstants.BUCKET) {
+                try (var trans = Transaction.openRoot()) {
+                    var removed = tank.extract(0, FluidResource.of(ModFluids.HONEY), GameConstants.BUCKET, trans);
+                    if (removed == GameConstants.BUCKET) {
+                        stack.shrink(1);
+                        if (!p.addItem(new ItemStack(ModItems.HONEY_BUCKET))) {
+                            GameUtil.spawnDrops(world, p.getOnPos(), List.of(new ItemStack(ModItems.HONEY_BUCKET)));
+                        }
+                        trans.commit();
+                    }
                 }
-                return ItemInteractionResult.SUCCESS;
+                return InteractionResult.SUCCESS;
             }
         }
         return null;
@@ -76,7 +91,7 @@ public class BlockModularBeehive extends BlockMBGuiBase<TileModularBeehive> impl
         if (tile.isFormed()) {
             MBGuiHandler.open(ContainerMBModularBeehive.TYPE.type(), p, ContainerResolver.of(tile));
         } else {
-            p.displayClientMessage(Objects.requireNonNullElse(tile.getUnformedMessage(), Component.translatable("modularbees.chat.beehive_unformed")), true);
+            p.sendOverlayMessage(Objects.requireNonNullElse(tile.getUnformedMessage(), Component.translatable("modularbees.chat.beehive_unformed")));
             if (tile.getErrorInfo() instanceof BlockPos pos && p instanceof ServerPlayer sp) {
                 MBNetworkHandler.INSTANCE.sendTo(new SMBHighlighter(pos, p.level().dimension()), sp);
             }
@@ -110,6 +125,11 @@ public class BlockModularBeehive extends BlockMBGuiBase<TileModularBeehive> impl
     @Override
     protected void loadBlockModel(DyResourcePack pack) {
         // NO-OP
+    }
+
+    @Override
+    public Identifier modelType() {
+        return ModularBees.id("modular_connect_model");
     }
 
 }

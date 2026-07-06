@@ -11,16 +11,16 @@ import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
 import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.recipe.IFocusGroup;
-import mezz.jei.api.recipe.RecipeType;
+import mezz.jei.api.recipe.types.IRecipeType;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.crafting.RecipeHolder;
 import org.jetbrains.annotations.NotNull;
 
 public class MBTreaterCategory extends MBRecipeCategory<TreaterRecipe> {
 
-    public static RecipeType<RecipeHolder<TreaterRecipe>> RECIPE_TYPE = RecipeType.createFromVanilla(TreaterRecipe.TYPE);
+    public static IRecipeType<@NotNull RecipeHolder<@NotNull TreaterRecipe>> RECIPE_TYPE = IRecipeType.create(TreaterRecipe.TYPE);
     private final IDrawable arrow;
 
     public MBTreaterCategory(IGuiHelper helpers) {
@@ -34,16 +34,16 @@ public class MBTreaterCategory extends MBRecipeCategory<TreaterRecipe> {
 
     @Override
     void setRecipe(@NotNull IRecipeLayoutBuilder builder, @NotNull TreaterRecipe recipe, @NotNull IFocusGroup focuses) {
-        builder.addInputSlot(12, 1).addIngredients(recipe.input()).setSlotName("input");
-        if (!recipe.output().isEmpty()) {
-            builder.addOutputSlot(62, 1).addItemStack(recipe.output()).setSlotName("output");
+        builder.addInputSlot(12, 1).add(recipe.input()).setSlotName("input");
+        if (recipe.output().isPresent()) {
+            builder.addOutputSlot(62, 1).add(recipe.output().get()).setSlotName("output");
         }
     }
 
     @Override
-    public void draw(@NotNull TreaterRecipe recipe, @NotNull IRecipeSlotsView recipeSlotsView, @NotNull GuiGraphics guiGraphics, double mouseX, double mouseY) {
+    public void draw(@NotNull TreaterRecipe recipe, @NotNull IRecipeSlotsView recipeSlotsView, @NotNull GuiGraphicsExtractor guiGraphics, double mouseX, double mouseY) {
         this.arrow.draw(guiGraphics, 33, 1);
-        guiGraphics.drawString(Minecraft.getInstance().font, Component.translatable("modularbees.jei.treater_boost", GameUtil.NUMBER_F.format((recipe.boost() - 1) * 100) + '%'), 0, 23, MBBaseGui.DEFAULT_TEXT_COLOR, false);
+        guiGraphics.text(Minecraft.getInstance().font, Component.translatable("modularbees.jei.treater_boost", GameUtil.NUMBER_F.format((recipe.boost() - 1) * 100) + '%'), 0, 23, MBBaseGui.DEFAULT_TEXT_COLOR, false);
     }
 
 }

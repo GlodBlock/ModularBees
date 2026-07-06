@@ -2,10 +2,8 @@ package com.glodblock.github.modularbees.common.blocks.base;
 
 import com.glodblock.github.modularbees.common.tileentities.base.TileMBBase;
 import com.glodblock.github.modularbees.util.ClientTickTile;
-import com.glodblock.github.modularbees.util.GameUtil;
 import com.glodblock.github.modularbees.util.ServerTickTile;
 import net.minecraft.core.BlockPos;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.EntityBlock;
@@ -17,32 +15,30 @@ import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
-
 public class BlockMBTileBase<T extends TileMBBase> extends BlockMBBase implements EntityBlock {
 
     private Class<T> tileEntityClass;
 
-    private BlockEntityType<T> tileEntityType;
+    private BlockEntityType<@NotNull T> tileEntityType;
 
     @Nullable
-    private BlockEntityTicker<T> serverTicker;
+    private BlockEntityTicker<@NotNull T> serverTicker;
 
     @Nullable
-    private BlockEntityTicker<T> clientTicker;
+    private BlockEntityTicker<@NotNull T> clientTicker;
 
     public BlockMBTileBase(BlockBehaviour.Properties properties) {
         super(properties);
     }
 
-    public void bindTileEntity(Class<T> tileEntityClass, BlockEntityType<T> tileEntityType, BlockEntityTicker<T> serverTicker, BlockEntityTicker<T> clientTicker) {
+    public void bindTileEntity(Class<T> tileEntityClass, BlockEntityType<@NotNull T> tileEntityType, BlockEntityTicker<@NotNull T> serverTicker, BlockEntityTicker<@NotNull T> clientTicker) {
         this.tileEntityClass = tileEntityClass;
         this.tileEntityType = tileEntityType;
         this.serverTicker = serverTicker;
         this.clientTicker = clientTicker;
     }
 
-    public void bindTileEntity(Class<T> clazz, BlockEntityType<T> type) {
+    public void bindTileEntity(Class<T> clazz, BlockEntityType<@NotNull T> type) {
         this.tileEntityClass = clazz;
         this.tileEntityType = type;
         if (ServerTickTile.class.isAssignableFrom(clazz)) {
@@ -67,7 +63,7 @@ public class BlockMBTileBase<T extends TileMBBase> extends BlockMBBase implement
         return null;
     }
 
-    public BlockEntityType<T> getBlockEntityType() {
+    public BlockEntityType<@NotNull T> getBlockEntityType() {
         return this.tileEntityType;
     }
 
@@ -80,22 +76,8 @@ public class BlockMBTileBase<T extends TileMBBase> extends BlockMBBase implement
     @SuppressWarnings("unchecked")
     @Nullable
     @Override
-    public <E extends BlockEntity> BlockEntityTicker<E> getTicker(Level level, @NotNull BlockState blockState, @NotNull BlockEntityType<E> type) {
-        return (BlockEntityTicker<E>) (level.isClientSide() ? this.clientTicker : this.serverTicker);
-    }
-
-    @Override
-    public void onRemove(@NotNull BlockState state, Level level, @NotNull BlockPos pos, @NotNull BlockState newState, boolean isMoving) {
-        // Drop internal content
-        if (!level.isClientSide() && !newState.is(state.getBlock())) {
-            var be = this.getBlockEntity(level, pos);
-            if (be != null) {
-                var drops = new ArrayList<ItemStack>();
-                be.addInventoryDrops(level, pos, drops);
-                GameUtil.spawnDrops(level, pos, drops);
-            }
-        }
-        super.onRemove(state, level, pos, newState, isMoving);
+    public <E extends BlockEntity> BlockEntityTicker<@NotNull E> getTicker(Level level, @NotNull BlockState blockState, @NotNull BlockEntityType<@NotNull E> type) {
+        return (BlockEntityTicker<@NotNull E>) (level.isClientSide() ? this.clientTicker : this.serverTicker);
     }
 
     @Override

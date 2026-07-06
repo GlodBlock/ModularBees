@@ -10,16 +10,17 @@ import com.glodblock.github.modularbees.util.ServerTickTile;
 import cy.jdkdigital.productivebees.ProductiveBeesConfig;
 import cy.jdkdigital.productivelib.registry.LibItems;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.HolderLookup;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
-import net.neoforged.neoforge.items.IItemHandler;
-import net.neoforged.neoforge.items.IItemHandlerModifiable;
-import net.neoforged.neoforge.items.wrapper.CombinedInvWrapper;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
+import net.neoforged.neoforge.transfer.CombinedResourceHandler;
+import net.neoforged.neoforge.transfer.ResourceHandler;
+import net.neoforged.neoforge.transfer.item.ItemResource;
+import net.neoforged.neoforge.transfer.transaction.Transaction;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
@@ -35,7 +36,7 @@ public abstract class TileMBMachine extends TileMBBase implements ItemHandlerHos
     protected final MBItemInventory inputs = this.createInputs();
     protected final MBItemInventory outputs = this.createOutputs();
     protected final MBEnergyInventory energy = new MBEnergyInventory(this, 80 * GameConstants.K);
-    protected IItemHandlerModifiable exposed = new CombinedInvWrapper(this.outputs, this.inputs);
+    protected ResourceHandler<@NotNull ItemResource> exposed = new CombinedResourceHandler<>(this.outputs, this.inputs);
     protected float process = 0;
     protected float tickSpeed = 1;
     protected int powerMultiplier = 1;
@@ -55,7 +56,7 @@ public abstract class TileMBMachine extends TileMBBase implements ItemHandlerHos
     }
 
     @Override
-    public IItemHandler getItemInventory() {
+    public ResourceHandler<@NotNull ItemResource> getItemInventory() {
         return this.exposed;
     }
 
@@ -97,9 +98,12 @@ public abstract class TileMBMachine extends TileMBBase implements ItemHandlerHos
             } else if (this.statues == RUNNING) {
                 if (this.process < this.getMaxProcessTime()) {
                     var power = this.getPowerUse() * this.powerMultiplier;
-                    if (this.energy.getEnergyStored() >= power) {
-                        this.process += this.tickSpeed;
-                        this.energy.forceExtractEnergy(power, false);
+                    try (var trans = Transaction.openRoot()) {
+                        var removed = this.energy.extract(power, trans);
+                        if (removed >= power) {
+                            this.process += this.tickSpeed;
+                            trans.commit();
+                        }
                     }
                 } else {
                     this.process = 0;
@@ -110,7 +114,7 @@ public abstract class TileMBMachine extends TileMBBase implements ItemHandlerHos
     }
 
     @Override
-    public void onChange(IItemHandler inv, int slot) {
+    public void onChange(ResourceHandler<@NotNull ItemResource> inv, int slot) {
         if (inv == this.upgrade) {
             this.updateUpgrade();
         } else if (inv == this.inputs || inv == this.outputs) {
@@ -132,21 +136,21 @@ public abstract class TileMBMachine extends TileMBBase implements ItemHandlerHos
     }
 
     @Override
-    public void saveTag(CompoundTag data, HolderLookup.@NotNull Provider provider) {
-        super.saveTag(data, provider);
-        data.put("outputs", this.outputs.serializeNBT(provider));
-        data.put("inputs", this.inputs.serializeNBT(provider));
-        data.put("upgrade", this.upgrade.serializeNBT(provider));
+    public void saveTag(ValueOutput data) {
+        super.saveTag(data);
+        this.outputs.serialize(data.child("outputs"));
+        this.inputs.serialize(data.child("inputs"));
+        this.upgrade.serialize(data.child("upgrade"));
         data.putFloat("process", this.process);
     }
 
     @Override
-    public void loadTag(CompoundTag data, HolderLookup.@NotNull Provider provider) {
-        super.loadTag(data, provider);
-        this.outputs.deserializeNBT(provider, data.getCompound("outputs"));
-        this.inputs.deserializeNBT(provider, data.getCompound("inputs"));
-        this.upgrade.deserializeNBT(provider, data.getCompound("upgrade"));
-        this.process = data.getFloat("process");
+    public void loadTag(ValueInput data) {
+        super.loadTag(data);
+        data.child("outputs").ifPresent(this.outputs::deserialize);
+        data.child("inputs").ifPresent(this.inputs::deserialize);
+        data.child("upgrade").ifPresent(this.upgrade::deserialize);
+        this.process = data.getFloatOr("process", 0);
     }
 
     // You should only return RUNNING and STOP here.

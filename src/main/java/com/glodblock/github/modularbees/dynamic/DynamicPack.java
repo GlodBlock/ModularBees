@@ -1,7 +1,7 @@
 package com.glodblock.github.modularbees.dynamic;
 
 import com.glodblock.github.modularbees.ModularBees;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.packs.PackLocationInfo;
 import net.minecraft.server.packs.PackResources;
 import net.minecraft.server.packs.PackType;
@@ -19,7 +19,7 @@ public abstract class DynamicPack implements PackResources {
 
     private static final Set<String> DOMAIN = Set.of("minecraft", "c", ModularBees.MODID);
     protected final PackType type;
-    protected final Map<ResourceLocation, byte[]> data = this.createMap();
+    protected final Map<Identifier, byte[]> data = this.createMap();
     private PackLocationInfo name;
 
     public DynamicPack(PackType type) {
@@ -31,11 +31,11 @@ public abstract class DynamicPack implements PackResources {
         return this;
     }
 
-    protected abstract Map<ResourceLocation, byte[]> createMap();
+    protected abstract Map<Identifier, byte[]> createMap();
 
     @Nullable
     @Override
-    public IoSupplier<InputStream> getRootResource(String @NotNull ... elements) {
+    public IoSupplier<@NotNull InputStream> getRootResource(String @NotNull ... elements) {
         return null;
     }
 
@@ -46,7 +46,7 @@ public abstract class DynamicPack implements PackResources {
     }
 
     @Override
-    public IoSupplier<InputStream> getResource(@NotNull PackType side, @NotNull ResourceLocation location) {
+    public IoSupplier<@NotNull InputStream> getResource(@NotNull PackType side, @NotNull Identifier location) {
         if (side == this.type) {
             var byteArray = this.data.get(location);
             if (byteArray != null) {

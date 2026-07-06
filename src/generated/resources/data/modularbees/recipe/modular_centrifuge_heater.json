@@ -2,18 +2,10 @@
   "type": "minecraft:crafting_shaped",
   "category": "misc",
   "key": {
-    "1": {
-      "item": "productivebees:heated_centrifuge"
-    },
-    "2": {
-      "item": "productivelib:upgrade_block"
-    },
-    "N": {
-      "tag": "c:ingots/netherite"
-    },
-    "P": {
-      "item": "modularbees:modular_centrifuge_part"
-    }
+    "1": "productivebees:heated_centrifuge",
+    "2": "productivelib:upgrade_block",
+    "N": "#c:ingots/netherite",
+    "P": "modularbees:modular_centrifuge_part"
   },
   "pattern": [
     "N1N",
@@ -21,7 +13,6 @@
     "N2N"
   ],
   "result": {
-    "count": 1,
     "id": "modularbees:modular_centrifuge_heater"
   }
 }

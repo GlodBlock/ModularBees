@@ -1,19 +1,18 @@
 package com.glodblock.github.modularbees.client.model;
 
-import com.glodblock.github.modularbees.client.util.StandardItemTransform;
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import net.minecraft.core.Direction;
-import net.minecraft.resources.ResourceLocation;
-import net.neoforged.neoforge.client.model.geometry.IGeometryLoader;
+import net.minecraft.resources.Identifier;
+import net.neoforged.neoforge.client.model.UnbakedModelLoader;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class ModularConnectModelLoader implements IGeometryLoader<ModularConnectModel> {
+public class ModularConnectModelLoader implements UnbakedModelLoader<@NotNull ModularModelData> {
 
     public static final ModularConnectModelLoader LOADER = new ModularConnectModelLoader();
 
@@ -22,10 +21,9 @@ public class ModularConnectModelLoader implements IGeometryLoader<ModularConnect
     }
 
     @Override
-    public @NotNull ModularConnectModel read(@NotNull JsonObject json, @NotNull JsonDeserializationContext context) throws JsonParseException {
-        StandardItemTransform.init(context);
-        ResourceLocation border = this.getResource(json.get("border"));
-        ResourceLocation particle = null;
+    public @NotNull ModularModelData read(@NotNull JsonObject json, @NotNull JsonDeserializationContext context) throws JsonParseException {
+        Identifier border = this.getResource(json.get("border"));
+        Identifier particle = null;
         List<Object> faces = new ArrayList<>();
         for (var dir : Direction.values()) {
             if (json.has(dir.getSerializedName())) {
@@ -67,11 +65,11 @@ public class ModularConnectModelLoader implements IGeometryLoader<ModularConnect
         if (json.has("particle")) {
             particle = this.getResource(json.get("particle"));
         }
-        return new ModularConnectModel(border, particle, faces.toArray());
+        return new ModularModelData(border, particle, faces.toArray());
     }
 
-    public ResourceLocation getResource(JsonElement json) {
-        return ResourceLocation.parse(json.getAsString());
+    public Identifier getResource(JsonElement json) {
+        return Identifier.parse(json.getAsString());
     }
 
 }

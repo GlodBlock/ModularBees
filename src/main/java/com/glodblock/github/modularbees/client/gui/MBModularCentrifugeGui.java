@@ -9,6 +9,7 @@ import com.glodblock.github.modularbees.common.tileentities.centrifuge.TileModul
 import com.glodblock.github.modularbees.container.ContainerMBModularCentrifuge;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Inventory;
+import net.neoforged.neoforge.transfer.fluid.FluidResource;
 
 public class MBModularCentrifugeGui extends MBBaseGui<ContainerMBModularCentrifuge> {
 
@@ -18,7 +19,7 @@ public class MBModularCentrifugeGui extends MBBaseGui<ContainerMBModularCentrifu
         super(container, inv, component);
         for (int x = 0; x < TileModularCentrifuge.FLUID_TANKS; x ++) {
             final int slot = x;
-            var tank = new FluidTankDisplay(() -> container.getTank(slot)).capacity(container.getHost().getFluidInventory().getTankCapacity(slot));
+            var tank = new FluidTankDisplay(() -> container.getTank(slot)).capacity(container.getHost().getFluidInventory().getCapacityAsInt(slot, FluidResource.EMPTY));
             tank.setPosition(127 + slot * 13, 17);
             tank.setSize(11, 52);
             this.group.add("output_tank_" + slot, tank);
@@ -33,7 +34,7 @@ public class MBModularCentrifugeGui extends MBBaseGui<ContainerMBModularCentrifu
 
     @Override
     protected Component getGuiName() {
-        return MBSingletons.MODULAR_CENTRIFUGE_CORE.getName();
+        return MBSingletons.MODULAR_CENTRIFUGE_CORE.get().getName();
     }
 
     @Override

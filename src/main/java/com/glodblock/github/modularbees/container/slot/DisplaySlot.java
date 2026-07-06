@@ -1,15 +1,22 @@
 package com.glodblock.github.modularbees.container.slot;
 
+import com.glodblock.github.modularbees.common.inventory.MBItemInventory;
+import net.minecraft.world.Container;
+import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.neoforge.items.IItemHandler;
-import net.neoforged.neoforge.items.SlotItemHandler;
+import net.neoforged.neoforge.transfer.item.ItemResource;
 import org.jetbrains.annotations.NotNull;
 
-public class DisplaySlot extends SlotItemHandler {
+public class DisplaySlot extends Slot {
 
-    public DisplaySlot(IItemHandler itemHandler, int index, int xPosition, int yPosition) {
-        super(itemHandler, index, xPosition, yPosition);
+    private static final Container EMPTY = new SimpleContainer(0);
+    private final MBItemInventory inventory;
+
+    public DisplaySlot(MBItemInventory itemHandler, int index, int xPosition, int yPosition) {
+        super(EMPTY, index, xPosition, yPosition);
+        this.inventory = itemHandler;
     }
 
     @Override
@@ -19,6 +26,11 @@ public class DisplaySlot extends SlotItemHandler {
     @Override
     public @NotNull ItemStack remove(int amount) {
         return ItemStack.EMPTY;
+    }
+
+    @Override
+    public @NotNull ItemStack getItem() {
+        return this.inventory.getItemStack(this.getSlotIndex()).copy();
     }
 
     @Override
@@ -32,7 +44,17 @@ public class DisplaySlot extends SlotItemHandler {
             is = is.copy();
             is.setCount(1);
         }
-        super.set(is);
+        this.inventory.setItemStack(this.getSlotIndex(), is);
+    }
+
+    @Override
+    public int getMaxStackSize() {
+        return this.inventory.getCapacityAsInt(this.getSlotIndex(), ItemResource.EMPTY);
+    }
+
+    @Override
+    public int getMaxStackSize(@NotNull ItemStack stack) {
+        return this.inventory.getCapacityAsInt(this.getSlotIndex(), ItemResource.of(stack));
     }
 
     @Override
@@ -40,8 +62,9 @@ public class DisplaySlot extends SlotItemHandler {
         return false;
     }
 
-    public int index() {
-        return this.index;
+    @Override
+    public boolean isSameInventory(@NotNull Slot other) {
+        return other instanceof DisplaySlot ds && ds.inventory == this.inventory;
     }
 
 }

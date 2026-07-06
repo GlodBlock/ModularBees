@@ -22,7 +22,7 @@ public class MBTreaterGui extends MBBaseGui<ContainerMBTreater> {
 
     @Override
     protected Component getGuiName() {
-        return MBSingletons.MODULAR_TREATER.getName();
+        return MBSingletons.MODULAR_TREATER.get().getName();
     }
 
 }

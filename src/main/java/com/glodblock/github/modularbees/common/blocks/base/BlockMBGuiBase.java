@@ -4,7 +4,6 @@ import com.glodblock.github.modularbees.common.tileentities.base.TileMBBase;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
-import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
@@ -27,20 +26,20 @@ public abstract class BlockMBGuiBase<T extends TileMBBase> extends BlockMBTileBa
             if (!level.isClientSide()) {
                 this.openGui(be, p);
             }
-            return InteractionResult.sidedSuccess(level.isClientSide());
+            return InteractionResult.SUCCESS;
         } else {
             return InteractionResult.PASS;
         }
     }
 
     @Override
-    public @NotNull ItemInteractionResult useItemOn(@NotNull ItemStack heldItem, @NotNull BlockState state, @NotNull Level level, @NotNull BlockPos pos, @NotNull Player p, @NotNull InteractionHand hand, @NotNull BlockHitResult hit) {
+    public @NotNull InteractionResult useItemOn(@NotNull ItemStack heldItem, @NotNull BlockState state, @NotNull Level level, @NotNull BlockPos pos, @NotNull Player p, @NotNull InteractionHand hand, @NotNull BlockHitResult hit) {
         var parent = super.useItemOn(heldItem, state, level, pos, p, hand, hit);
-        if (parent.result() != InteractionResult.PASS) {
+        if (parent != InteractionResult.PASS && parent != InteractionResult.TRY_WITH_EMPTY_HAND) {
             return parent;
         }
         if (p.isShiftKeyDown()) {
-            return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+            return InteractionResult.PASS;
         } else {
             var be = this.getBlockEntity(level, pos);
             if (be != null) {
@@ -51,9 +50,9 @@ public abstract class BlockMBGuiBase<T extends TileMBBase> extends BlockMBTileBa
                 if (!level.isClientSide()) {
                     this.openGui(be, p);
                 }
-                return ItemInteractionResult.SUCCESS;
+                return InteractionResult.SUCCESS;
             } else {
-                return ItemInteractionResult.FAIL;
+                return InteractionResult.FAIL;
             }
         }
     }
@@ -61,7 +60,7 @@ public abstract class BlockMBGuiBase<T extends TileMBBase> extends BlockMBTileBa
     public abstract void openGui(T tile, Player p);
 
     @Nullable
-    public ItemInteractionResult check(T tile, ItemStack stack, Level world, BlockPos pos, BlockHitResult hit, Player p) {
+    public InteractionResult check(T tile, ItemStack stack, Level world, BlockPos pos, BlockHitResult hit, Player p) {
         return null;
     }
 

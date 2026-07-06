@@ -1,9 +1,9 @@
 package com.glodblock.github.modularbees.util;
 
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 public interface RegisterTask {
 
-    void onRegister(ResourceLocation id);
+    void onRegister(Identifier id);
 
 }

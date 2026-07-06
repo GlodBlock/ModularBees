@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "B": "minecraft:iron_bars",
+    "C": "minecraft:clock",
+    "P": "modularbees:modular_beehive_part",
+    "R": "minecraft:repeater",
+    "X": "minecraft:comparator"
+  },
+  "pattern": [
+    "BCB",
+    "RPR",
+    "BXB"
+  ],
+  "result": {
+    "id": "modularbees:modular_beehive_overclocker"
+  }
+}

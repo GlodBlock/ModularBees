@@ -9,7 +9,7 @@ import cy.jdkdigital.productivebees.common.crafting.ingredient.BeeIngredientFact
 import cy.jdkdigital.productivebees.common.entity.bee.ConfigurableBee;
 import cy.jdkdigital.productivebees.util.BeeHelper;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Renderable;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
@@ -34,10 +34,10 @@ public class BeeDisplay extends RelativeRect2i implements Renderable, TooltipEle
         if (data == null) {
             return null;
         }
-        var tag = data.toOccupant().entityData().copyTag();
-        String type = tag.getString("type");
-        if (type.isEmpty() || type.equals("minecraft:")) {
-            type = tag.getString("id");
+        var tag = data.toOccupant().entityData().copyTagWithoutId();
+        String type = tag.getStringOr("type", "");
+        if (type.isEmpty() || type.startsWith("minecraft:")) {
+            type = tag.getStringOr("id", "");
         }
         var bee = BeeIngredientFactory.getIngredient(type).get();
         if (bee == null) {
@@ -53,8 +53,8 @@ public class BeeDisplay extends RelativeRect2i implements Renderable, TooltipEle
             var bee = info.bee.getCachedEntity(Minecraft.getInstance().level);
             List<Component> tooltip = new ArrayList<>();
             if (bee != null && bee.getEncodeId() != null) {
-                if (bee instanceof ConfigurableBee && info.tag.contains("type")) {
-                    ((ConfigurableBee) bee).setBeeType(info.tag.getString("type"));
+                if (bee instanceof ConfigurableBee cb) {
+                    info.tag.getString("type").ifPresent(cb::setBeeType);
                 }
                 tooltip.add(bee.getName());
                 if (info.status != null) {
@@ -77,7 +77,7 @@ public class BeeDisplay extends RelativeRect2i implements Renderable, TooltipEle
     }
 
     @Override
-    public void render(@NotNull GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
+    public void extractRenderState(@NotNull GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTicks) {
         var info = this.getInfo();
         if (info != null) {
             BeeRenderer.render(graphics, this.getX(), this.getY(), info.bee, Minecraft.getInstance());

@@ -3,24 +3,33 @@ package com.glodblock.github.modularbees.common.inventory;
 import com.glodblock.github.modularbees.common.tileentities.base.TileMBBase;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.neoforged.neoforge.fluids.FluidStack;
-import net.neoforged.neoforge.fluids.capability.templates.FluidTank;
+import net.neoforged.neoforge.transfer.fluid.FluidResource;
+import net.neoforged.neoforge.transfer.fluid.FluidStacksResourceHandler;
+import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.function.Predicate;
 
-public class MBFluidInventory extends FluidTank {
+public class MBFluidInventory extends FluidStacksResourceHandler {
 
     protected IO mode = IO.ALL;
     protected final BlockEntity host;
+    protected Predicate<FluidResource> filter = _ -> true;
 
     public MBFluidInventory(BlockEntity host, int capacity) {
-        super(capacity);
+        super(1, capacity);
         this.host = host;
     }
 
-    public MBFluidInventory(BlockEntity host, int capacity, Predicate<FluidStack> validator) {
-        super(capacity, validator);
+    public MBFluidInventory(BlockEntity host, int size, int capacity) {
+        super(size, capacity);
         this.host = host;
+    }
+
+    public MBFluidInventory(BlockEntity host, int capacity, Predicate<FluidResource> validator) {
+        super(1, capacity);
+        this.host = host;
+        this.filter = validator;
     }
 
     public MBFluidInventory inputOnly() {
@@ -33,43 +42,42 @@ public class MBFluidInventory extends FluidTank {
         return this;
     }
 
-    public int forceFill(@NotNull FluidStack resource, @NotNull FluidAction action) {
-        return super.fill(resource, action);
+    public int forceInsert(int slot, @NotNull FluidResource resource, int amount, @NotNull TransactionContext transaction) {
+        return super.insert(slot, resource, amount, transaction);
     }
 
-    public FluidStack forceDrain(int maxDrain, @NotNull FluidAction action) {
-        return super.drain(maxDrain, action);
+    public int forceInsert(@NotNull FluidResource resource, int amount, @NotNull TransactionContext transaction) {
+        return super.insert(resource, amount, transaction);
+    }
+
+    public int forceExtract(int slot, @NotNull FluidResource resource, int amount, @NotNull TransactionContext transaction) {
+        return super.extract(slot, resource, amount, transaction);
+    }
+
+    public int forceExtract(@NotNull FluidResource resource, int amount, @NotNull TransactionContext transaction) {
+        return super.extract(resource, amount, transaction);
     }
 
     @Override
-    public int fill(@NotNull FluidStack resource, @NotNull FluidAction action) {
-        if (this.mode.canInsert()) {
-            return super.fill(resource, action);
+    public int insert(int slot, @NotNull FluidResource resource, int amount, @NotNull TransactionContext transaction) {
+        if (this.mode.canInsert() && this.filter.test(resource)) {
+            return super.insert(slot, resource, amount, transaction);
         } else {
             return 0;
         }
     }
 
     @Override
-    public @NotNull FluidStack drain(@NotNull FluidStack resource, @NotNull FluidAction action) {
-        if (this.mode.canExtract()) {
-            return super.drain(resource, action);
+    public int extract(int slot, @NotNull FluidResource resource, int amount, @NotNull TransactionContext transaction) {
+        if (this.mode.canExtract() ) {
+            return super.extract(slot, resource, amount, transaction);
         } else {
-            return FluidStack.EMPTY;
+            return 0;
         }
     }
 
     @Override
-    public @NotNull FluidStack drain(int maxDrain, @NotNull FluidAction action) {
-        if (this.mode.canExtract()) {
-            return super.drain(maxDrain, action);
-        } else {
-            return FluidStack.EMPTY;
-        }
-    }
-
-    @Override
-    protected void onContentsChanged() {
+    protected void onContentsChanged(int slot, FluidStack stack) {
         if (this.host != null) {
             if (this.host instanceof TankListener listener) {
                 listener.onChange(this);
@@ -78,10 +86,12 @@ public class MBFluidInventory extends FluidTank {
         }
     }
 
-    @Override
-    public void setFluid(@NotNull FluidStack stack) {
-        super.setFluid(stack);
-        this.onContentsChanged();
+    public int getCapacity() {
+        return this.capacity;
+    }
+
+    public FluidStack getFluidStack(int slot) {
+        return this.stacks.get(slot);
     }
 
     private void markDirty() {

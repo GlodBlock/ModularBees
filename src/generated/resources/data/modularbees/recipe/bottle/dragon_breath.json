@@ -2,13 +2,10 @@
   "type": "productivebees:bottler",
   "fluid": {
     "amount": 250,
-    "tag": "c:dragon_breath"
+    "ingredient": "#c:dragon_breath"
   },
-  "ingredient": {
-    "item": "minecraft:glass_bottle"
-  },
+  "ingredient": "minecraft:glass_bottle",
   "result": {
-    "count": 1,
     "id": "minecraft:dragon_breath"
   }
 }

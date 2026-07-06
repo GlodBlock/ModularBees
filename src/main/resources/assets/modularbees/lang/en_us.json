@@ -52,5 +52,7 @@
   "modularbees.gui.me_export.whitelist": "Whitelist Mode",
   "modularbees.gui.me_export.blacklist": "Blacklist Mode",
   "modularbees.jei.treater_boost": "Productivity +%s",
-  "modularbees.jei.overclocker_boost": "Speed x%s"
+  "modularbees.jei.overclocker_boost": "Speed x%s",
+  "config.jade.plugin_modularbees.grid_node_state": "AE2 Network State (ModularBees)",
+  "config.jade.plugin_modularbees.power_storage": "AE2 Power State (ModularBees)"
 }

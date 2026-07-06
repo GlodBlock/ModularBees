@@ -13,7 +13,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "modularbees:modular_feeder"
+        "recipe": "modularbees:modular_beehive_overclocker"
       },
       "trigger": "minecraft:recipe_unlocked"
     }
@@ -26,7 +26,7 @@
   ],
   "rewards": {
     "recipes": [
-      "modularbees:modular_feeder"
+      "modularbees:modular_beehive_overclocker"
     ]
   }
 }

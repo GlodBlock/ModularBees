@@ -1,12 +1,13 @@
 package com.glodblock.github.modularbees.util;
 
 import net.minecraft.core.Direction;
-import net.minecraft.world.level.block.state.properties.DirectionProperty;
+import net.minecraft.world.level.block.state.properties.EnumProperty;
+import org.jetbrains.annotations.NotNull;
 
-public record RotorBlocks(Direction[] faces, DirectionProperty property) {
+public record RotorBlocks(Direction[] faces, EnumProperty<@NotNull Direction> property) {
 
     public RotorBlocks(String id, Direction... faces) {
-        this(faces, DirectionProperty.create(id, faces));
+        this(faces, EnumProperty.create(id, Direction.class, faces));
     }
 
     public Direction defaultFace() {

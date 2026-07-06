@@ -1,43 +1,34 @@
 package com.glodblock.github.modularbees.client.model;
 
 import com.glodblock.github.modularbees.client.util.ConnectBlock;
-import com.glodblock.github.modularbees.client.util.StandardItemTransform;
 import com.mojang.math.Transformation;
 import it.unimi.dsi.fastutil.objects.Object2ReferenceMap;
 import it.unimi.dsi.fastutil.objects.Object2ReferenceOpenHashMap;
-import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.renderer.block.model.BakedQuad;
-import net.minecraft.client.renderer.block.model.ItemOverrides;
-import net.minecraft.client.renderer.block.model.ItemTransforms;
-import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.client.resources.model.Material;
-import net.minecraft.client.resources.model.ModelState;
+import net.minecraft.client.renderer.block.BlockAndTintGetter;
+import net.minecraft.client.renderer.block.dispatch.BlockStateModelPart;
+import net.minecraft.client.renderer.block.dispatch.ModelState;
+import net.minecraft.client.resources.model.ModelDebugName;
+import net.minecraft.client.resources.model.SimpleModelWrapper;
+import net.minecraft.client.resources.model.geometry.BakedQuad;
+import net.minecraft.client.resources.model.geometry.QuadCollection;
+import net.minecraft.client.resources.model.sprite.Material;
+import net.minecraft.client.resources.model.sprite.MaterialBaker;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Vec3i;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.RandomSource;
-import net.minecraft.world.inventory.InventoryMenu;
-import net.minecraft.world.level.BlockAndTintGetter;
 import net.minecraft.world.level.block.state.BlockState;
-import net.neoforged.neoforge.client.ChunkRenderTypeSet;
-import net.neoforged.neoforge.client.model.IDynamicBakedModel;
-import net.neoforged.neoforge.client.model.data.ModelData;
-import net.neoforged.neoforge.client.model.data.ModelProperty;
+import net.neoforged.neoforge.client.model.DynamicBlockStateModel;
 import net.neoforged.neoforge.client.model.pipeline.QuadBakingVertexConsumer;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import org.joml.Vector3f;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.EnumMap;
 import java.util.List;
-import java.util.function.Function;
 
-public abstract class ConnectBorderlineBakedModel implements IDynamicBakedModel {
+public abstract class ConnectBorderlineBakedModel implements DynamicBlockStateModel {
 
-    private static final ChunkRenderTypeSet RENDER_TYPES = ChunkRenderTypeSet.of(RenderType.CUTOUT_MIPPED, RenderType.SOLID);
     protected static final Object2ReferenceMap<FaceCorner, List<Vector3f>> V_MAP = createVertexMap();
     protected static final EnumMap<Direction, List<Vector3f>> F_MAP = createFaceMap();
     public static final int LU = 0;
@@ -45,20 +36,19 @@ public abstract class ConnectBorderlineBakedModel implements IDynamicBakedModel 
     public static final int LD = 2;
     public static final int RD = 4;
     public static final float EPS = 0.001F;
-    protected final TextureAtlasSprite border;
+    protected final Material.Baked border;
     @NotNull
     protected final Transformation rotorMatrix;
-    protected static final ModelProperty<Connect> CONNECT_STATE = new ModelProperty<>();
 
-    public ConnectBorderlineBakedModel(Function<Material, TextureAtlasSprite> getter, ModelState modelTransform, ResourceLocation border) {
-        this.border = getter.apply(new Material(InventoryMenu.BLOCK_ATLAS, border));
-        var inverseMatrix = modelTransform.getRotation().inverse();
-        this.rotorMatrix = inverseMatrix == null ? Transformation.identity() : inverseMatrix;
+    public ConnectBorderlineBakedModel(MaterialBaker getter, ModelState modelTransform, Identifier border) {
+        ModelDebugName debugName = getClass()::toString;
+        this.border = getter.get(new Material(border), debugName);
+        var inverseMatrix = modelTransform.transformation().inverse();
+        this.rotorMatrix = inverseMatrix == null ? Transformation.IDENTITY : inverseMatrix;
     }
 
     @Override
-    @NotNull
-    public ModelData getModelData(@NotNull BlockAndTintGetter world, @NotNull BlockPos pos, @NotNull BlockState state, @NotNull ModelData modelData) {
+    public void collectParts(@NotNull BlockAndTintGetter world, @NotNull BlockPos pos, @NotNull BlockState state, @NotNull RandomSource rand, @NotNull List<BlockStateModelPart> parts) {
         var connect = new Connect();
         var self = world.getBlockState(pos).getBlock();
         if (self instanceof ConnectBlock c) {
@@ -73,46 +63,22 @@ public abstract class ConnectBorderlineBakedModel implements IDynamicBakedModel 
                 }
             }
         }
-        return modelData.derive().with(CONNECT_STATE, connect).build();
-    }
-
-    @Override
-    public @NotNull List<BakedQuad> getQuads(@Nullable BlockState blockState, @Nullable Direction side, @NotNull RandomSource randomSource, @NotNull ModelData modelData, @Nullable RenderType renderType) {
-        if (side == null) {
-            return Collections.emptyList();
-        }
-        Connect connect;
-        if (blockState == null) {
-            connect = new Connect();
-        } else {
-            connect = modelData.get(CONNECT_STATE);
-        }
-        if (connect == null) {
-            connect = new Connect();
-        }
-        List<BakedQuad> quads = new ArrayList<>();
-        if (renderType == null || renderType == RenderType.CUTOUT_MIPPED) {
+        var quads = new QuadCollection.Builder();
+        for (var side : Direction.values()) {
             this.addQuad(quads, side, connect.getIndex(side, LU), LU);
             this.addQuad(quads, side, connect.getIndex(side, RU), RU);
             this.addQuad(quads, side, connect.getIndex(side, LD), LD);
             this.addQuad(quads, side, connect.getIndex(side, RD), RD);
-        }
-        if (renderType == null || renderType == RenderType.SOLID) {
             this.addQuad(quads, side, connect.getBlocked(side));
         }
-        return quads;
-    }
-
-    @Override
-    public @NotNull ChunkRenderTypeSet getRenderTypes(@NotNull BlockState state, @NotNull RandomSource rand, @NotNull ModelData data) {
-        return RENDER_TYPES;
+        parts.add(new SimpleModelWrapper(quads.build(), false, this.particleMaterial()));
     }
 
     private List<Vector3f> calculateCorners(Direction face, int corner) {
         return V_MAP.get(new FaceCorner(face, corner));
     }
 
-    private void addQuad(List<BakedQuad> quads, Direction side, boolean blocked) {
+    private void addQuad(QuadCollection.Builder quads, Direction side, boolean blocked) {
         if (blocked) {
             return;
         }
@@ -122,8 +88,7 @@ public abstract class ConnectBorderlineBakedModel implements IDynamicBakedModel 
         builder.setSprite(sprite);
         builder.setDirection(side);
         builder.setShade(true);
-        builder.setHasAmbientOcclusion(true);
-        var normal = side.getNormal();
+        var normal = side.getUnitVec3i();
         var c1 = cons.get(0);
         var c2 = cons.get(1);
         var c3 = cons.get(2);
@@ -132,12 +97,12 @@ public abstract class ConnectBorderlineBakedModel implements IDynamicBakedModel 
         this.putVertex(builder, sprite, normal, c2.x(), c2.y(), c2.z(), 0, 1);
         this.putVertex(builder, sprite, normal, c3.x(), c3.y(), c3.z(), 1, 1);
         this.putVertex(builder, sprite, normal, c4.x(), c4.y(), c4.z(), 1, 0);
-        quads.add(builder.bakeQuad());
+        quads.addCulledFace(side, builder.bakeQuad());
     }
 
-    abstract TextureAtlasSprite getFaceSprite(Direction side);
+    abstract Material.Baked getFaceSprite(Direction side);
 
-    private void addQuad(List<BakedQuad> quads, Direction side, int index, int corner) {
+    private void addQuad(QuadCollection.Builder quads, Direction side, int index, int corner) {
         if (index < 0) {
             return;
         }
@@ -146,7 +111,7 @@ public abstract class ConnectBorderlineBakedModel implements IDynamicBakedModel 
         builder.setSprite(this.border);
         builder.setDirection(side);
         builder.setShade(true);
-        var normal = side.getNormal();
+        var normal = side.getUnitVec3i();
         var c1 = cons.get(0);
         var c2 = cons.get(1);
         var c3 = cons.get(2);
@@ -181,7 +146,7 @@ public abstract class ConnectBorderlineBakedModel implements IDynamicBakedModel 
                 this.putVertex(builder, this.border, normal, c4.x(), c4.y(), c4.z(), u0, v1);
             }
         }
-        quads.add(builder.bakeQuad());
+        quads.addCulledFace(side, builder.bakeQuad());
     }
 
     private static EnumMap<Direction, List<Vector3f>> createFaceMap() {
@@ -225,7 +190,8 @@ public abstract class ConnectBorderlineBakedModel implements IDynamicBakedModel 
         return map;
     }
 
-    private void putVertex(QuadBakingVertexConsumer builder, TextureAtlasSprite sprite, Vec3i normal, float x, float y, float z, float u, float v) {
+    private void putVertex(QuadBakingVertexConsumer builder, Material.Baked baked, Vec3i normal, float x, float y, float z, float u, float v) {
+        var sprite = baked.sprite();
         builder.addVertex(x, y, z);
         builder.setColor(1.0f, 1.0f, 1.0f, 1.0f);
         builder.setNormal((float) normal.getX(), (float) normal.getY(), (float) normal.getZ());
@@ -262,40 +228,14 @@ public abstract class ConnectBorderlineBakedModel implements IDynamicBakedModel 
         };
     }
 
-    @Override
-    public boolean useAmbientOcclusion() {
-        return true;
-    }
-
-    @Override
-    public boolean isGui3d() {
-        return false;
-    }
-
-    @Override
-    public boolean usesBlockLight() {
-        return true;
-    }
-
-    @Override
-    public boolean isCustomRenderer() {
-        return false;
-    }
-
-    @Override
-    public @NotNull TextureAtlasSprite getParticleIcon() {
+    @NotNull
+    public Material.Baked particleMaterial() {
         return this.border;
     }
 
     @Override
-    public @NotNull ItemOverrides getOverrides() {
-        return ItemOverrides.EMPTY;
-    }
-
-    @SuppressWarnings("deprecation")
-    @Override
-    public @NotNull ItemTransforms getTransforms() {
-        return StandardItemTransform.get();
+    public @BakedQuad.MaterialFlags int materialFlags() {
+        return BakedQuad.FLAG_TRANSLUCENT;
     }
 
     public static class Connect {
@@ -324,7 +264,7 @@ public abstract class ConnectBorderlineBakedModel implements IDynamicBakedModel 
         }
 
         boolean getBlocked(Direction face) {
-            var pos = face.getNormal().offset(1, 1, 1);
+            var pos = face.getUnitVec3i().offset(1, 1, 1);
             return this.connects[pos.getX()][pos.getY()][pos.getZ()];
         }
 

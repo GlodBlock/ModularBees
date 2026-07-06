@@ -2,7 +2,7 @@ package com.glodblock.github.modularbees.client.gui.elements;
 
 import com.glodblock.github.modularbees.client.util.PicData;
 import com.glodblock.github.modularbees.client.util.RelativeRect2i;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Renderable;
 import net.minecraft.client.renderer.Rect2i;
 import org.jetbrains.annotations.NotNull;
@@ -30,7 +30,7 @@ public class ProcessDisplay extends RelativeRect2i implements Renderable {
     }
 
     @Override
-    public void render(@NotNull GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
+    public void extractRenderState(@NotNull GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTicks) {
         var process = this.process.getAsDouble();
         if (process <= 0 || this.bar == null || this.full <= 0) {
             return;
