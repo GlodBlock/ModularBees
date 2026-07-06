@@ -45,8 +45,8 @@ public class MBAlvearyGui extends MBBaseGui<ContainerMBAlveary> {
     }
 
     @Override
-    protected void extractMenuBackground(@NotNull GuiGraphicsExtractor graphics, int x, int y, int width, int height) {
-        super.extractMenuBackground(graphics, x, y, width, height);
+    public void extractBackground(@NotNull GuiGraphicsExtractor graphics, int mouseX, int mouseY, float a) {
+        super.extractBackground(graphics, mouseX, mouseY, a);
         if (this.getMenu().renderInputSlot()) {
             INPUT.render(graphics, 32 + this.leftPos, 36 + this.topPos);
         }

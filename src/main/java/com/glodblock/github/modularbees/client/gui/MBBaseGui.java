@@ -79,7 +79,8 @@ public abstract class MBBaseGui<C extends ContainerMBBase<? extends TileMBBase>>
     }
 
     @Override
-    protected void extractMenuBackground(@NotNull GuiGraphicsExtractor graphics, int x, int y, int width, int height) {
+    public void extractBackground(@NotNull GuiGraphicsExtractor graphics, int mouseX, int mouseY, float a) {
+        super.extractBackground(graphics, mouseX, mouseY, a);
         // Background rendering doesn't count GUI offset yet
         this.getBackground().render(graphics, this.leftPos, this.topPos);
     }

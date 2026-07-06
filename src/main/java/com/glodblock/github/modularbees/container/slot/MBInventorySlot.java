@@ -22,7 +22,7 @@ public class MBInventorySlot extends ResourceHandlerSlot {
 
     @Override
     public boolean mayPlace(@NotNull ItemStack stack) {
-        IO mode = this.getResourceHandler().getIO(this.index);
+        IO mode = this.getResourceHandler().getIO(this.getSlotIndex());
         MBItemInventory.ItemFilter filter = this.getResourceHandler().getFilter(this.getSlotIndex());
         if (mode.canInsert() && filter.valid(ItemResource.of(stack))) {
             return super.mayPlace(stack);

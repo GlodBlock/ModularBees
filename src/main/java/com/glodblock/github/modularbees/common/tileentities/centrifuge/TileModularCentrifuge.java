@@ -36,12 +36,14 @@ import net.neoforged.neoforge.transfer.ResourceHandler;
 import net.neoforged.neoforge.transfer.fluid.FluidResource;
 import net.neoforged.neoforge.transfer.item.ItemResource;
 import net.neoforged.neoforge.transfer.transaction.Transaction;
+import net.neoforged.neoforge.transfer.transaction.TransactionContext;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.SequencedCollection;
 import java.util.Set;
 import java.util.function.Consumer;
 
@@ -70,7 +72,7 @@ public class TileModularCentrifuge extends TileMBModularCore implements ItemHand
     private boolean stuck = false;
     private int para = 1;
     private float chanceBoost = 0;
-    private ResourceHandler<@NotNull ItemResource> combinedInputs;
+    private CombinedInputInventory combinedInputs;
     private TileCentrifugeHeater heater;
 
     public TileModularCentrifuge(BlockEntityType<?> type, BlockPos pos, BlockState state) {
@@ -78,14 +80,14 @@ public class TileModularCentrifuge extends TileMBModularCore implements ItemHand
         this.tanks = new MBFluidInventory(this, 3, 64 * GameConstants.BUCKET).outputOnly();
     }
 
-    private ResourceHandler<@NotNull ItemResource> getCombinedInputs() {
+    private CombinedInputInventory getCombinedInputs() {
         if (this.combinedInputs == null) {
-            List<ResourceHandler<@NotNull ItemResource>> inv = new ArrayList<>();
+            List<MBItemInventory> inv = new ArrayList<>();
             inv.add(this.inputs);
             for (var input : this.getComponents(TileCentrifugeImport.class)) {
                 inv.add(input.getItemInventory());
             }
-            this.combinedInputs = new CombinedResourceHandler<>(inv);
+            this.combinedInputs = new CombinedInputInventory(inv);
             this.stuck = false;
         }
         return this.combinedInputs;
@@ -180,7 +182,7 @@ public class TileModularCentrifuge extends TileMBModularCore implements ItemHand
                                 int used = Math.min(left, combAmount);
                                 if (CombCentrifugeLookup.query(this.sending::add, this.filling::add, combType, world, used, this.chanceBoost, this.heater != null)) {
                                     try (var trans = Transaction.openRoot()) {
-                                        var rmv = this.getCombinedInputs().extract(x, combType, used, trans);
+                                        var rmv = this.getCombinedInputs().forceExtract(x, combType, used, trans);
                                         if (rmv == used) {
                                             left -= used;
                                             this.markDirty();
@@ -462,6 +464,24 @@ public class TileModularCentrifuge extends TileMBModularCore implements ItemHand
         }
         this.chanceBoost = 0;
         this.chanceBoost += (float) (this.upgrade.countStack(LibItems.UPGRADE_STABILITY.get()) * ProductiveBeesConfig.UPGRADES.stabilityChanceIncrease.get());
+    }
+
+    private static class CombinedInputInventory extends CombinedResourceHandler<@NotNull ItemResource> {
+
+        public CombinedInputInventory(SequencedCollection<MBItemInventory> handlers) {
+            super(handlers);
+        }
+
+        @NotNull
+        protected MBItemInventory getHandlerFromIndex(int handlerIndex) {
+            return (MBItemInventory) super.getHandlerFromIndex(handlerIndex);
+        }
+
+        public int forceExtract(int slot, @NotNull ItemResource item, int amount, @NotNull TransactionContext transaction) {
+            int handlerIndex = getHandlerIndex(slot);
+            return this.getHandlerFromIndex(handlerIndex).forceExtract(getSlotFromIndex(slot, handlerIndex), item, amount, transaction);
+        }
+
     }
 
 }

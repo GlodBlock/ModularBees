@@ -5,6 +5,7 @@ import com.glodblock.github.modularbees.util.ResourceHandlerAccessor;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.neoforged.neoforge.transfer.TransferPreconditions;
 import net.neoforged.neoforge.transfer.item.ItemResource;
 import net.neoforged.neoforge.transfer.item.ItemStacksResourceHandler;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
@@ -99,16 +100,28 @@ public class MBItemInventory extends ItemStacksResourceHandler {
         return super.insert(slot, item, amount, transaction);
     }
 
-    public int forceInsert(@NotNull ItemResource item, int amount, @NotNull TransactionContext transaction) {
-        return super.insert(item, amount, transaction);
+    public int forceInsert(@NotNull ItemResource resource, int amount, @NotNull TransactionContext transaction) {
+        TransferPreconditions.checkNonEmptyNonNegative(resource, amount);
+        int inserted = 0;
+        for (int index = 0; index < this.size(); index++) {
+            inserted += super.insert(index, resource, amount - inserted, transaction);
+            if (inserted == amount) break;
+        }
+        return inserted;
     }
 
     public int forceExtract(int slot, @NotNull ItemResource item, int amount, @NotNull TransactionContext transaction) {
         return super.extract(slot, item, amount, transaction);
     }
 
-    public int forceExtract(@NotNull ItemResource item, int amount, @NotNull TransactionContext transaction) {
-        return super.extract(item, amount, transaction);
+    public int forceExtract(@NotNull ItemResource resource, int amount, @NotNull TransactionContext transaction) {
+        TransferPreconditions.checkNonEmptyNonNegative(resource, amount);
+        int extracted = 0;
+        for (int index = 0; index < this.size(); index++) {
+            extracted += super.extract(index, resource, amount - extracted, transaction);
+            if (extracted == amount) break;
+        }
+        return extracted;
     }
 
     @Override
@@ -175,7 +188,7 @@ public class MBItemInventory extends ItemStacksResourceHandler {
 
     public interface ItemFilter {
 
-        ItemFilter PASS = s -> true;
+        ItemFilter PASS = _ -> true;
 
         boolean valid(ItemResource stack);
 

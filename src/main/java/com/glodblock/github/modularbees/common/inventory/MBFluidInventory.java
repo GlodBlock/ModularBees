@@ -3,6 +3,7 @@ package com.glodblock.github.modularbees.common.inventory;
 import com.glodblock.github.modularbees.common.tileentities.base.TileMBBase;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.neoforged.neoforge.fluids.FluidStack;
+import net.neoforged.neoforge.transfer.TransferPreconditions;
 import net.neoforged.neoforge.transfer.fluid.FluidResource;
 import net.neoforged.neoforge.transfer.fluid.FluidStacksResourceHandler;
 import net.neoforged.neoforge.transfer.transaction.TransactionContext;
@@ -47,7 +48,13 @@ public class MBFluidInventory extends FluidStacksResourceHandler {
     }
 
     public int forceInsert(@NotNull FluidResource resource, int amount, @NotNull TransactionContext transaction) {
-        return super.insert(resource, amount, transaction);
+        TransferPreconditions.checkNonEmptyNonNegative(resource, amount);
+        int inserted = 0;
+        for (int index = 0; index < this.size(); index++) {
+            inserted += super.insert(index, resource, amount - inserted, transaction);
+            if (inserted == amount) break;
+        }
+        return inserted;
     }
 
     public int forceExtract(int slot, @NotNull FluidResource resource, int amount, @NotNull TransactionContext transaction) {
@@ -55,7 +62,13 @@ public class MBFluidInventory extends FluidStacksResourceHandler {
     }
 
     public int forceExtract(@NotNull FluidResource resource, int amount, @NotNull TransactionContext transaction) {
-        return super.extract(resource, amount, transaction);
+        TransferPreconditions.checkNonEmptyNonNegative(resource, amount);
+        int extracted = 0;
+        for (int index = 0; index < this.size(); index++) {
+            extracted += super.extract(index, resource, amount - extracted, transaction);
+            if (extracted == amount) break;
+        }
+        return extracted;
     }
 
     @Override
