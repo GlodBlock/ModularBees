@@ -17,11 +17,15 @@ import cy.jdkdigital.productivebees.util.BeeHelper;
 import cy.jdkdigital.productivebees.util.GeneAttribute;
 import it.unimi.dsi.fastutil.ints.Int2ReferenceMap;
 import it.unimi.dsi.fastutil.ints.Int2ReferenceOpenHashMap;
+import it.unimi.dsi.fastutil.objects.Object2ReferenceMap;
+import it.unimi.dsi.fastutil.objects.Object2ReferenceOpenHashMap;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.component.DataComponents;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.util.RandomSource;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.animal.Bee;
 import net.minecraft.world.item.ItemStack;
@@ -186,6 +190,7 @@ public final class BeeTable {
     public static class BeeCache {
 
         private static final Set<String> SPECIAL_BEES = Set.of("productivebees:lumber_bee", "productivebees:quarry_bee", "productivebees:dye_bee", "productivebees:wanna");
+        private static final Object2ReferenceMap<String, Entity> ENTITY_CACHE = new Object2ReferenceOpenHashMap<>();
         private final TileBeehiveAlveary.AlvearyBee key;
         private final String beeId;
         private final ChanceStack beeGene;
@@ -280,7 +285,7 @@ public final class BeeTable {
                     if (inputBlock.getBlock() instanceof Amber) {
                         var tag = input.get(DataComponents.ENTITY_DATA);
                         if (tag != null) {
-                            var entity = AmberBlockEntity.createEntity(world, tag.copyTag());
+                            var entity = makeEntity(tag.copyTag(), world);
                             if (entity instanceof Mob mob && world instanceof ServerLevel serverWorld) {
                                 var loot = serverWorld.getServer().reloadableRegistries().getLootTable(mob.getLootTable());
                                 return new Output(List.of(new MobOutput(mob, loot, serverWorld, pos, 1)), this.geneBoost);
@@ -290,6 +295,14 @@ public final class BeeTable {
                 }
             }
             return Output.EMPTY;
+        }
+
+        private static Entity makeEntity(CompoundTag tag, Level world) {
+            if (tag.contains("id")) {
+                return ENTITY_CACHE.computeIfAbsent(tag.getString("id"), key -> AmberBlockEntity.createEntity(world, tag));
+            } else {
+                return null;
+            }
         }
 
         ChanceStack geneDrop(final BeeAttributesHandler handler) {
