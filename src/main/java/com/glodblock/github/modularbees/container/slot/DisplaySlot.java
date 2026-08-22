@@ -1,5 +1,6 @@
 package com.glodblock.github.modularbees.container.slot;
 
+import com.glodblock.github.modularbees.common.inventory.MBItemInventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.items.IItemHandler;
@@ -32,7 +33,17 @@ public class DisplaySlot extends SlotItemHandler {
             is = is.copy();
             is.setCount(1);
         }
-        super.set(is);
+        if (is.isEmpty() || this.checkFilter(is)) {
+            super.set(is);
+        }
+    }
+
+    private boolean checkFilter(ItemStack stack) {
+        if (this.getItemHandler() instanceof MBItemInventory mb) {
+            return mb.getFilter(this.index).valid(stack);
+        } else {
+            return super.mayPlace(stack);
+        }
     }
 
     @Override

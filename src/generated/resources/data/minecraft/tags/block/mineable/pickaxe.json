@@ -11,6 +11,10 @@
     {
       "id": "modularbees:me_centrifuge_export",
       "required": false
+    },
+    {
+      "id": "modularbees:me_centrifuge_import",
+      "required": false
     }
   ]
 }

@@ -343,6 +343,15 @@ public class MBRecipeProvider extends RecipeProvider {
                 .define('S', MBSingletons.MODULAR_CENTRIFUGE_EXPORT)
                 .unlockedBy(C, has(MBSingletons.MODULAR_CENTRIFUGE_EXPORT))
                 .save(c.withConditions(mod(ModIDs.AE2)), ModularBees.id("me_centrifuge_export"));
+        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, AEXSingletons.ME_CENTRIFUGE_IMPORT)
+                .pattern("FIF")
+                .pattern("PSP")
+                .define('F', ConventionTags.FLUIX_CRYSTAL)
+                .define('I', ConventionTags.INTERFACE)
+                .define('P', Items.IRON_BARS)
+                .define('S', MBSingletons.MODULAR_CENTRIFUGE_IMPORT)
+                .unlockedBy(C, has(MBSingletons.MODULAR_CENTRIFUGE_IMPORT))
+                .save(c.withConditions(mod(ModIDs.AE2)), ModularBees.id("me_centrifuge_import"));
     }
 
     private void electrode(Item electrode, TagKey<Item> material, TagKey<Item> material2, String name, @NotNull RecipeOutput c) {

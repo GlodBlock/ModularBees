@@ -17,6 +17,7 @@ import com.glodblock.github.modularbees.util.GameConstants;
 import com.glodblock.github.modularbees.util.GameUtil;
 import com.glodblock.github.modularbees.util.TryResult;
 import com.glodblock.github.modularbees.xmod.ae.expose.MEExportAction;
+import com.glodblock.github.modularbees.xmod.ae.expose.MEImportAction;
 import cy.jdkdigital.productivebees.ProductiveBeesConfig;
 import cy.jdkdigital.productivebees.init.ModTags;
 import cy.jdkdigital.productivelib.registry.LibItems;
@@ -90,6 +91,9 @@ public class TileModularCentrifuge extends TileMBModularCore implements ItemHand
             List<IItemHandlerModifiable> inv = new ArrayList<>();
             inv.add(this.inputs);
             for (var input : this.getComponents(TileCentrifugeImport.class)) {
+                inv.add(input.getItemInventory());
+            }
+            for (var input : this.getComponents(MEImportAction.class)) {
                 inv.add(input.getItemInventory());
             }
             this.combinedInputs = new CombinedInvWrapper(inv.toArray(new IItemHandlerModifiable[0]));

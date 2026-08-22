@@ -39,6 +39,9 @@ public class MBConfig {
     public static final ModConfigSpec.IntValue ME_EXPORT_INTERVAL = BUILDER
             .comment("Tick interval for ME export hatch check network status")
             .defineInRange("ae2.me_output_interval", 20, 1, 1000);
+    public static final ModConfigSpec.IntValue ME_IMPORT_INTERVAL = BUILDER
+            .comment("Tick interval for ME import hatch pull from network")
+            .defineInRange("ae2.me_input_interval", 3, 1, 1000);
     public static final ModConfigSpec SPEC = BUILDER.build();
 
 }

@@ -20,6 +20,11 @@ public class MBBigItemInventory extends MBItemInventory {
         super(host, size);
     }
 
+    public MBBigItemInventory(BlockEntity host, int multiplier, int size) {
+        super(host, size);
+        this.multiplier = multiplier;
+    }
+
     public void setMultiplier(int multiplier) {
         this.multiplier = Math.max(multiplier, 1);
     }
